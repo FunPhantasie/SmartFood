@@ -1,0 +1,114 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[left=30mm,right=30mm,top=30mm,bottom=25mm,head=14.5pt]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ulem}
+\usepackage{amsmath}
+\usepackage{booktabs} 
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}  %Path fehlte
+\usepackage{svg}
+
+\usepackage[rightcaption]{sidecap}
+\usepackage{wrapfig}
+\usepackage{nicefrac}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{eso-pic} 
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{caption}
+\usepackage{pdfpages}
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{tocloft}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\usepackage{censor}
+\usepackage{scrdate}
+\usepackage{lastpage}
+\usepackage{boxedminipage}
+\usepackage{multicol}
+\usepackage{tikz,lipsum,lmodern}
+\usepackage[most]{tcolorbox}
+\usepackage[singlespacing]{setspace}
+\usepackage[ngerman]{babel}
+%variable Titel
+
+\newcommand{\Titel}{ Kochbuch  }
+\newcommand{\Subtitle}{ Was nicht brennt, ist kalt. }
+\newcommand{\Versuchstag}{ 1. Januar  \the\year }
+%
+\newcounter{mycounter}
+\setcounter{mycounter}{1}
+\newcommand{\zaehler}{\arabic{mycounter}\stepcounter{mycounter}}
+
+
+
+
+\begin{document}
+% Hintergrund aktivieren
+\AddToShipoutPicture*{\includegraphics{background.pdf}}
+
+\vspace*{-20mm}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{logo_1.png}
+\end{figure}
+
+\begin{center}
+\begin{LARGE}
+\textbf{\Titel \\[4mm]
+\Subtitle}
+\end{LARGE}
+
+\vspace*{9mm}
+
+\begin{large}
+Author Tim
+\end{large}
+\end{center}
+
+
+
+\newpage
+\ClearShipoutPicture % Hintergrund wieder deaktivieren
+\numberwithin{equation}{subsection}
+\lhead{\Titel}
+\chead{}
+\rhead{}
+\lfoot{}
+\cfoot{\thepage{}}
+\rfoot{}
+\pagestyle{fancyplain}
+
+\makeatletter
+\renewcommand{\numberline}[1]{#1\hspace{0.7em}}
+\makeatother
+\tableofcontents
+
+\newpage 
+\section{Hauptgerichte}
+\section{Snacks}
+\section{Dip}
+\section{Süßspeisen}
+\section{Gewürzmischungen}
+\appendix
+
+
+
+
+ 
+    \newpage
+    
+    \rhead{}
+    \rfoot{}
+
+    \newpage
+
+\end{document}

@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SmartFood — Recipe & Ingredient Manager</title>
+  <style>
+    :root {
+      --bg: #0f172a; /* slate-900 */
+      --panel: #111827; /* gray-900 */
+      --muted: #94a3b8; /* slate-400 */
+      --text: #e5e7eb; /* gray-200 */
+      --accent: #22c55e; /* green-500 */
+      --accent2: #60a5fa; /* blue-400 */
+      --alt: #a78bfa; /* violet-400 */
+      --warn: #f59e0b; /* amber-500 */
+      --danger: #ef4444; /* red-500 */
+      --shadow: 0 10px 20px rgba(0,0,0,0.25);
+      --radius: 16px;
+      --gap: 12px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 80% -20%, rgba(96,165,250,0.08), transparent 60%),
+                  radial-gradient(900px 600px at -10% 120%, rgba(34,197,94,0.07), transparent 60%),
+                  var(--bg);
+      color: var(--text);
+    }
+    header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 22px 24px;
+      position: sticky; top: 0;
+      backdrop-filter: blur(8px);
+      background: rgba(15,23,42,0.75);
+      border-bottom: 1px solid rgba(148,163,184,0.15);
+      z-index: 5;
+    }
+    h1 { font-size: 20px; margin: 0; letter-spacing: .3px; }
+    .badge { font-size: 12px; color: var(--muted); }
+    .container { display:grid; grid-template-columns: 1fr; gap: 18px; padding: 18px 24px 60px; align-items:start; }
+
+    .card { background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)); border: 1px solid rgba(148,163,184,0.18); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .card h2 { margin: 0; font-size: 16px; padding: 16px 16px 0 16px; }
+    .card .content { padding: 14px 16px 16px 16px; }
+    .row { display:flex; gap: var(--gap); flex-wrap: wrap; }
+    .col { flex: 1 1 0; min-width: 160px; }
+
+    label { display:block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,0.25);
+      background: #0b1220;
+      color: var(--text);
+      outline: none;
+    }
+    input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    textarea#rec_instructions {
+  min-height: 140px;
+  font-size: 17px;            /* noch minimal größer */
+  line-height: 1.65;
+  padding: 16px 18px 15px 18px;
+  resize: none;               /* 👈 wichtig für Auto-Resize */
+  overflow: hidden;
+}
+    .checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+}
+   /* make checkbox bigger + lower it */
+.checkbox input[type="checkbox"] {
+  width: 15px;          /* increase size */
+  height: 15px;         /* increase size */
+  transform: translateY(10px);  /* lower it a bit more */
+}
+.checkbox span {
+  font-size: 13px;
+  transform: translateY(9px); /* move text down */
+}
+    .btn {
+      cursor:pointer;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,0.25);
+      background:#0b1220;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .btn.primary { background: linear-gradient(180deg, rgba(34,197,94,0.18), rgba(34,197,94,0.05)); border-color: rgba(34,197,94,0.45); }
+    .btn.secondary { background: linear-gradient(180deg, rgba(96,165,250,0.18), rgba(96,165,250,0.05)); border-color: rgba(96,165,250,0.45); }
+    .btn.alt { background: linear-gradient(180deg, rgba(167,139,250,0.22), rgba(167,139,250,0.06)); border-color: rgba(167,139,250,0.55); }
+    .btn.warn { background: linear-gradient(180deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05)); border-color: rgba(245,158,11,0.4); }
+    .btn.danger { background: linear-gradient(180deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05)); border-color: rgba(239,68,68,0.4); }
+    .btn:disabled { opacity:.5; cursor: not-allowed; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align:left; border-bottom:1px solid rgba(148,163,184,0.15); padding: 10px 6px; }
+    th { color: var(--muted); font-weight: 600; }
+    tr:hover td { background: rgba(148,163,184,0.05); }
+
+    .pill { font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(148,163,184,0.3); display:inline-block; }
+    .pill.meat { border-color: rgba(248,113,113,0.6); color:#fecaca; }
+    .pill.vegan { border-color: rgba(34,197,94,0.6); color:#bbf7d0; }
+    .pill.vegetarian { border-color: rgba(59,130,246,0.6); color:#bfdbfe; }
+
+    .toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .footer { position: fixed; bottom: 10px; right: 12px; color: var(--muted); font-size: 12px; }
+    .hint { color: var(--muted); font-size: 12px; }
+    .list { display:flex; flex-direction: column; gap: 8px; }
+    .inline { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .divider { height: 1px; background: rgba(148,163,184,0.15); margin: 10px 0; }
+    .status { font-size:12px; color: var(--muted); }
+
+    .combo {
+      position: relative;
+      width: 100%;
+    }
+
+    .combo input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+    }
+
+    .combo-list {
+      position: absolute;
+      top: 105%;
+      left: 0;
+      right: 0;
+      max-height: 220px;
+      overflow-y: auto;
+      background: #0b1220;
+      border: 1px solid rgba(148,163,184,.25);
+      border-radius: 12px;
+      display: none;
+      z-index: 10;
+    }
+
+    .combo-item {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .combo-item:hover {
+      background: rgba(148,163,184,.1);
+    }
+
+
+
+    /* Modal */
+    .modalOverlay{position:fixed;inset:0;background:rgba(2,6,23,.65);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:50;padding:18px}
+    .modalOverlay.open{display:flex;}
+    .modalPanel{width:min(560px,100%);max-height:calc(100vh - 36px);overflow:auto;border-radius:var(--radius)}
+    .modalHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(148,163,184,0.15)}
+    .modalHeader h2{padding:0;margin:0;font-size:16px}
+
+    /* Ingredient picker row: keep buttons on same line */
+    .ingPickRow { align-items: flex-end; }
+    .ingPickRow .col.pick { flex: 2 1 320px; min-width: 280px; }
+    .pickLine { display:flex; gap: 8px; align-items: center; }
+    .pickLine select { flex: 1 1 auto; min-width: 180px; }
+    .pickLine input { width: 140px; flex: 0 0 140px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SmartFood — Recipe & Ingredient Manager <span class="badge">(auto-save to YAML)</span></h1>
+    <div class="toolbar">
+      <span class="status" id="saveStatus">Loading…</span>
+      <button onclick="location.href='/'" style="border-radius:10px;padding:8px 14px;border:none;background:#22d3ee;color:#0f172a;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.2);">
+        🍳 Go to Recipe Proposer
+      </button>
+      <button id="resetAll" class="btn danger">Reset (clear in-memory only)</button>
+    </div>
+  </header>
+
+  <!-- INGREDIENTS MODAL -->
+  <div id="ingredientsModal" class="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="ingredientsModalTitle">
+    <section class="card modalPanel" id="ingredientsCard">
+      <div class="modalHeader">
+        <h2 id="ingredientsModalTitle">Ingredients</h2>
+        <div class="toolbar">
+          <button id="closeIngredientsModal" class="btn">Close</button>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="list">
+          <div class="row">
+            <div class="col">
+              <label>Name</label>
+              <input id="ing_name" type="text" placeholder="e.g., Flour" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label>Veg Type</label>
+              <select id="ing_veg">
+                <option value="vegan">vegan</option>
+                <option value="vegetarian">vegetarian</option>
+                <option value="meat">meat</option>
+              </select>
+            </div>
+            <div class="col">
+              <label>Default unit (optional)</label>
+              <input id="ing_unit" type="text" placeholder="g | ml | pcs | ..." />
+            </div>
+            <div class="col">
+              <label class="checkbox"><input id="ing_side" type="checkbox" /><span>Side dish</span></label>
+            </div>
+          </div>
+
+          <div class="inline">
+            <button id="addIngredient" class="btn primary">Add ingredient</button>
+            <button id="updateIngredient" class="btn secondary" disabled>Update selected</button>
+            <span class="hint">Tip: click a row to select it for editing.</span>
+          </div>
+
+          <div class="divider"></div>
+
+          <div style="max-height: 360px; overflow:auto;">
+            <table id="ingredientsTable">
+              <thead><tr>
+                <th>ID</th><th>Name</th><th>Veg</th><th>Unit</th><th>Side</th><th></th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="container">
+    <main class="card" id="recipesCard">
+      <h2>New Recipe</h2>
+      <div class="content">
+        <div class="row">
+          <div class="col">
+            <label>Name</label>
+            <input id="rec_name" type="text" placeholder="e.g., Pancakes" />
+          </div>
+          <div class="col">
+            <label>Zubereitungszeit (min)</label>
+            <input id="rec_prep" type="number" min="0" />
+          </div>
+
+        </div>
+
+        <div class="row" style="margin-top:8px;">
+          <div class="col">
+            <label>Recipe Type</label>
+            <select id="rec_type">
+              <option value="main_dish">Hauptspeise</option>
+              <option value="sweet">Süßspeise</option>
+              <option value="dip">Dip</option>
+              <option value="wuerzung">Würzmischung</option>
+              <option value="side_dish">Nebenspeise</option>
+              <option value="snack">Snack</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Kochzeit (min)</label>
+            <input id="rec_cook" type="number" min="0" />
+          </div>
+          <div class="col">
+            <label class="checkbox"><input id="rec_sweet" type="checkbox" />  <span>Sweet</span></label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label>Instructions</label>
+            <textarea id="rec_instructions" placeholder="Write concise steps..."></textarea>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <h3 style="margin:0 0 6px 0; font-size:14px; color:var(--muted);">Ingredients for this recipe</h3>
+
+        <div class="row ingPickRow">
+          <div class="col pick">
+            <label>Select ingredient</label>
+            <div class="combo">
+            <input
+              id="rec_ing_combo"
+              type="text"
+              placeholder="Select ingredient…"
+              autocomplete="off"
+            />
+            <div class="combo-list" id="rec_ing_options"></div>
+          </div>
+
+          </div>
+
+          <div class="col">
+            <label>Quantity</label>
+            <input id="rec_ing_qty" type="number" min="0" step="0.01" placeholder="e.g., 250" />
+          </div>
+
+          <div class="col">
+            <label>Unit</label>
+            <input id="rec_ing_unit" type="text" placeholder="g | ml | pcs | ..." />
+          </div>
+          <div class="col">
+          <button id="openIngredientModal" class="btn alt" type="button">+ New ingredient</button>
+          <button id="addRecIngredient" class="btn secondary" type="button">Add to list</button>
+          </div>
+        </div>
+
+        <div id="recIngWrap" style="margin-top:8px;">
+          <table id="rec_ing_table">
+            <thead><tr><th>Ingredient</th><th>Veg</th><th>Qty</th><th>Unit</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="inline" style="margin-top:10px;">
+          <span>Calculated veg type: <span id="calculatedVeg" class="pill">—</span></span>
+          <span class="hint">(auto from selected ingredients)</span>
+        </div>
+        <div class="divider"></div>
+<div class="inline">
+          <button id="saveRecipe" class="btn primary">Save recipe</button>
+          <button id="clearRecipe" class="btn">Clear</button>
+        </div>
+      </div>
+
+      <div class="content">
+        <h2 style="margin-top:0;">Existing Recipes</h2>
+        <div style="max-height: 360px; overflow:auto;">
+          <table id="recipesTable">
+            <thead><tr>
+              <th>ID</th><th>Name</th><th>Veg</th><th>Zubereitung</th><th>Kochzeit</th><th>Sweet</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="footer">Served by Python. Auto-loads from YAML on start and auto-saves changes.</div>
+
+<script>
+  // ---------------------- State ----------------------
+  let ingredients = [];       // [{ingredient_id, name, veg_type, side_dish, unit}]
+  let recipes = [];           // [{recipe_id, veg_type, prep_minutes, cook_minutes, name, sweet, instructions, recipe_type, ...}]
+  let recipeIngredients = []; // [{ingredient_id, recipe_id, quantity, unit}]
+  let history = [];
+
+  let selectedIngredientId = null;
+  let currentRecipeItems = []; // [{ingredient_id, quantity, unit}]
+  let editingRecipeId = null;
+  let pendingDeleteIngredientIds = new Set(); // ingredient_ids to consider deleting after save/update
+  let pendingUpdateConfirmation = null; // {recipe_id, message}
+
+  const $ = (sel) => document.querySelector(sel);
+
+  function escapeHtml(s) {
+    return (s ?? "").toString().replace(/[&<>"']/g, (m) => (
+      {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]
+    ));
+  }
+
+  function nextId(arr, key) {
+    return arr.reduce((m, r) => Math.max(m, Number(r?.[key] || 0)), 0) + 1;
+  }
+
+
+  function normalizeName(name) {
+    return (name ?? "")
+      .toString()
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, " ");
+  }
+
+  function findIngredientByNormalizedName(normName) {
+    const norm = normalizeName(normName);
+    return ingredients.find(i => normalizeName(i?.name) === norm) || null;
+  }
+
+  function compactRecipeIngredients() {
+    // Merge duplicates of (recipe_id, ingredient_id, unit) by summing quantity.
+    const key = (ri) => `${Number(ri.recipe_id)}|${Number(ri.ingredient_id)}|${(ri.unit ?? '').toString()}`;
+    const out = [];
+    const map = new Map();
+    for (const ri of recipeIngredients) {
+      const k = key(ri);
+      if (!map.has(k)) {
+        const copy = { ...ri };
+        copy.recipe_id = Number(copy.recipe_id);
+        copy.ingredient_id = Number(copy.ingredient_id);
+        copy.quantity = Number(copy.quantity);
+        map.set(k, copy);
+        out.push(copy);
+      } else {
+        const cur = map.get(k);
+        const q = Number(ri.quantity);
+        if (Number.isFinite(q)) cur.quantity += q;
+      }
+    }
+    recipeIngredients = out;
+  }
+
+  function mergeIngredientInto(sourceId, targetId) {
+    const src = Number(sourceId);
+    const tgt = Number(targetId);
+    if (!src || !tgt || src === tgt) return;
+
+    // Re-point all recipe links
+    for (const ri of recipeIngredients) {
+      if (Number(ri.ingredient_id) === src) {
+        ri.ingredient_id = tgt;
+      }
+    }
+    compactRecipeIngredients();
+
+    // Remove source ingredient record
+    ingredients = ingredients.filter(i => Number(i.ingredient_id) !== src);
+
+    // If current recipe had src, make sure UI updates
+    currentRecipeItems.forEach(it => {
+      if (Number(it.ingredient_id) === src) it.ingredient_id = tgt;
+    });
+  }
+
+// ---------------------- UI helpers ----------------------
+  function setStatus(txt) {
+    const el = $('#saveStatus');
+    if (el) el.textContent = txt;
+  }
+
+  function showToast(msg, ms = 2200) {
+    let el = document.getElementById('toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'toast';
+      el.style.position = 'fixed';
+      el.style.right = '16px';
+      el.style.bottom = '16px';
+      el.style.zIndex = '9999';
+      el.style.background = 'rgba(15,23,42,0.95)';
+      el.style.color = '#e2e8f0';
+      el.style.border = '1px solid rgba(148,163,184,0.35)';
+      el.style.padding = '10px 12px';
+      el.style.borderRadius = '12px';
+      el.style.boxShadow = '0 10px 30px rgba(0,0,0,0.35)';
+      el.style.fontSize = '14px';
+      el.style.maxWidth = '60ch';
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(8px)';
+      el.style.transition = 'opacity 150ms ease, transform 150ms ease';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    // animate in
+    requestAnimationFrame(() => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0px)';
+    });
+    clearTimeout(el._hideTimer);
+    el._hideTimer = setTimeout(() => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(8px)';
+    }, ms);
+  }
+
+
+  // Auto-expand the recipe-ingredients table wrapper so nothing is clipped (no inner scrolling)
+  function autoSizeRecIngWrap() {
+    const wrap = document.getElementById('recIngWrap');
+    const table = document.getElementById('rec_ing_table');
+    if (!wrap || !table) return;
+    // Ensure the wrapper never clips the table
+    wrap.style.overflow = 'visible';
+    wrap.style.maxHeight = 'none';
+    // Let the layout recalc naturally; (kept for robustness if inline styles were changed elsewhere)
+    wrap.style.height = 'auto';
+  }
+
+  function normalizeInstructions(text) {
+    return (text ?? "")
+      .replace(/\r?\n+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function autoResizeTextarea(el) {
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
+
+  function bindAutoResizeTextarea(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    autoResizeTextarea(el);
+    el.addEventListener('input', () => autoResizeTextarea(el));
+    el.addEventListener('paste', () => setTimeout(() => autoResizeTextarea(el), 0));
+  }
+
+// Auto-size an input to fit its content (used for ingredient selector)
+const __measureSpan = document.createElement('span');
+__measureSpan.style.position = 'absolute';
+__measureSpan.style.top = '-9999px';
+__measureSpan.style.left = '-9999px';
+__measureSpan.style.whiteSpace = 'pre';
+document.body.appendChild(__measureSpan);
+
+function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
+  if (!input) return;
+  const cs = window.getComputedStyle(input);
+  __measureSpan.style.font = cs.font;
+  __measureSpan.style.letterSpacing = cs.letterSpacing;
+  __measureSpan.textContent = (input.value || input.placeholder || '') + ' ';
+  const w = Math.ceil(__measureSpan.getBoundingClientRect().width) + 24; // padding
+  const clamped = Math.max(minPx, Math.min(maxPx, w));
+  input.style.width = clamped + 'px';
+}
+
+  function setEditingRecipe(idOrNull) {
+    editingRecipeId = idOrNull;
+    const btn = $('#saveRecipe');
+    if (btn) btn.textContent = editingRecipeId ? 'Update recipe' : 'Save recipe';
+
+    const h2 = document.querySelector('#recipesCard > h2');
+    if (h2) h2.textContent = editingRecipeId ? `Edit Recipe (ID ${editingRecipeId})` : 'New Recipe';
+  }
+
+  function clearRecipeForm() {
+    $('#rec_name').value = '';
+    $('#rec_prep').value = '';
+    $('#rec_cook').value = '';
+    $('#rec_sweet').checked = false;
+    $('#rec_instructions').value = '';
+    $('#rec_type').value = 'main_dish';
+
+    currentRecipeItems = [];
+    renderRecipeIngredientList();
+    setEditingRecipe(null);
+    autoResizeTextarea($('#rec_instructions'));
+
+    // ensure ingredient suggestions do NOT open after clearing
+    if (comboInput) {
+      comboInput.value = '';
+      delete comboInput.dataset.id;
+      autoSizeInputToContent(comboInput);
+    }
+    comboOpen = false;
+    if (comboList) comboList.style.display = 'none';
+  }
+
+  // ---------------------- Ingredients Modal ----------------------
+  function openIngredientsModal() {
+    const modal = $('#ingredientsModal');
+    if (modal) modal.classList.add('open');
+  }
+
+  function closeIngredientsModal() {
+    const modal = $('#ingredientsModal');
+    if (modal) modal.classList.remove('open');
+    clearIngredientForm();
+  }
+
+  function clearIngredientForm() {
+    $('#ing_name').value = '';
+    $('#ing_veg').value = 'vegan';
+    $('#ing_unit').value = '';
+    $('#ing_side').checked = false;
+    selectedIngredientId = null;
+    $('#updateIngredient').disabled = true;
+  }
+
+  function renderIngredients() {
+    const tbody = $('#ingredientsTable tbody');
+    tbody.innerHTML = '';
+
+    for (const ing of ingredients) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${ing.ingredient_id}</td>
+        <td>${escapeHtml(ing.name)}</td>
+        <td><span class="pill ${ing.veg_type}">${ing.veg_type}</span></td>
+        <td>${escapeHtml(ing.unit ?? '')}</td>
+        <td>${ing.side_dish ? '✓' : ''}</td>
+        <td><button class="btn danger" data-del="${ing.ingredient_id}" type="button">Delete</button></td>
+      `;
+
+      tr.addEventListener('click', (e) => {
+        if (e.target?.dataset?.del) return;
+        selectedIngredientId = ing.ingredient_id;
+        $('#ing_name').value = ing.name;
+        $('#ing_veg').value = ing.veg_type || 'vegan';
+        $('#ing_unit').value = ing.unit ?? '';
+        $('#ing_side').checked = !!ing.side_dish;
+        $('#updateIngredient').disabled = false;
+      });
+
+      tbody.appendChild(tr);
+    }
+
+    tbody.querySelectorAll('button[data-del]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = Number(btn.dataset.del);
+        if (!confirm(`Delete ingredient ${id}? This also removes it from ALL recipes.`)) return;
+
+        ingredients = ingredients.filter(i => Number(i.ingredient_id) !== id);
+        recipeIngredients = recipeIngredients.filter(ri => Number(ri.ingredient_id) !== id);
+        currentRecipeItems = currentRecipeItems.filter(it => Number(it.ingredient_id) !== id);
+
+        renderIngredients();
+        renderRecipes();
+        renderRecipeIngredientList();
+        scheduleSave();
+      });
+    });
+
+    renderCombo($('#rec_ing_combo')?.value || '');
+  }
+
+  function addIngredient() {
+    const name = $('#ing_name').value.trim();
+    const veg_type = $('#ing_veg').value;
+    const unitRaw = $('#ing_unit').value.trim();
+    const unit = unitRaw === '' ? null : unitRaw;
+    const side_dish = $('#ing_side').checked;
+
+    if (!name) { alert('Ingredient name required'); return; }
+
+    const existing = findIngredientByNormalizedName(name);
+    if (existing) {
+      // Reuse existing ingredient instead of creating a duplicate
+      selectedIngredientId = existing.ingredient_id;
+      $('#ing_name').value = existing.name;
+      $('#ing_veg').value = existing.veg_type || veg_type;
+      $('#ing_unit').value = existing.unit ?? (unit ?? '');
+      $('#ing_side').checked = !!existing.side_dish;
+      $('#updateIngredient').disabled = false;
+      setStatus(`Ingredient already exists (ID ${existing.ingredient_id}) — reused instead of creating duplicate.`);
+      return;
+    }
+
+    const ingredient_id = nextId(ingredients, 'ingredient_id');
+    ingredients.push({ ingredient_id, name, veg_type, unit, side_dish });
+
+    renderIngredients();
+    renderRecipes();
+    renderRecipeIngredientList();
+    clearIngredientForm();
+    scheduleSave();
+  }
+
+  function updateIngredient() {
+    if (!selectedIngredientId) return;
+    const currentId = Number(selectedIngredientId);
+    let ing = ingredients.find(i => Number(i.ingredient_id) === currentId);
+    if (!ing) return;
+
+    const name = $('#ing_name').value.trim();
+    if (!name) { alert('Ingredient name required'); return; }
+
+    // If the new name matches an existing ingredient, merge into it (e.g. "geschlagenes Ei" -> "Ei")
+    const existing = findIngredientByNormalizedName(name);
+    if (existing && Number(existing.ingredient_id) !== currentId) {
+      mergeIngredientInto(currentId, existing.ingredient_id);
+      selectedIngredientId = Number(existing.ingredient_id);
+      ing = ingredients.find(i => Number(i.ingredient_id) === Number(selectedIngredientId));
+      if (!ing) return;
+    }
+
+    ing.name = name;
+    ing.veg_type = $('#ing_veg').value;
+    const unitRaw = $('#ing_unit').value.trim();
+    ing.unit = unitRaw === '' ? null : unitRaw;
+    ing.side_dish = $('#ing_side').checked;
+
+    renderIngredients();
+    renderRecipes();
+    renderRecipeIngredientList();
+    clearIngredientForm();
+    scheduleSave();
+  }
+
+  // ---------------------- Recipe ingredients list ----------------------
+  function normalizeUnit(u) {
+    return (u ?? '').toString().trim().toLowerCase();
+  }
+
+  function dedupeRecipeItems() {
+    const out = [];
+    const idxMap = new Map();
+
+    currentRecipeItems.forEach(it => {
+      const ingId = Number(it.ingredient_id);
+      const unitNorm = normalizeUnit(it.unit);
+      const key = `${ingId}|${unitNorm}`;
+      const qty = Number(it.quantity) || 0;
+      const unit = (it.unit ?? '').toString().trim();
+
+      if (!idxMap.has(key)) {
+        idxMap.set(key, out.length);
+        out.push({ recipe_id: it.recipe_id, ingredient_id: ingId, quantity: qty, unit });
+      } else {
+        out[idxMap.get(key)].quantity += qty;
+      }
+    });
+
+    currentRecipeItems = out;
+  }
+
+  // If an ingredient is no longer referenced by any recipe_ingredients, delete it globally.
+  function cleanupIngredientIfUnused(ingredientId) {
+    const id = Number(ingredientId);
+    if (!Number.isFinite(id) || id <= 0) return false;
+
+    // Still referenced anywhere?
+    if (recipeIngredients.some(ri => Number(ri.ingredient_id) === id)) return false;
+
+    // Safety: if current unsaved recipe still uses it, keep it.
+    if (currentRecipeItems.some(it => Number(it.ingredient_id) === id)) return false;
+
+    const beforeLen = ingredients.length;
+    ingredients = ingredients.filter(i => Number(i.ingredient_id) !== id);
+    return ingredients.length !== beforeLen;
+  }
+
+  function cleanupUnusedPendingIngredients() {
+    if (!pendingDeleteIngredientIds || pendingDeleteIngredientIds.size === 0) return;
+    let changed = false;
+    for (const id of Array.from(pendingDeleteIngredientIds)) {
+      changed = cleanupIngredientIfUnused(id) || changed;
+    }
+    pendingDeleteIngredientIds.clear();
+
+    if (changed) {
+      renderIngredients();           // refresh global ingredient list/modal
+    }
+  }
+
+  function renderRecipeIngredientList() {
+    const tbody = $('#rec_ing_table tbody');
+    tbody.innerHTML = '';
+
+    // Build option HTML once (native select supports type-to-search)
+    const sortedIngs = [...ingredients].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    const optionHtml = sortedIngs.map(i => `<option value="${Number(i.ingredient_id)}">${escapeHtml(i.name)}</option>`).join('');
+
+    currentRecipeItems.forEach((it, idx) => {
+      const ing = ingredients.find(i => Number(i.ingredient_id) === Number(it.ingredient_id));
+      const veg = ing ? (ing.veg_type || 'vegan') : 'vegan';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>
+          <select class="ing-select" data-idx="${idx}">
+            ${optionHtml}
+          </select>
+        </td>
+        <td><span class="pill ${veg}">${veg}</span></td>
+        <td>
+          <input class="qty-input" data-idx="${idx}" type="number" step="any" min="0" value="${Number(it.quantity) || 0}" />
+        </td>
+        <td>
+          <input class="unit-input" data-idx="${idx}" type="text" value="${escapeHtml((it.unit ?? '').toString())}" />
+        </td>
+        <td><button class="btn danger" data-rm="${idx}" type="button">Remove</button></td>
+      `;
+
+      // set selected ingredient id
+      const sel = tr.querySelector('select.ing-select');
+      if (sel) sel.value = String(Number(it.ingredient_id));
+
+      tbody.appendChild(tr);
+    });
+
+    // change ingredient mapping inline (merge duplicates automatically)
+    tbody.querySelectorAll('select.ing-select').forEach(sel => {
+      sel.addEventListener('change', () => {
+        const idx = Number(sel.dataset.idx);
+        const newId = Number(sel.value);
+        if (!Number.isFinite(newId) || newId <= 0) return;
+
+        const oldId = Number(currentRecipeItems[idx]?.ingredient_id);
+        if (Number.isFinite(oldId) && oldId > 0 && oldId !== newId) {
+          pendingDeleteIngredientIds.add(oldId);
+        }
+
+        currentRecipeItems[idx].ingredient_id = newId;
+        dedupeRecipeItems();
+        renderRecipeIngredientList();
+      });
+    });
+
+    // edit quantity inline
+    tbody.querySelectorAll('input.qty-input').forEach(inp => {
+      const handler = () => {
+        const idx = Number(inp.dataset.idx);
+        currentRecipeItems[idx].quantity = Number(inp.value) || 0;
+        // no rerender needed; veg calc only
+        refreshCalculatedVeg();
+      };
+      inp.addEventListener('change', handler);
+      inp.addEventListener('blur', handler);
+    });
+
+    // edit unit inline (merge duplicates when unit changes)
+    tbody.querySelectorAll('input.unit-input').forEach(inp => {
+      const handler = () => {
+        const idx = Number(inp.dataset.idx);
+        currentRecipeItems[idx].unit = (inp.value ?? '').toString();
+        dedupeRecipeItems();
+        renderRecipeIngredientList();
+      };
+      inp.addEventListener('change', handler);
+      inp.addEventListener('blur', handler);
+    });
+
+    // remove row
+    tbody.querySelectorAll('button[data-rm]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.rm);
+        currentRecipeItems.splice(idx, 1);
+        renderRecipeIngredientList();
+      });
+    });
+
+    refreshCalculatedVeg();
+
+    autoSizeRecIngWrap();
+  }
+
+  function refreshCalculatedVeg() {
+    const types = currentRecipeItems.map(it => (ingredients.find(i => Number(i.ingredient_id) === Number(it.ingredient_id))?.veg_type || 'vegan'));
+    let veg = 'vegan';
+    if (types.includes('meat')) veg = 'meat';
+    else if (types.includes('vegetarian')) veg = 'vegetarian';
+    const pill = $('#calculatedVeg');
+    pill.textContent = veg;
+    pill.className = 'pill ' + veg;
+    return veg;
+  }
+
+  function addRecipeItem() {
+    const comboInput = document.getElementById('rec_ing_combo');
+    const ingId = Number(comboInput?.dataset?.id || 0);
+    const qty = Number(document.getElementById('rec_ing_qty').value);
+    let unit = document.getElementById('rec_ing_unit').value.trim();
+
+    if (!ingId) { alert('Choose an ingredient from the dropdown'); return; }
+    const ing = ingredients.find(i => Number(i.ingredient_id) === ingId);
+    if (!ing) { alert('Ingredient no longer exists'); return; }
+    if (!Number.isFinite(qty) || qty <= 0) { alert('Quantity must be > 0'); return; }
+
+    if (!unit) unit = ing.unit || null;
+
+    currentRecipeItems.push({ ingredient_id: ingId, quantity: qty, unit });
+
+    document.getElementById('rec_ing_qty').value = '';
+    document.getElementById('rec_ing_unit').value = '';
+    comboInput.value = '';
+    delete comboInput.dataset.id;
+
+    renderRecipeIngredientList();
+  }
+
+  // ---------------------- Recipes list + editing ----------------------
+  function renderRecipes() {
+    const tbody = $('#recipesTable tbody');
+    tbody.innerHTML = '';
+
+    for (const r of recipes) {
+      const tr = document.createElement('tr');
+      tr.style.cursor = 'pointer';
+      tr.innerHTML = `
+        <td>${r.recipe_id}</td>
+        <td>${escapeHtml(r.name)}</td>
+        <td><span class="pill ${r.veg_type}">${r.veg_type}</span></td>
+        <td>${r.prep_minutes ?? ''}</td>
+        <td>${r.cook_minutes ?? ''}</td>
+        <td>${r.sweet ? '✓' : ''}</td>
+      `;
+
+      tr.addEventListener('click', () => loadRecipeIntoForm(Number(r.recipe_id)));
+      tbody.appendChild(tr);
+    }
+  }
+
+  function loadRecipeIntoForm(recipeId) {
+    const r = recipes.find(x => Number(x.recipe_id) === Number(recipeId));
+    if (!r) { alert('Recipe not found'); return; }
+
+    $('#rec_name').value = r.name || '';
+    $('#rec_prep').value = r.prep_minutes ?? 0;
+    $('#rec_cook').value = r.cook_minutes ?? 0;
+    $('#rec_sweet').checked = !!r.sweet;
+    $('#rec_instructions').value = normalizeInstructions(r.instructions ?? '');
+    $('#rec_type').value = r.recipe_type || 'main_dish';
+
+    currentRecipeItems = recipeIngredients
+      .filter(ri => Number(ri.recipe_id) === Number(recipeId))
+      .map(ri => ({
+        ingredient_id: Number(ri.ingredient_id),
+        quantity: Number(ri.quantity),
+        unit: ri.unit ?? null
+      }));
+
+    setEditingRecipe(Number(recipeId));
+
+    // do not auto-open ingredient suggestions when loading a recipe
+    comboOpen = false;
+    if (comboList) comboList.style.display = 'none';
+
+    renderRecipeIngredientList();
+    autoResizeTextarea($('#rec_instructions'));
+  }
+
+  function getEditRecipeIdFromUrl() {
+    const s = window.location.search || '';
+    const params = new URLSearchParams(s);
+
+    const byKey = params.get('edit') || params.get('id') || params.get('recipe_id');
+    if (byKey) {
+      const n = parseInt(byKey, 10);
+      return Number.isFinite(n) ? n : null;
+    }
+    if (s.length > 1 && /^[0-9]+$/.test(s.slice(1))) {
+      return parseInt(s.slice(1), 10);
+    }
+    return null;
+  }
+
+  // ---------------------- Save / Update ----------------------
+  function buildRecipeJsonForConsole(recObj) {
+    const list = currentRecipeItems.map(it => {
+      const ing = ingredients.find(i => Number(i.ingredient_id) === Number(it.ingredient_id));
+      return {
+        ingredient_id: Number(it.ingredient_id),
+        name: ing?.name ?? null,
+        veg_type: ing?.veg_type ?? null,
+        quantity: Number(it.quantity),
+        unit: it.unit ?? null
+      };
+    });
+    return { recipe: recObj, ingredients: list };
+  }
+
+  function saveOrUpdateRecipe() {
+    const name = $('#rec_name').value.trim();
+    const prep = Number($('#rec_prep').value);
+    const cook = Number($('#rec_cook').value);
+    const sweet = $('#rec_sweet').checked;
+    const instructions = normalizeInstructions($('#rec_instructions').value);
+    const recipe_type = $('#rec_type').value;
+
+    if (!name) { alert('Recipe name required'); return; }
+    if (!Number.isFinite(prep) || prep < 0) { alert('Zubereitungszeit muss ≥ 0 sein'); return; }
+    if (!Number.isFinite(cook) || cook < 0) { alert('Kochzeit muss ≥ 0 sein'); return; }
+    if (!currentRecipeItems.length) { alert('Add at least one ingredient'); return; }
+
+    const veg_type = refreshCalculatedVeg();
+    const isUpdate = editingRecipeId !== null;
+    const recipe_id = isUpdate ? Number(editingRecipeId) : nextId(recipes, 'recipe_id');
+
+    const recObj = {
+      recipe_id,
+      name,
+      recipe_type,
+      veg_type,
+      prep_minutes: prep,
+      cook_minutes: cook,
+      sweet,
+      instructions,
+      variant_of: null
+    };
+
+    // Console JSON output (Recipe + Ingredients)
+    console.log('Save/Update JSON (Recipe + Ingredients):', buildRecipeJsonForConsole(recObj));
+
+    // Upsert recipe
+    const idx = recipes.findIndex(r => Number(r.recipe_id) === recipe_id);
+    if (idx >= 0) recipes[idx] = { ...recipes[idx], ...recObj };
+    else recipes.push(recObj);
+
+    // Replace recipeIngredients for this recipe
+    recipeIngredients = recipeIngredients.filter(ri => Number(ri.recipe_id) !== recipe_id);
+    for (const it of currentRecipeItems) {
+      recipeIngredients.push({
+        recipe_id,
+        ingredient_id: Number(it.ingredient_id),
+        quantity: Number(it.quantity),
+        unit: it.unit ?? null
+      });
+    }
+
+    cleanupUnusedPendingIngredients();
+
+    renderRecipes();
+    // Keep recipe loaded after update; clear only after creating a new one.
+    if (isUpdate) {
+      pendingUpdateConfirmation = { recipe_id, message: 'Rezept aktualisiert ✓' };
+      showToast('Update gespeichert…');
+      scheduleSave();
+      loadRecipeIntoForm(recipe_id);
+    } else {
+      pendingUpdateConfirmation = null;
+      scheduleSave();
+      clearRecipeForm();
+      showToast('Rezept gespeichert ✓');
+    }
+  }
+
+  // ---------------------- Server I/O ----------------------
+  let saveTimer = null;
+
+  function scheduleSave() {
+    setStatus('Saving…');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveAll, 250);
+  }
+
+  async function saveAll() {
+    try {
+      const payload = { ingredients, recipes, recipe_ingredients: recipeIngredients, history };
+      const res = await fetch('/api/all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      setStatus('Saved');
+      if (pendingUpdateConfirmation) {
+        showToast(pendingUpdateConfirmation.message);
+        pendingUpdateConfirmation = null;
+      }
+    } catch (e) {
+      console.error(e);
+      setStatus('Save failed (server running?)');
+    }
+  }
+
+  async function loadAll() {
+    try {
+      const res = await fetch('/api/all');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+
+      ingredients = Array.isArray(data.ingredients) ? data.ingredients : [];
+      ingredients = ingredients.map(i => ({
+        ingredient_id: Number(i.ingredient_id),
+        name: i.name,
+        veg_type: i.veg_type || 'vegan',
+        side_dish: !!i.side_dish,
+        unit: (i.unit ?? null)
+      }));
+
+      recipes = Array.isArray(data.recipes) ? data.recipes : [];
+      recipes.forEach(r => {
+        if ((r.prep_minutes == null || r.cook_minutes == null) && typeof r.duration_minutes === 'number') {
+          r.prep_minutes = r.prep_minutes ?? r.duration_minutes;
+          r.cook_minutes = r.cook_minutes ?? 0;
+        }
+        r.recipe_id = Number(r.recipe_id);
+        r.prep_minutes = Number(r.prep_minutes ?? 0);
+        r.cook_minutes = Number(r.cook_minutes ?? 0);
+      });
+
+      recipeIngredients = Array.isArray(data.recipe_ingredients) ? data.recipe_ingredients : [];
+      recipeIngredients = recipeIngredients.map(ri => ({
+        recipe_id: Number(ri.recipe_id),
+        ingredient_id: Number(ri.ingredient_id),
+        quantity: Number(ri.quantity),
+        unit: ri.unit ?? null
+      }));
+
+      history = Array.isArray(data.history) ? data.history : [];
+
+      renderIngredients();
+      renderRecipes();
+      renderRecipeIngredientList();
+      setStatus('Loaded');
+    } catch (e) {
+      console.error(e);
+      setStatus('Offline (open via server for auto-save)');
+      renderIngredients();
+      renderRecipes();
+      renderRecipeIngredientList();
+    }
+  }
+
+  // ---------------------- Ingredient combo ----------------------
+  const comboInput = document.getElementById('rec_ing_combo');
+const comboList  = document.getElementById('rec_ing_options');
+
+let comboOpen = false;
+
+function renderCombo(filter = '') {
+  if (!comboList) return;
+  comboList.innerHTML = '';
+  const f = (filter || '').toLowerCase();
+
+  const list = ingredients
+    .filter(i => (i.name || '').toLowerCase().includes(f))
+    .slice(0, 200);
+
+  for (const i of list) {
+    const div = document.createElement('div');
+    div.className = 'combo-item';
+    div.textContent = i.name;
+    div.addEventListener('click', () => {
+      comboInput.value = i.name;
+      comboInput.dataset.id = i.ingredient_id;
+
+      autoSizeInputToContent(comboInput);
+
+      comboOpen = false;
+      comboList.style.display = 'none';
+    });
+    comboList.appendChild(div);
+  }
+
+  // Only show suggestions when user is interacting with the field
+  comboList.style.display = (comboOpen && list.length) ? 'block' : 'none';
+}
+
+// Keep the selector input nicely sized
+autoSizeInputToContent(comboInput);
+
+comboInput?.addEventListener('focus', () => {
+  comboOpen = true;
+  autoSizeInputToContent(comboInput);
+  renderCombo(comboInput.value);
+});
+
+comboInput?.addEventListener('input', (e) => {
+  comboOpen = true;
+  autoSizeInputToContent(comboInput);
+  renderCombo(e.target.value);
+});
+
+comboInput?.addEventListener('blur', () => {
+  // Delay so click on an item still registers
+  setTimeout(() => {
+    comboOpen = false;
+    if (comboList) comboList.style.display = 'none';
+  }, 120);
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.combo')) {
+    comboOpen = false;
+    if (comboList) comboList.style.display = 'none';
+  }
+});
+
+// ---------------------- Events ----------------------
+  window.addEventListener('DOMContentLoaded', async () => {
+    bindAutoResizeTextarea('rec_instructions');
+
+    // Modal
+    $('#openIngredientModal')?.addEventListener('click', () => openIngredientsModal());
+    $('#closeIngredientsModal')?.addEventListener('click', () => closeIngredientsModal());
+    $('#ingredientsModal')?.addEventListener('click', (e) => { if (e.target?.id === 'ingredientsModal') closeIngredientsModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && $('#ingredientsModal')?.classList.contains('open')) closeIngredientsModal(); });
+
+    // Ingredient CRUD
+    $('#addIngredient')?.addEventListener('click', addIngredient);
+    $('#updateIngredient')?.addEventListener('click', updateIngredient);
+
+    // Recipe ingredient add
+    $('#addRecIngredient')?.addEventListener('click', addRecipeItem);
+
+    // Save / Clear
+    $('#saveRecipe')?.addEventListener('click', saveOrUpdateRecipe);
+    $('#clearRecipe')?.addEventListener('click', clearRecipeForm);
+
+    // Reset in-memory only
+    $('#resetAll')?.addEventListener('click', () => {
+      if (!confirm('Clear in-memory data (unsaved)?')) return;
+      ingredients = []; recipes = []; recipeIngredients = []; history = [];
+      selectedIngredientId = null;
+      currentRecipeItems = [];
+      setEditingRecipe(null);
+      renderIngredients(); renderRecipes(); renderRecipeIngredientList();
+      setStatus('Cleared (not saved)');
+    });
+
+    // Load data
+    await loadAll();
+
+    // Auto-open recipe from URL if present
+    const editId = getEditRecipeIdFromUrl();
+    if (editId) {
+      loadRecipeIntoForm(editId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+</script>
+</body>
+</html>

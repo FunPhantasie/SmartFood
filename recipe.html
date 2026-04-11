@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Rezept</title>
+  <style>
+    body{
+      font-family: system-ui, sans-serif;
+      background:#0b0f17;
+      color:#e9eefc;
+      margin:0;
+      padding:24px;
+    }
+    h1{ margin-top:0 }
+    .meta{ color:#a7b4d6; margin-bottom:16px }
+    .block{
+      background:#121a2a;
+      border-radius:12px;
+      padding:16px;
+      margin-bottom:16px;
+    }
+    ul{ padding-left:20px }
+  </style>
+</head>
+<body>
+
+<h1 id="title">Rezept</h1>
+<div class="meta" id="meta"></div>
+
+<div class="block">
+  <h3>Zutaten</h3>
+  <ul id="ingredients"></ul>
+</div>
+
+<div class="block">
+  <h3>Zubereitung</h3>
+  <p id="instructions"></p>
+</div>
+
+<script>
+function getRecipeId(){
+  const p = new URLSearchParams(window.location.search);
+  return p.get("id");
+}
+
+async function loadRecipe(){
+  const id = getRecipeId();
+  if(!id){
+    document.body.innerHTML = "❌ Keine Rezept-ID angegeben";
+    return;
+  }
+
+  const r = await fetch(`/api/recipe/${id}`);
+  if(!r.ok){
+    document.body.innerHTML = "❌ Rezept nicht gefunden";
+    return;
+  }
+
+  const data = await r.json();
+  const recipe = data.recipe;
+  const ingredients = data.ingredients || [];
+
+  document.getElementById("title").textContent = recipe.name;
+  document.getElementById("meta").textContent =
+    `${recipe.veg_type} · ${recipe.duration_minutes} min`;
+
+  document.getElementById("instructions").textContent =
+    recipe.instructions || "—";
+
+  const ul = document.getElementById("ingredients");
+  ul.innerHTML = "";
+
+  if(ingredients.length === 0){
+    ul.innerHTML = "<li>Keine Zutaten hinterlegt</li>";
+  }else{
+    ingredients.forEach(i => {
+      const li = document.createElement("li");
+      li.textContent = `Menge: ${i.quantity} ${i.unit}   Name: ${i.name} , Art: ${i.veg_type},     ID: ${i.ingredient_id}`;
+      ul.appendChild(li);
+    });
+  }
+}
+
+loadRecipe();
+</script>
+</body>
+</html>
