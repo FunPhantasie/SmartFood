@@ -274,11 +274,6 @@ ingredients:
   veg_type: vegan
   side_dish: false
   unit: null
-- ingredient_id: 59
-  name: Fruehlingszwiebeln
-  veg_type: vegan
-  side_dish: false
-  unit: null
 - ingredient_id: 60
   name: Tafelessig
   veg_type: vegan
@@ -1369,6 +1364,7 @@ ingredients:
   veg_type: vegan
   side_dish: false
   unit: EL
+  spice: true
 - ingredient_id: 278
   name: Gemuesebruehpulver
   veg_type: vegan
@@ -1567,11 +1563,6 @@ ingredients:
 - ingredient_id: 318
   name: Huehnerbrust
   veg_type: vegan
-  side_dish: false
-  unit: null
-- ingredient_id: 319
-  name: kleiner Bund Fruehlingszwiebeln
-  veg_type: vegetarian
   side_dish: false
   unit: null
 - ingredient_id: 320
@@ -4134,6 +4125,7 @@ ingredients:
   veg_type: vegan
   side_dish: false
   unit: null
+  spice: true
 - ingredient_id: 832
   name: Paprike edelsuess
   veg_type: vegan

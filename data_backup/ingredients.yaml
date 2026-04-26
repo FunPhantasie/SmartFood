@@ -1,0 +1,6731 @@
+ingredients:
+- ingredient_id: 2
+  name: Ananassaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 3
+  name: Ananas
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 4
+  name: Kokosraspeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 5
+  name: Oel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 6
+  name: Essig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 7
+  name: Zucker
+  veg_type: vegan
+  side_dish: false
+  unit: TL
+- ingredient_id: 8
+  name: Tabasco
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 9
+  name: Apfel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 10
+  name: Zwiebel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 11
+  name: Paprika
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 14
+  name: Meersalz 200 ml Olivenoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 15
+  name: Waldhonig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 16
+  name: Olivenoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 17
+  name: weissen Balsamico-Essig
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 18
+  name: Baerlauchpesto
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 19
+  name: saure Sahne
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 20
+  name: Knoblauchzehen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 21
+  name: Msp. Curcuma
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 22
+  name: Chilipulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 23
+  name: Feta-Kaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 24
+  name: Frischkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 25
+  name: Paprikaschote
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 26
+  name: Kraeuter der Provence
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 27
+  name: Zehen Knoblauch
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 28
+  name: â€“ 2 EL Hoi Sin
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 29
+  name: â€“ 2 TL Honig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 30
+  name: â€“ 2 EL Oel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 31
+  name: Sojasouce
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 32
+  name: Chili bzw. Sambal Olek
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 33
+  name: Ingwer frisch
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 34
+  name: Reisessig
+  veg_type: vegetarian
+  side_dish: false
+  unit: EL
+- ingredient_id: 35
+  name: Kochendes Wasser
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 36
+  name: Joghurt natur
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 37
+  name: Frische Kraeuter (Dill
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 38
+  name: Knoblauch
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 39
+  name: Schnittlauch)
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 40
+  name: Karotten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 41
+  name: Joghurt
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 42
+  name: Sauerrahn
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 43
+  name: Butter
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 44
+  name: Zehe Knoblauch
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 45
+  name: Pinienkerne
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 46
+  name: Kraeuter
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 47
+  name: Knoblauchzehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 48
+  name: Parmesan gerieben
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 49
+  name: Sahne steif schlagen
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 50
+  name: Meerrettich
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 51
+  name: etwas Zitronensaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 52
+  name: Camemberts
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 53
+  name: weiche Butter
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 54
+  name: Zwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 55
+  name: ganzer Kuemmel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 56
+  name: grosse Dosen geschaelte Tomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 57
+  name: Jalapenos aus dem Glas
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 58
+  name: entkernte Oliven
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 59
+  name: Fruehlingszwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 60
+  name: Tafelessig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 61
+  name: Knoblauchsalz oder 2 frische Knoblauchzehen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 62
+  name: Senfsauce
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 63
+  name: â€“ 3 EL Senf
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 64
+  name: â€“ 2 EL Kapern
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 65
+  name: â€“ 3 Gewuerzgurken
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 66
+  name: hartgekochte Eier
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 67
+  name: -3 Zehen Knoblauch
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 68
+  name: -2 kleine Dosen Tomaten
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 69
+  name: Koriander gemahlen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 70
+  name: Evtl. Chilischote
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 71
+  name: bis 4 Tomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 72
+  name: franzoesischer Ziegenfrischkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 73
+  name: '- 2 EL Sahne'
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 74
+  name: â€“ 6 Thymianzweige
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 75
+  name: -3 Zitronenmelissenzweige
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 76
+  name: Tomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 77
+  name: brauner Zucker
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 78
+  name: Tomatenmark
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 79
+  name: Rotweinessig
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 80
+  name: reife Tomaten
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 81
+  name: gelbe Paprika
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 82
+  name: Balsamico Essig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 83
+  name: Gelierzucker
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 84
+  name: Blaettchen Basilikum
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 85
+  name: Basilikumzweige
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 86
+  name: Hartkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 87
+  name: Sonnenblumenkerne
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 88
+  name: Aceto Balsamico
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 89
+  name: kleine rote Chili
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 90
+  name: gewuertztes Raps-Kernoel â€žKraeuter mediterraneeâ€œ
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 91
+  name: Couscous
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 92
+  name: Gemuesebruehe oder Fond
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 93
+  name: Paprikaschoten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 94
+  name: Mais
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 95
+  name: Stangen Lauchzwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 96
+  name: Raps- oder Sonnenblumenoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 97
+  name: Currypaste
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 98
+  name: Sojasauce
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 99
+  name: Glatte Petersilie
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 100
+  name: Weisskohl
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 101
+  name: Speck
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 102
+  name: kleine Zwiebel
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 103
+  name: Weissweinessig
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 104
+  name: Gemuesebruehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 105
+  name: scharfen Senf
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 106
+  name: Baguette oder Ciabatta
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 107
+  name: scharfe Salami
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 108
+  name: Ruccola
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 109
+  name: Cocktailtomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 110
+  name: Balsamicoessig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 111
+  name: Rosmarinzweig
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 112
+  name: Parmesan
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 113
+  name: Nach Belieben eine Knoblauchzehe
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 114
+  name: Glaeser schwarze Oliven
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 115
+  name: Dosen Mais
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 116
+  name: Kaestchen Kresse
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 117
+  name: Kopf Eisbergsalat
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 118
+  name: Champignons
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 119
+  name: Feta
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 120
+  name: Spargel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 121
+  name: geschnittene Champignons
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 122
+  name: kleine Dose geschnittene Ananas
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 123
+  name: kleine Dose Mandarinen
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 124
+  name: kleine Dose Erbsen
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 125
+  name: Tube Mayonnaise
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 126
+  name: Zitronensaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 127
+  name: Worcestersauce
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 128
+  name: suesse Sahne geschlagen
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 129
+  name: evtl. etwas Spargelwasser
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 130
+  name: Ananassaft hinzufuegen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 131
+  name: â€“ 8 Heringfilet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 132
+  name: AEpfel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 133
+  name: kleine Gurken
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 134
+  name: kleine Zwiebeln
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 135
+  name: Fleisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 136
+  name: Walnuesse
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 137
+  name: Mit Fleischbruehe aufschuetten
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 138
+  name: Hering/Matjesfilet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 139
+  name: grosser Apfel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 140
+  name: kleine eingelegte Gurken
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 141
+  name: rote Beete
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 142
+  name: Joghurt / Mayo
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 143
+  name: Evtl. Sahnemeerrettich
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 144
+  name: Moehren
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 145
+  name: Sonnenblumenoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 146
+  name: Zucker oder 1 EL Honig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 147
+  name: Etwas Meerrettich
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 148
+  name: saeuerliche AEpfel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 149
+  name: evtl. Pinienkerne
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 150
+  name: grosse Karotten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 151
+  name: Dosen Thunfisch ohne Oel
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 152
+  name: Senf
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 153
+  name: Honig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 154
+  name: festkochende Kartoffeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 155
+  name: Â¼ TL Liebstoeckel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 156
+  name: Piment
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 157
+  name: Â½ Zwiebel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 158
+  name: sehr kleine Wuerfel
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 159
+  name: Â½ Gurke
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 160
+  name: duenne Scheiben
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 161
+  name: 'fuer das Dressing:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 162
+  name: scharfer Senf
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 163
+  name: Chili
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 164
+  name: Fruehlingszwiebel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 165
+  name: gehacktes Petersilie
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 166
+  name: Essiggurken
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 167
+  name: Kopf Endiviensalat
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 168
+  name: Pellkartoffeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 169
+  name: Matjesfiles
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 170
+  name: -6 EL Obstessig oder Zitronenessig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 171
+  name: frisch gemahlener weisser Pfeffer
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 172
+  name: geh. EL gehackte Petersilie
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 173
+  name: CrÃ¨me fraÃ®che
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 174
+  name: in Scheiben geschnittene Moehren
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 175
+  name: Lauch
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 176
+  name: Cherry
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 177
+  name: Champion
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 178
+  name: etwas Zucker
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 179
+  name: Nachosalat ( ( (
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 180
+  name: Salz L/ Paprikapulver / Koriander
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 181
+  name: Pflanzenoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 182
+  name: Maismehl
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 183
+  name: Dinkelvollkornmehl
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 184
+  name: Bio Hirse
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 185
+  name: kleine Zuccini
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 186
+  name: Tomatenmart
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 187
+  name: Pizzatomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 188
+  name: Tomatensaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 189
+  name: Kidneybohnen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 190
+  name: Eisbergsalat
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 191
+  name: Petersilie / Saft Â½ Zitrone / Pfeffer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 192
+  name: Bruehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 193
+  name: Langkornreis
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 194
+  name: gruene Paprikaschote
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 195
+  name: Kabanossi
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 196
+  name: rote Chilischoten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 197
+  name: Saft einer Zitrone
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 198
+  name: Sahne
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 199
+  name: â€“ 2 feste Rettiche
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 200
+  name: AEpfel in Streifen
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 201
+  name: Matjesfiles gehackt
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 202
+  name: Roastbeef-Aufschnitt
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 203
+  name: suess-saure Gurken fein gehackt
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 204
+  name: grosser Apfel feingewuerfelt
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 205
+  name: Ei
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 206
+  name: Walnuesse gehackt
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 207
+  name: kleines Glas Kapern
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 208
+  name: fluessiger Suessstoff
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 209
+  name: Miracel Whip Olive
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 210
+  name: Rote Beete Saft nach Belieben
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 211
+  name: Speisefruehkartoffeln
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 212
+  name: Gruenspargel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 213
+  name: hart gekochte Eier
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 214
+  name: Rapsoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 215
+  name: rohe Riesen-Scampi
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 216
+  name: Schalotte
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 217
+  name: Dillzweige zum Garnieren
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 218
+  name: Nudeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 219
+  name: Fruehlinszwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 220
+  name: Gemuesezwiebel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 221
+  name: Balsamico - Essig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 222
+  name: â€“ 2 EL Sambal Oelek
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 223
+  name: Knollensellerie
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 224
+  name: Scheiben Ananas
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 225
+  name: Walnusskerne
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 226
+  name: Saft von 2 Zitronen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 227
+  name: Lyoner in Streifen geschnitten
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 228
+  name: Emmentaler
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 229
+  name: grosse Gewuerzgurken
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 230
+  name: Raps-Oel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 231
+  name: -4 gegarte Semmelknoedel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 232
+  name: Tiroler Karreespeck in duennen scheiben
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 233
+  name: Hand voll Feldsalat
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 234
+  name: Kuerbiskerne
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 235
+  name: Saft von Â½ Zitrone
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 236
+  name: -4 EL Kuerbiskernoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 237
+  name: rote Linsen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 238
+  name: Basmate-Reis
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 239
+  name: Kurkuma
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 240
+  name: Chilischote gehackt
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 241
+  name: Gefluegelbruehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 242
+  name: Ingwer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 243
+  name: Sesamoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 244
+  name: Rindfleisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 245
+  name: Â½ EL Paprika
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 246
+  name: Fleischbruehe
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 247
+  name: kleine Dose geschaelte Tomaten
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 248
+  name: getr. Majoran
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 249
+  name: Kartoffeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 250
+  name: gruene und 1 rote Paprika
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 251
+  name: etwas Rosenpaprika
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 252
+  name: Fleischtomaten
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 253
+  name: sauere Sahne
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 254
+  name: gekochter Schinken
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 255
+  name: Zweig Thymian
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 256
+  name: Zwiebeln schaelen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 257
+  name: Hackfleisch gemischt
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 258
+  name: grosse Zwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 259
+  name: Stangen Lauch
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 260
+  name: Â½ l Wasser
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 261
+  name: Milch
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 262
+  name: Maggiwuerfel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 263
+  name: helle Sosse
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 264
+  name: Packungen Schmelzkaese Kraeuter
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 265
+  name: Packungen Schmelzkaese Sahne
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 266
+  name: Sellerie
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 267
+  name: Gefluegelfond
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 268
+  name: geschaelte und gegarten Kastanien
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 269
+  name: Margarine
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 270
+  name: gehackte Petersilie
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 271
+  name: Scheiben Baguette
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 272
+  name: Kuerbis
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 273
+  name: Schalotten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 274
+  name: Kokosmilch
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 275
+  name: Orangensaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 276
+  name: rote Bohnen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 277
+  name: Wasser
+  veg_type: vegan
+  side_dish: false
+  unit: EL
+- ingredient_id: 278
+  name: Gemuesebruehpulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 279
+  name: Gemuesezwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 280
+  name: mittelgrosse gruene Paprikaschoten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 281
+  name: Rinderhackfleisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 282
+  name: grosse Zwiebel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 283
+  name: Â¾ l Gemuesebruehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 284
+  name: Â¾ l Kokosmilch
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 285
+  name: Blattspinat
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 286
+  name: Chilischote
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 287
+  name: Muscheln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 288
+  name: Karotte
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 289
+  name: Tomate
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 290
+  name: Rosmarin
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 291
+  name: Â¼ l Weisswein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 292
+  name: Gulasch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 293
+  name: Pilze â€“ ohne Saft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 294
+  name: kl Dose Erbsen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 295
+  name: kl Dose Ananas
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 296
+  name: Tomatenpaprike
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 297
+  name: Curry Ketchup
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 298
+  name: Chilisauce
+  veg_type: vegan
+  side_dish: false
+  unit: EL
+- ingredient_id: 299
+  name: Reiswein
+  veg_type: vegetarian
+  side_dish: false
+  unit: TL
+- ingredient_id: 300
+  name: Mu-Err-Pilze
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 301
+  name: Ketchup
+  veg_type: vegan
+  side_dish: false
+  unit: EL
+- ingredient_id: 302
+  name: Austersauce
+  veg_type: vegan
+  side_dish: false
+  unit: EL
+- ingredient_id: 303
+  name: Chilioel
+  veg_type: vegan
+  side_dish: false
+  unit: TL
+- ingredient_id: 304
+  name: Fruehlingszwiebel in Ringe geschnittel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 305
+  name: Ingwer in Scheiben gehobelt
+  veg_type: vegetarian
+  side_dish: false
+  unit: EL
+- ingredient_id: 306
+  name: Glasnudeln
+  veg_type: vegan
+  side_dish: false
+  unit: g
+- ingredient_id: 307
+  name: Haehnchenbrustfilet in Streifen geschnitten
+  veg_type: meat
+  side_dish: false
+  unit: g
+- ingredient_id: 308
+  name: kl Dose Bombussprossen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 309
+  name: Maisstaerke
+  veg_type: vegan
+  side_dish: false
+  unit: EL
+- ingredient_id: 310
+  name: Rinderbruehe
+  veg_type: meat
+  side_dish: false
+  unit: Liter
+- ingredient_id: 311
+  name: Sajasauce dunkel
+  veg_type: vegan
+  side_dish: false
+  unit: TL
+- ingredient_id: 312
+  name: Ei verschlagen
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 313
+  name: Erbsen
+  veg_type: vegan
+  side_dish: false
+  unit: Tasse
+- ingredient_id: 315
+  name: frischer Ingwer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 316
+  name: Pfeffer / Zucker / Salz
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 317
+  name: Riesengarnelen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 318
+  name: Huehnerbrust
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 319
+  name: kleiner Bund Fruehlingszwiebeln
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 320
+  name: Ingwer fisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 321
+  name: Huehnerbruehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 322
+  name: Paprikaschote rot
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 323
+  name: Champignons gewuerfelt
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 324
+  name: Staengel Zitronengras
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 325
+  name: chinesische Eiernudeln
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 326
+  name: Handvoll Koriandergruen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 327
+  name: Evtl. Chilifaeden zum Garnieren
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 328
+  name: Sauerkraut
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 329
+  name: Butterschmalz
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 330
+  name: Â¾ l Heisses Wasser
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 331
+  name: Â¼ l trockener Weisswein oder naturtrueber Apfelsaft
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 332
+  name: rote Paprikaschoten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 333
+  name: Meerretichwurzel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 334
+  name: Creme fraiche bzw. Schmand
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 335
+  name: grosse Kartoffel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 336
+  name: TK Spinat
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 337
+  name: Balsamico bianco
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 338
+  name: frisch geriebener Parmesan
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 339
+  name: Steckrueben
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 340
+  name: Biskin spezial
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 341
+  name: kraeftige Rinderbruehe
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 342
+  name: geraeucherte Forellenfilets
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 343
+  name: Creme fraiche
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 344
+  name: Schnittlauch zum Garnieren
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 345
+  name: Hackfleisch vom Rind
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 346
+  name: Hackfleisch vom Schnwein
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 347
+  name: Tomatenpaprika
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 348
+  name: Morcheln oder andere Pilze aus der Dose
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 349
+  name: Staerkemehl
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 350
+  name: Maisgriess
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 351
+  name: Toast ohne Rinde
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 352
+  name: heisses Wasser bzw. Gemuesebruehe
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 353
+  name: Tomaten/Tomatenmark bzw. 1 grosse Dose geschaelte Tomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 354
+  name: ccm trockener Sherry
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 355
+  name: Prisen frisch gemahlener weisser Pfeffer
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 356
+  name: Prisen edelsuesses Paprikapulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 357
+  name: Ahornsirup
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 358
+  name: Zweige Dill
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 359
+  name: Spaetzle
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 360
+  name: â€“ 3 Zwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 361
+  name: kleine Stange Poree
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 362
+  name: Mehl
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 363
+  name: gekoernte Bruehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 364
+  name: Kaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 365
+  name: Weisswein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 366
+  name: Sossenbinder hell
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 367
+  name: Kirschwasser
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 368
+  name: Greyerzer Kaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 369
+  name: Emmentaler Kaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 370
+  name: grosse Knoblauchzehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 371
+  name: trockener Weisswein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 372
+  name: Speisestaerke
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 373
+  name: Geriebene Muskatnuss
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 374
+  name: Ciabatta
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 375
+  name: gewuerztes Raps-Kernoel â€žKnoblauch und Zwiebelâ€œ
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 376
+  name: Tomatenpesto
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 377
+  name: Rostbratwuerste
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 378
+  name: -3 TL Curry Pulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 379
+  name: Paprika Pulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 380
+  name: Cola
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 381
+  name: getrocknete Kichererbsen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 382
+  name: Semmelbroesel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 383
+  name: Backpulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 384
+  name: Korianderpulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 385
+  name: Kreuzkuemmelpulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 386
+  name: Scheiben Weizenvollkornbrot
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 387
+  name: ganhz kleine Tasse heisses Wasser
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 388
+  name: halben Gemuese-Bruehwuerfel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 389
+  name: Scheibne Emmentaler-Kaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 390
+  name: Eeir
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 391
+  name: Putenbrustfilet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 392
+  name: -2 EL Gyros-Gewuerz
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 393
+  name: Kebabbrote
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 394
+  name: Lauchzwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 395
+  name: Krautsalat
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 396
+  name: Kraeuter-Knoblauchquark
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 397
+  name: Salat zum Garnieren
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 398
+  name: 'Fuer die Creme:'
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 399
+  name: Fruchtfleisch von 1 Avocado
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 400
+  name: gehaeufter EL Bindemittel von Bio Wertkost
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 401
+  name: scharfer Curry
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 402
+  name: 'Zum Unterheben:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 403
+  name: Fruchtfleisch von einer Melone
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 404
+  name: Schnittlauch in Roellchen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 405
+  name: Krabben in Lake
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 406
+  name: Basilikumblaetter
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 407
+  name: rote / 1 gelbe Paprikaschote
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 408
+  name: Weizentortillas
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 409
+  name: â€“ 3 EL Sahnemeerretich
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 410
+  name: Raeucherlachs in Scheiben
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 411
+  name: Oliven
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 412
+  name: Fetakaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 413
+  name: Chilischoten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 414
+  name: Paprikapulver edelsuess
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 415
+  name: italienische Kraeutermischung
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 416
+  name: mittelgrosse Tomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 417
+  name: Petersiele geackt
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 418
+  name: Knoblauchzehen gehackt
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 419
+  name: Scheiben gekochter Schinken
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 420
+  name: Ricotta
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 421
+  name: geriebener Parmesan
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 422
+  name: Chiliflocken
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 423
+  name: Blaetterteig
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 424
+  name: Shrimps
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 425
+  name: kl Dose Champignons
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 426
+  name: Salatcreme
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 427
+  name: Tomatenketchup
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 428
+  name: Cognac
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 429
+  name: Garnelen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 430
+  name: Salat
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 431
+  name: Estragon fein gehackt
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 432
+  name: gepresste Knoblauchzehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 433
+  name: Schalotte fein geschnitten
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 434
+  name: Thunfisch im eigenen Saft
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 435
+  name: Bindemittel von Bio Wertkost
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 436
+  name: kleine Tomaten
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 437
+  name: einige Dillzweige
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 438
+  name: reife Birne
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 439
+  name: einige Blaetter Salat ( z.B. Rucola
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 440
+  name: Lollo Rosso ect. )
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 441
+  name: Tortillawraps
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 442
+  name: Joghurt-Currycreme
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 443
+  name: Sprossen zum Garnieren
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 444
+  name: Ziegenkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 445
+  name: schwarze Oliven
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 446
+  name: eingelegte milde Peperoni
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 447
+  name: grosse Tomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 448
+  name: altbackene Broetchen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 449
+  name: Butter oder Margarine
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 450
+  name: Eier
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 451
+  name: mehlige Kartoffeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 452
+  name: weisser Speck
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 453
+  name: Schicht- oder Frischkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 454
+  name: Eigelb
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 455
+  name: Selbstgemachter Apfelmus
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 456
+  name: Bauernbrot ohne Rinde
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 457
+  name: Â¼ l Milch
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 458
+  name: gegarte kalte Kartoffeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 459
+  name: Hand voll Kraeuter
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 460
+  name: grob geriebener Kaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 461
+  name: Frittierfett
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 462
+  name: Ca. 2
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 463
+  name: Magerquark
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 464
+  name: Griess
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 465
+  name: Jasminreis
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 466
+  name: â€“ 3 EL Sesamoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 467
+  name: Zuckerschoten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 468
+  name: Brokkoliroeschen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 469
+  name: rote Paprikaschote
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 470
+  name: Zuckermais
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 471
+  name: Reis- oder Weisswein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 472
+  name: chinesische Chilisauce
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 473
+  name: â€“ 4 TL Tomatenketchup
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 474
+  name: Szetchuanpfeffer aus der Muehle
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 475
+  name: geschaelte Tomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 476
+  name: Reis
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 477
+  name: Dosen Thunfisch im eigenen Saft a 185 ml
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 478
+  name: Spinat
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 479
+  name: Cannelloni
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 480
+  name: Mozzarella
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 481
+  name: Spaghetti nach Anleitung kochen. 250 g Champignon in Scheiben
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 482
+  name: gruene Bandnudeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 483
+  name: Lachs
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 484
+  name: Kaffeesahne
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 485
+  name: Liebstoeckel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 486
+  name: Frische Petersilie
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 487
+  name: TraubenkernNudeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 488
+  name: Scampi
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 489
+  name: milder Curry oder Kurkuma
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 490
+  name: Traubenkern-Oel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 491
+  name: rote Chilischote
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 492
+  name: Zuckererbsen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 493
+  name: TraubenkernDinkelvollkornmehl
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 494
+  name: je 1 TL Dill
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 495
+  name: 'Fuer den Teig:'
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 496
+  name: Etwas Wasser
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 497
+  name: 'Fuer die Fuellung:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 498
+  name: Broetchen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 499
+  name: gemischtes Hackfleisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 500
+  name: Kalbsbroet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 501
+  name: Penne
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 502
+  name: Â¼ rote Chilischote
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 503
+  name: geriebener Parmesankaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 504
+  name: frisches Basilikum
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 505
+  name: Haehnchenbrfust
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 506
+  name: rote Zwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 507
+  name: geschaelte Tomatenstuecke
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 508
+  name: schwarze entkernte Oliven
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 509
+  name: Zweige Rosmarin
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 510
+  name: Kohlrabi
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 511
+  name: mittelgrosse Zwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 512
+  name: Spaghetti
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 513
+  name: Cherry-Tomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 514
+  name: Parmesankaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 515
+  name: Kraeuterfrischkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 516
+  name: Lasagneblaetter
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 517
+  name: Rindergehacktes
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 518
+  name: gegarte Schupfnudeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 519
+  name: geriebener Kaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 520
+  name: ger. Meerrettich
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 521
+  name: Schmand
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 522
+  name: rotschaliger Apfel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 523
+  name: Endiviensalat
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 524
+  name: Rinderhack
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 525
+  name: frische Schupfnudeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 526
+  name: Schlagsahne
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 527
+  name: klare Bruehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 528
+  name: gekochten Schinken
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 529
+  name: mittelscharfer Senf
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 530
+  name: Better
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 531
+  name: Stiele frischer Majoran
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 532
+  name: neue Kartoffeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 533
+  name: grosse Paprikaschoten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 534
+  name: Gyrosgewuerz
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 535
+  name: getrockneter Thymian
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 536
+  name: rote und 1 gelbe Paprikaschote
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 537
+  name: mittelgrosse Zucchini
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 538
+  name: Cabanossi
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 539
+  name: Stiele Thymian
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 540
+  name: Stiel Rosmarin
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 541
+  name: Oliven Oel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 542
+  name: -2 EL Butter mit 2-3 EL Mehl anschwitzen
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 543
+  name: â€“ 5 EL Oel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 544
+  name: Scheiben mittelalter Gauda
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 545
+  name: Dosen Ananasscheiben
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 546
+  name: Scheiben Weissbrot
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 547
+  name: kleiner Blumenkohl
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 548
+  name: Salatkraeuter TK
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 549
+  name: etwas Gemuesebruehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 550
+  name: grobgewuerfelte Zwiebeln und 100 Gramm gewuerfelten Speck in
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 551
+  name: ChicorÃ©e Stauden
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 552
+  name: grosse Scheiben Gauda
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 553
+  name: Tomaten aus der Dose
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 554
+  name: Margarine zum Einfetten
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 555
+  name: Ebly Geniesserweizen
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 556
+  name: Pink Grapefruit
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 557
+  name: kleiner Apfel
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 558
+  name: geraeucherter Lachs
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 559
+  name: Alfalfa-Sprossen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 560
+  name: Saft einer Pink Grapefruit
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 561
+  name: Rapsoel kalt gepresst
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 562
+  name: grosse Chicoreestaude
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 563
+  name: Erdkohlraebchen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 564
+  name: Doerrfleisch oder Schinken
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 565
+  name: Fleischbruehwuerfel.
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 566
+  name: Kreuzkuemmel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 567
+  name: frische Korianderblaetter
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 568
+  name: Kokosfett
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 569
+  name: verschiedene frische Kraeuter (Petersilie
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 570
+  name: Kichererbsen oder 2 Dosen Kichererbse (a 280 g
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 571
+  name: Abtropfgewicht)
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 572
+  name: Broccoli
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 573
+  name: frische Champignons in Scheiben schneiden und mit Zitronensaft
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 574
+  name: Gruenkernschrot
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 575
+  name: Mehl bzw. Haferflocken
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 576
+  name: Evtl. Petersilie
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 577
+  name: Kaiserschoten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 578
+  name: Salbeiblaetter
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 579
+  name: halbe Zitronenscheiben
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 580
+  name: Kartoffel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 581
+  name: Raps- oder Sojaoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 582
+  name: frisches Sauerkraut
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 583
+  name: Salatkraeuter
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 584
+  name: Getrocknete Basilikum oder tiefgekuehlt
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 585
+  name: Auberginen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 586
+  name: gem. Hackfleisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 587
+  name: passierte Tomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 588
+  name: gemischte Kraeuter
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 589
+  name: Hirse
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 590
+  name: Quark
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 591
+  name: gehackte Kraeuter
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 592
+  name: Knoblauchzehe feingehackt
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 593
+  name: Rosenkohl
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 594
+  name: Sossenbinder
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 595
+  name: Lachsschinken
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 596
+  name: Rotkohl
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 597
+  name: Nelken gemahlen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 598
+  name: Zimt
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 599
+  name: Schweinefilet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 600
+  name: gek. Schinken
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 601
+  name: Sherry trocken
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 602
+  name: Rotwein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 603
+  name: Kasseler
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 604
+  name: rote Paprika
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 605
+  name: Stueck Ingwer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 606
+  name: Frischer Parmesan
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 607
+  name: Gemuesebruehwuerfel oder 1 EL Gemuesebruehpulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 608
+  name: Vollmilch
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 609
+  name: Vanillinzucker
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 610
+  name: Vollkorn Haferfleks Knusper-Klassik
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 611
+  name: ''
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 612
+  name: Weizenmehl
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 613
+  name: Puderzucker
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 614
+  name: Weizenvollkornmehl
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 615
+  name: kalte Butter
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 616
+  name: gehackte Erdnuesse
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 617
+  name: Pistazien
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 618
+  name: Mohn
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 619
+  name: Sesam
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 620
+  name: rote Spitzpaprika
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 621
+  name: Bacon in Scheiben
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 622
+  name: abgeriebene Limettenschale
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 623
+  name: fettarme Milch
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 624
+  name: frische Hefe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 625
+  name: â€“ 2 TL Oregano
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 626
+  name: Mehl zum Bearbeiten
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 627
+  name: Glaeschen Sardellenfilets in Oel
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 628
+  name: x Hefe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 629
+  name: lauwarmes Wasser
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 630
+  name: lauwarme Milch
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 631
+  name: Hefe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 632
+  name: lange Stoecke
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 633
+  name: Dinkelmehl
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 634
+  name: Trockenhefe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 635
+  name: warmes Wasser
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 636
+  name: lauwarme fettarme Milch
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 637
+  name: gewuerfelter Speck
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 638
+  name: Rotbarschfilets
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 639
+  name: je 1 Bund Petersilie
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 640
+  name: Fett fuer die Form
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 641
+  name: Regenbogen-Forellen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 642
+  name: Fenchelknollen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 643
+  name: Tafel-Meerrettich
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 644
+  name: â€“ 100 ml Gemuesebruehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 645
+  name: Safe Â½ Zitrone
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 646
+  name: â€“ 3 EL Butter
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 647
+  name: Anans
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 648
+  name: -2 rote Chilischoten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 649
+  name: Limette
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 650
+  name: Holzspiesse
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 651
+  name: Forellenfilets geraeuchert
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 652
+  name: gemischte Pilze
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 653
+  name: weisser Balsamicoessig
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 654
+  name: Walnussoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 655
+  name: Tomatenfruchtfleisch in Stueckchen
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 656
+  name: Basilikumblaettchen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 657
+  name: Gnocchi
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 658
+  name: Rotbarsch oder Kabeljau
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 659
+  name: 'fuer die Kaesesauce:'
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 660
+  name: einige Blaettchen Salbei
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 661
+  name: frischen gehackten Liebstoeckel
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 662
+  name: frisch geriebenen Parmesan
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 663
+  name: trockenen Wermut
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 664
+  name: Basilikum zum Bestreuen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 665
+  name: Goldbarschfilets
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 666
+  name: Koriandersamen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 667
+  name: Staudensellerie
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 668
+  name: Stck Ingwer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 669
+  name: Kabeljaurueckenfilets
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 670
+  name: Zucchini
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 671
+  name: â€“ 2 Knoblauchzehen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 672
+  name: feiner Maisgriess
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 673
+  name: Zitronenschale
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 674
+  name: Scheiben Parmaschinken
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 675
+  name: â€“ 12 Salbeiblaetter
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 676
+  name: Kabeljaufilet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 677
+  name: Tomatenpueree
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 678
+  name: Paprika edelsuess
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 679
+  name: Pfeffer aus der Muehle
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 680
+  name: Fruehstuecksbretter Holz
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 681
+  name: Packungen Lachsfilet mit Haut
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 682
+  name: 'Marinade:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 683
+  name: Zweig Rosmarin
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 684
+  name: Zweige Thymian
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 685
+  name: Zweig Dill
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 686
+  name: Zweig Estragon
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 687
+  name: Fencheltee
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 688
+  name: Knoblauchpulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 689
+  name: rosenscharfes Paprikapuler
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 690
+  name: â€“ 3 Stangen Lauch
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 691
+  name: Vanaigrette
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 692
+  name: weinwuerziger Essig
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 693
+  name: Portweinn
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 694
+  name: heller Balsamico
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 695
+  name: dunkler Balsamico
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 696
+  name: Sherry
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 697
+  name: â€“ 2 EL Gefluegelbruehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 698
+  name: Fruehstuecksbrettchen aus unbehandeltem Buchen/Zeder- oder Eichenholz
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 699
+  name: Ca. 1000 g Lachsfilet mit Haut
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 700
+  name: â€“ 2 TL getr. Rosmarin
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 701
+  name: gruener Spargel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 702
+  name: Â½ Zitrone (Schale
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 703
+  name: Saft)
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 704
+  name: kleiner Bund Sauerampfer
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 705
+  name: Topf Basilikum
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 706
+  name: Â¼ Topf Schnittlauch
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 707
+  name: Backpapier
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 708
+  name: Scheiben Lachs
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 709
+  name: Erbsen frisch oder 450 g Tiefkuehlerbsen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 710
+  name: Dill gehackt
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 711
+  name: Rotbarschfilet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 712
+  name: Lauchbruehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 713
+  name: geriebener Gauda
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 714
+  name: Loup de mer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 715
+  name: â€“ 3 Zweige Rosmaarin
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 716
+  name: â€“ 4 Zweige glatte Petersilei
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 717
+  name: frische Weissbrotbroesel
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 718
+  name: Beutel Salatkroenung Mediterrane Art
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 719
+  name: Saft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 720
+  name: Schale einer Â½ Orange
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 721
+  name: Riesengarnelen ohne Kopf und Schale
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 722
+  name: geraeucherte Speckwuerfel
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 723
+  name: â€“ 2 EL Muschelkraeuter
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 724
+  name: Moehre
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 725
+  name: Oel/Butter
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 726
+  name: gekochte
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 727
+  name: Schafskaese in Wuerfel
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 728
+  name: rote Zwiebel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 729
+  name: Shiitakepilze
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 730
+  name: Oelivenoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 731
+  name: gruene Spaghetti
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 732
+  name: Haehnchenbrustfilet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 733
+  name: Â½ l Gemuesebruehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 734
+  name: Msp. gemahlener Safran
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 735
+  name: TK-Erbsen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 736
+  name: Tintenfischringe
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 737
+  name: Miesmuschelfleisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 738
+  name: Heilbuttfilet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 739
+  name: Worcestershiresauce
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 740
+  name: edelsuess
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 741
+  name: Seelachsfilet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 742
+  name: Fruehstuecksspeck in duennen Scheiben
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 743
+  name: kleine Zucchini
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 744
+  name: Aluschale zum Grillen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 745
+  name: Fischfilet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 746
+  name: Saft 1 Zitrone
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 747
+  name: schnittfeste Tomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 748
+  name: Zanderfilets
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 749
+  name: gruene Linsen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 750
+  name: getr. Thymian
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 751
+  name: Saudensellerie
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 752
+  name: â€“ 4 EL Butter
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 753
+  name: â€“ 3 TL Bluetenhonig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 754
+  name: reife Birnen
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 755
+  name: Brathaehnchen
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 756
+  name: Bier
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 757
+  name: Gaensebrueste
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 758
+  name: getrockneter Rosmarin
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 759
+  name: Birnen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 760
+  name: dunkler Saucenbinder
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 761
+  name: getrocknete Tomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 762
+  name: Blaettchen Salbei
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 763
+  name: Rosmarinnadeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 764
+  name: Feta - Schafskaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 765
+  name: hauchduenne Scheiben ital. Salami
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 766
+  name: Instant Huehnerbruehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 767
+  name: trockener Sherry
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 768
+  name: heller Saucenbinder
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 769
+  name: Baerlauch
+  veg_type: vegetarian
+  side_dish: false
+  unit: Bund
+- ingredient_id: 770
+  name: Â¼ l Sahne
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 771
+  name: Aprikosen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 772
+  name: Petersilie gehackt
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 773
+  name: Stck Haehnchenbrust
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 774
+  name: Sojaoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 775
+  name: Baby-Ananas
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 776
+  name: kleiner Brokkoli
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 777
+  name: Fruehlingslauch
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 778
+  name: Sprossen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 779
+  name: Suess-Saure Chillisauce
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 780
+  name: Haehnchenschnitzel
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 781
+  name: Scheiben Kochschinken
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 782
+  name: Tomato al Gusto
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 783
+  name: geriebener Gouda
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 784
+  name: Â¼ TL Paprikapulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 785
+  name: Â¼ TL gem. Kreuzkuemmel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 786
+  name: Msp. Kardamonpulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 787
+  name: Fuer die Sauce
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 788
+  name: gemahlener Ingwer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 789
+  name: gem. Muskatnuss
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 790
+  name: frische Pfifferlinge
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 791
+  name: Pfirsichsaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 792
+  name: Frische Brombeeren
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 793
+  name: Pfirsichspalten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 794
+  name: Gegarter Reis
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 795
+  name: Petersilie zum Garnieren
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 796
+  name: Pute
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 797
+  name: Tyhmian
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 798
+  name: Scheiben geraeucheter Speck
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 799
+  name: Putenfuellung
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 800
+  name: Rote Beete-Apfel-Gemuese
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 801
+  name: Bratenfond
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 802
+  name: Sternanis
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 803
+  name: Orangenschale
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 804
+  name: Aceta Balsamico
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 805
+  name: Pflaumenmus
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 806
+  name: Saft von 2 Limetten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 807
+  name: Entenbrust mit Haut
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 808
+  name: Sojasprossen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 809
+  name: Putenbrust oder Putenschnitzel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 810
+  name: geriebener Meerrettich
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 811
+  name: Gewuerzgurke
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 812
+  name: Putenbrustfilets
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 813
+  name: grosse Wirsingblaetter
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 814
+  name: Ajvar
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 815
+  name: Schwarzwurzeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 816
+  name: Putenschnitzel a 150 g
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 817
+  name: mittelgrosse Banane
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 818
+  name: Putenschnitzel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 819
+  name: Mango-Chutney
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 820
+  name: Currypulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 821
+  name: Knorr-Aromat
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 822
+  name: Maggi Wuerzmittel Nr. 3
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 823
+  name: Bresso-Kraeuterkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 824
+  name: roher Schinken
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 825
+  name: Paniermehl
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 826
+  name: Maggi Kraeutersosse
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 827
+  name: Â¼ l Wasser
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 828
+  name: Ecke Adler Schmelzkraeuterkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 829
+  name: Schweinefleisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 830
+  name: Flasche Bier
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 831
+  name: Peffer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 832
+  name: Paprike edelsuess
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 833
+  name: Senf mittelscharf
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 834
+  name: Koepfe Weisskohl
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 835
+  name: abgezogene Zwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 836
+  name: Schweineschmalz
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 837
+  name: magere
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 838
+  name: evtl. 150 g saure Sahne
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 839
+  name: Rumpsteaks a 150 g
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 840
+  name: -6 mittelgrosse Kartoffeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 841
+  name: Karianderkoerner
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 842
+  name: getrockneter Majoran
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 843
+  name: Msp. Kreuzkuemmel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 844
+  name: Flasche Chilisauce
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 845
+  name: Schnitzelfleisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 846
+  name: Speiseoel
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 847
+  name: je 4 rote / gruene Paprikaschoten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 848
+  name: Glaeser Silberzwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 849
+  name: Glaeser Champignons
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 850
+  name: Ananasstuecke mit Saft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 851
+  name: â€“ 6 EL Tomatenmark
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 852
+  name: â€“ 6 Spritzer Tabasco
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 853
+  name: Filetsteaks
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 854
+  name: roter Portwein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 855
+  name: suesser
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 856
+  name: duenne Schweineschnitzel
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 857
+  name: duenne Scheiben Schinkenspeck
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 858
+  name: Scheiben Gouda
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 859
+  name: Salbei
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 860
+  name: Dosen Tomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 861
+  name: Schweine- oder Haehnchenschnitzel
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 862
+  name: helles Saucenpulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 863
+  name: Rahmsaucenpulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 864
+  name: Schinkenwuerfel
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 865
+  name: evtl. gekochter Schinken
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 866
+  name: Scheibletten-Kaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 867
+  name: Cocktailkirschen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 868
+  name: Kalbsbraten in 6 Schnitzel geschnitten
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 869
+  name: Scheiben luftgetrockneter Kernschinken
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 870
+  name: 'Sauce:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 871
+  name: Zitronengras
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 872
+  name: Zitrone
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 873
+  name: Kalbsfond
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 874
+  name: Saucenbinder
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 875
+  name: 'Gemuese:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 876
+  name: Marsala Wein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 877
+  name: Kalbsschnitzel
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 878
+  name: Blauschimmelkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 879
+  name: Schnittlauchroellchen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 880
+  name: Roggenmehl
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 881
+  name: Frischhefe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 882
+  name: Â½ kg Kasseler
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 883
+  name: Â¾ l Weisswein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 884
+  name: Kassler
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 885
+  name: Senfkoerner
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 886
+  name: Je 1 gruene
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 887
+  name: Pilze
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 888
+  name: kleine Ananas
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 889
+  name: Schweinekotellets
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 890
+  name: -3 EL Butter
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 891
+  name: Mandelblaettchen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 892
+  name: heisse Milch
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 893
+  name: gerieben Muskatnuss
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 894
+  name: ausgeloester Neuseeland-Lammruecken
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 895
+  name: unbehandelte Zitrone
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 896
+  name: LE Olivenoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 897
+  name: Â¼ l Rotwein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 898
+  name: klare Fleischbruehe
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 899
+  name: ausgebeinte Koteletts
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 900
+  name: Doerrfleisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 901
+  name: Kochschinken
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 902
+  name: Suppengemuese
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 903
+  name: Rinderbraten
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 904
+  name: Wacholderbeeren
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 905
+  name: Schweinerueckenbraten
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 906
+  name: 'Tomatensauce:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 907
+  name: Sardelle
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 908
+  name: Tomaten stueckig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 909
+  name: 'Ofentomaten:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 910
+  name: Kirschtomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 911
+  name: Zeige Thymian
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 912
+  name: je 2 rote und gelbe Paprikaschoten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 913
+  name: â€“ 3 rote Chilischoten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 914
+  name: Stangen Staudensellerie
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 915
+  name: Main
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 916
+  name: Tomaten-Ketchup
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 917
+  name: Schweineschnitzel
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 918
+  name: geraspelter Edamer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 919
+  name: Peperoni
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 920
+  name: Rindergulasch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 921
+  name: Paprikapulver rosenscharf
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 922
+  name: Pr. Zucker
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 923
+  name: m Rotwein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 924
+  name: je 1 rote & gelbe Paprikaschote
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 925
+  name: Zweige glatte Petersilie
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 926
+  name: Hackfleisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 927
+  name: gemischte Paprika
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 928
+  name: Teeloeffel Chilisosse
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 929
+  name: Fenchel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 930
+  name: n g Kartoffeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 931
+  name: Rinderfilet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 932
+  name: kraeftiger Rotwein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 933
+  name: Rinderfond
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 934
+  name: Zucker / Pfeffer / Salz
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 935
+  name: grosse Rotkohlblaetter
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 936
+  name: Â½ EL Butter
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 937
+  name: Schnitzel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 938
+  name: Ca. 1
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 939
+  name: mittlere Zwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 940
+  name: Alt-Bier
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 941
+  name: Kuerbisfruchtfleisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 942
+  name: weisse Gemuesezwiebel
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 943
+  name: ausgeloesten Lammruecken
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 944
+  name: Garam Masala
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 945
+  name: Â½ TL Chilipulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 946
+  name: Limettensaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 947
+  name: weisse Bohnen aus der Dose
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 948
+  name: Kidney-Bohnen aus der Dose
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 949
+  name: geschaelte Tomaten aus der Dose
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 950
+  name: edelsuesses Paprikapulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 951
+  name: getrockneter Oregano
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 952
+  name: spanische Knoblauchwurst oder Cabanossi
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 953
+  name: Zucchini mit Schale
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 954
+  name: Pfund Paprika
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 955
+  name: Pfund Zwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 956
+  name: Flasche Gurkenessig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 957
+  name: Flasche Apfelsaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 958
+  name: â€“ 3 El curry
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 959
+  name: kraeftige Fleischbruehe
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 960
+  name: Apfelessig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 961
+  name: abgeriebene Schale von 1 Zitrone
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 962
+  name: Tomaten enthaeuten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 963
+  name: Frischrahmkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 964
+  name: ger. Kaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 965
+  name: ital. Wuerzmischung
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 966
+  name: Ei 2 EL Tomatenmark
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 967
+  name: in Milch eingeweichtes Weissbrot
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 968
+  name: Thunfisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 969
+  name: 'dip: 200 g Feta'
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 970
+  name: 'Fuer den Moehrensud:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 971
+  name: Bundmoehren
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 972
+  name: Loewensenf mild und voll Salz
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 973
+  name: 'Fuer den Zucchinisud:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 974
+  name: 'Fuer die Champignons:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 975
+  name: kleine Champignons
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 976
+  name: Dillzweig
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 977
+  name: Thymianzweig
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 978
+  name: 'Zum Garnieren:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 979
+  name: Blumenkohlroeschen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 980
+  name: Butter fuer die Form
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 981
+  name: 'Sauce: 1 El Butter'
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 982
+  name: Butter zum Einfetten
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 983
+  name: ger. Parmesankaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 984
+  name: Sesamsamen.
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 985
+  name: Lachsfilet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 986
+  name: Schollenfilet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 987
+  name: Dill und 1 EL Petersilie
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 988
+  name: Scheiben Vollkorntoast
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 989
+  name: ger. Kaese bzw. 200 g Mozzarella
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 990
+  name: muerbe AEpfel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 991
+  name: gem. Ingwer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 992
+  name: Stangen Zimt
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 993
+  name: gem. Nelken
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 994
+  name: Zucker.
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 995
+  name: Instand-Flocken
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 996
+  name: suesse Sahne
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 997
+  name: Zweige Oregano
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 998
+  name: Alufolie
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 999
+  name: ger. Emmentaler Kaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1000
+  name: Bohnenkraut
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1001
+  name: helles Bier
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1002
+  name: kleine Knoblauchzehe
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1003
+  name: Panade 1
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1004
+  name: Panade 2
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1005
+  name: Mineralwasser
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1006
+  name: EI 500 g ger. Cheddar
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1007
+  name: gem. Mandeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1008
+  name: 'Quark: 200 g Speisequark'
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1009
+  name: Naturjoghurt
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1010
+  name: etwas Oel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1011
+  name: Gemuesebruehwuerfel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1012
+  name: geraspelte Zucchini
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1013
+  name: je 1 rote/gruene Paprika geraspelt
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1014
+  name: Tassen Zwiebeln geraspelt
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1015
+  name: 'Sud:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1016
+  name: Â½ Tassen Gurkenessig unverduennt
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1017
+  name: Â½ Tassen Zucker
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1018
+  name: Senfmehl
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1019
+  name: Â¾ TL Muskatnuss
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1020
+  name: getr. Chilischoten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1021
+  name: Weissweinessig bzw. Rotweinessig
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1022
+  name: je 1 Tl Pfefferkoerner
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1023
+  name: Speisequark
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1024
+  name: Spritzer Zitronensaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1025
+  name: Fladenbrot
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1026
+  name: Â¼ l Weissweinessig
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1027
+  name: Msp. Chilipulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1028
+  name: Mandarinen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1029
+  name: Krabben
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1030
+  name: â€“ 2 EL Milch
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1031
+  name: 'Belag:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1032
+  name: Huettenkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1033
+  name: Msp. gem. Muskatnuss
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1034
+  name: rote/gruene Paprika
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1035
+  name: Stangen Bleichsellerie
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1036
+  name: Kuerbisfleisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1037
+  name: Tatar
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1038
+  name: Kuerbiskernoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1039
+  name: Stueckige Tomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1040
+  name: Chili con Carne - Wuerzer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1041
+  name: â€žHarissaâ€œ Wuerzpaste
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1042
+  name: Tortillachips
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1043
+  name: gelbfleischiger Kuerbis (ohne Kerne
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1044
+  name: Fruchtfleisch)
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1045
+  name: Â¼ l Fleischbruehe
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1046
+  name: Â¼ l trockener Weisswein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1047
+  name: Butterkaese-Schmelzkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1048
+  name: gemahlener Piment
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1049
+  name: frischer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1050
+  name: Scheiben Toastbrot
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1051
+  name: Traubenkernoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1052
+  name: Majoranblaettchen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1053
+  name: Mango
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1054
+  name: Saft von 1 Orange
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1055
+  name: Hirtenkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1056
+  name: abgeriebene Orangenschale
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1057
+  name: Handvoll in Streifen geschnittener Basilikum
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1058
+  name: Scheiben getoasteter Vollkorntoast
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1059
+  name: mittelgrosser Kuerbis
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1060
+  name: Kernige Haferflocken
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1061
+  name: mittelgrosse AEpfel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1062
+  name: Vanillezucker
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1063
+  name: in feine Streifen geschnittene Melisseblaettchen
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1064
+  name: Weinsteinbackpulver
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1065
+  name: Schafsfrischkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1066
+  name: Oreganoblaettchen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1067
+  name: Msp. Frisch gemahlener Pfeffer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1068
+  name: 'fuer den Belag:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1069
+  name: Kuerbiswuerfel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1070
+  name: mittlere Zwiebel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1071
+  name: Cashewkerne
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1072
+  name: mittelgrosse Birne
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1073
+  name: fuer den Guss
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1074
+  name: Gorgonzola
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1075
+  name: kleiner Kuerbis
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1076
+  name: mittelgrosse Kartoffeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1077
+  name: mageres Schweinefleisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1078
+  name: ss ml Gemuesebruehe
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1079
+  name: trockener Rotwein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1080
+  name: kleine Chilischoten
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1081
+  name: Essig-Essenz
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1082
+  name: gemahlener Koriander
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1083
+  name: Dosen Kokosmilch
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1084
+  name: Risottoreis
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1085
+  name: Msp. Safran
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1086
+  name: abgeriebene Schale 1 unbehandelten Orange
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1087
+  name: frischer Kuerbis
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1088
+  name: Rissotto-Reis
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1089
+  name: heisse Gemuesebruehe
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1090
+  name: Gartenkresse
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1091
+  name: Porree
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1092
+  name: â€“ 4 TL Curry
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1093
+  name: 'Fuer die Kloesschen:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1094
+  name: Allgaeuer Bergkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1095
+  name: TZL Halbfettmargarine
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1096
+  name: geriebener Ingwer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1097
+  name: Haehnchenbrust
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1098
+  name: kleine Mango
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1099
+  name: Zimtpulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1100
+  name: Schalotte gehackt
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1101
+  name: Seelachsfilets
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1102
+  name: einige Tropfen fluessiger Suessstoff
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1103
+  name: Dosen Pizzatomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1104
+  name: -2 TL getrockneter Oregano
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1105
+  name: Penne-Nudeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1106
+  name: Butterkaese gerieben
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1107
+  name: Paket Fruehstuecksspeck
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1108
+  name: Brandy / Weinbrand
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1109
+  name: Apfelkorn
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1110
+  name: trueber Apfelsaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1111
+  name: Eier Klasse M
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1112
+  name: AEpfel Elstar
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1113
+  name: getrueffelte Kalbsleberwurst
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1114
+  name: laengliche Schalotten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1115
+  name: Kalbsschnitzelfleisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1116
+  name: Scheiben Fruehstuecksspeck
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1117
+  name: Kalbsbruehe
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1118
+  name: Feldsalat
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1119
+  name: Riesen - Champignons
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1120
+  name: Haselnuss â€“ Petersilien - Pesto
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1121
+  name: -2 TL weisser Aceto Balsamico
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1122
+  name: Sultaninen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1123
+  name: Haselnusskerne
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1124
+  name: Blumenkohl-Kopf
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1125
+  name: mildes Currypulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1126
+  name: Moehrensaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1127
+  name: -3 TL Limettensaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1128
+  name: Balkangemuese TK
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1129
+  name: Salatgurke
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1130
+  name: gemischte Oliven ohne Stein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1131
+  name: griechischer Sahnejoghurt
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1132
+  name: -3 EL Zitronensaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1133
+  name: Zweige Minze
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1134
+  name: Schweinenacken
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1135
+  name: Rinderâ€”Gulaschfleisch
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1136
+  name: Wirsing
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1137
+  name: gemahlener Kuemmel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1138
+  name: Vanilleschote
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1139
+  name: Eier Kl. M
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1140
+  name: Weizengriess
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1141
+  name: abgeriebene Schale einer halben unbehandelten Zitrone
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1142
+  name: Minze zum Dekorieren
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1143
+  name: AEpfel a 200 g
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1144
+  name: Fliederbeersaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1145
+  name: â€“ 5 Maracujas
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1146
+  name: Minigurke
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1147
+  name: Schweinebratenaufschnitt
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1148
+  name: gruene Bohnen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1149
+  name: â€“3 EL Weissweinessig
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1150
+  name: -6 EL Olivenoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1151
+  name: grober Senf
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1152
+  name: gehackte Walnusskerne
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1153
+  name: saeuerlicher Apfel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1154
+  name: Blutwurst
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1155
+  name: gehackter Majoran
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1156
+  name: trockener Cidre oder Weisswein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1157
+  name: Pappardelle oder andere Bandnudeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1158
+  name: Seeteufelfilet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1159
+  name: Entenbrueste von 300 g
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1160
+  name: Chicorees a 175 g
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1161
+  name: Orangen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1162
+  name: Granatapfel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1163
+  name: Orangenmarmelade
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1164
+  name: grosse festkochende Kartoffeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1165
+  name: Babybananen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1166
+  name: Vanilleeiscreme
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1167
+  name: Kuvertuere
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1168
+  name: Blaetter Fruehlingsrollenteig
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1169
+  name: Puderzucker zum Garnieren
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1170
+  name: Dosen Sauerkraut
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1171
+  name: getrockneter Majoran oder Oregano
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1172
+  name: grobes Kalbsbraet
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1173
+  name: Beutel Mehlbuedel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1174
+  name: weiche Butter/Margarine
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1175
+  name: abgeriebene Zitronenschale
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1176
+  name: 'Fuer den Guss:'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1177
+  name: Liebesperlen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1178
+  name: weiches Fett
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1179
+  name: Wodka
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1180
+  name: Flasche Bitter Lemon
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1181
+  name: Zitronensaft von 2 Zitronen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1182
+  name: Chicoree
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1183
+  name: Roemersalat
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1184
+  name: Papaya
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1185
+  name: Avocados
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1186
+  name: -2 TL Paprikapulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1187
+  name: Pernod
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1188
+  name: Gemuesefond
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1189
+  name: kleine Zweige Minze
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1190
+  name: Minze zum Garnieren
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1191
+  name: Kreuzkuemmeloel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1192
+  name: Fenchelsaat
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1193
+  name: Koriandersaat
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1194
+  name: Zweige Petersilie
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1195
+  name: Zweige Koriander
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1196
+  name: -8 duenne Fladenbrote
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1197
+  name: mehligkochende Kartoffel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1198
+  name: Bruehe oder Fond
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1199
+  name: Â½ schwarze Rettiche
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1200
+  name: Ciabattabrote
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1201
+  name: frische Brunnenkresse
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1202
+  name: Â¼ TL weisser Pfeffer
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1203
+  name: Minutensteaks vom Rind a 80 g
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1204
+  name: Orangen â€“ Chili - Dip
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1205
+  name: Abrieb von Â¼ Orange
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1206
+  name: gehackte Mandeln
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1207
+  name: Orange
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1208
+  name: Sweet Chilisauce
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1209
+  name: -2 TL Honig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1210
+  name: -2 TL Zitronensaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1211
+  name: Wildfleisch aus der Schulter
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1212
+  name: Toastbrot
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1213
+  name: â€“ 2 Eier
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1214
+  name: Salatgurken
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1215
+  name: â€“ 3 rote Zwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1216
+  name: fein geschnittener Dill
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1217
+  name: Radicchio
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1218
+  name: Msp. gemahlener Zimt
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1219
+  name: suesser Senf
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1220
+  name: Petersilienwurzel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1221
+  name: Kalbsfond oder Gefluegelbruehe
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1222
+  name: Rinderfilet am Stueck
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1223
+  name: Weissbrot
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1224
+  name: Schnittlauch zum Dekorieren
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1225
+  name: frische Meerrettichwurzel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1226
+  name: Pimentkoerner
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1227
+  name: -3 TL Salz
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1228
+  name: Gewuerzgurken
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1229
+  name: Wolfsbarschfilets a 70 g
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1230
+  name: Estragon
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1231
+  name: Surimi
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1232
+  name: Polenta
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1233
+  name: -4 TL Zitronensaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1234
+  name: -3 EL frisch geriebenen Meerrettich
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1235
+  name: -2 TL Worcestershire-Sosse
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1236
+  name: Tabasco Sosse
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1237
+  name: kleiner Eisbergsalat
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1238
+  name: Nordmeershrimps
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1239
+  name: -8 Zitronenscheiben
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1240
+  name: bestes Olivenoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1241
+  name: Rauke
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1242
+  name: doppelte Rumsteaks von je 400 g
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1243
+  name: Schwarzer Pfeffer aus der Muehle
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1244
+  name: getrocknete Steinpilze
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1245
+  name: Parmesan frisch gerieben
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1246
+  name: Portwein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1247
+  name: Paprikaschoten aus dem Glas
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1248
+  name: Blaetterteigpastetchen
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1249
+  name: Limetten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1250
+  name: Paprika aus dem Glas
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1251
+  name: Nougatcreme
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1252
+  name: + 1 TL kandierter Ingwer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1253
+  name: Waffelroellchen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1254
+  name: Suppengruen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1255
+  name: Paprikamark
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1256
+  name: Beluga-Linsen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1257
+  name: Bandnudeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1258
+  name: gehobelter Parmesan
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1259
+  name: gemahlene Mandeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1260
+  name: â€“ 3 AEpfel a ca. 150 g
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1261
+  name: Baguette
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1262
+  name: abgeriebene Schale einer halben Zitrone
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1263
+  name: â€“ 75 g Meerrettichwurzel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1264
+  name: Ziegenfrischkaese
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1265
+  name: Rinderfilet aus der Mitte
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1266
+  name: â€“ 2 EL Honig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1267
+  name: Blaetter TK - Blaetterteig aufgetaut
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1268
+  name: Eigelbe
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1269
+  name: '- 2 EL Sojasauce'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1270
+  name: Lachsfilet auf der Haut
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1271
+  name: Schnittlauch in feine Roellchen geschnitten
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1272
+  name: Kopf Blattsalat
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1273
+  name: â€“2 EL Zucker
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1274
+  name: Dijonsenf
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1275
+  name: Himbeeressig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1276
+  name: â€“ 7 EL Walnussoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1277
+  name: Stiele Basilikum
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1278
+  name: Tamarillos
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1279
+  name: Bueffelmozzarella
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1280
+  name: â€“ 5 EL Olivenoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1281
+  name: abgeriebene Schale einer unbehandelten Zitrone
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1282
+  name: Tiroler Speck in duennen Scheiben
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1283
+  name: Zweige Basilikum
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1284
+  name: dunkle Kuvertuere
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1285
+  name: â€“ 3 TL Loesliches Espressopulver
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1286
+  name: Orangenlikoer
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1287
+  name: Stiele Salbei
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1288
+  name: kleines Bund glatte Petersilie
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1289
+  name: â€“ 6 Haehnchenkeulen
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1290
+  name: gruene Oliven - ohne Stein
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1291
+  name: Polentagriess
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1292
+  name: feste Birnen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1293
+  name: Zimtstange
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1294
+  name: Zimmerwarmes Nutella
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1295
+  name: angeschlagene Schlagsahne
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1296
+  name: Prise Zucker
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1297
+  name: Haselnusskrokant
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1298
+  name: rote Bete aus der Packung
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1299
+  name: Beet Gartenkresse
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1300
+  name: Buchweizenmehl
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1301
+  name: â€“ 4 EL Oel zum Backen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1302
+  name: stichfeste saure Sahne
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1303
+  name: geraeucherten Heilbutt in Scheiben
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1304
+  name: Ketakaviar
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1305
+  name: kleine rote Zwiebel
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1306
+  name: Stangen Zitronengras
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1307
+  name: Rotbarben
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1308
+  name: Reismehl zum Bestaeuben
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1309
+  name: â€“ 3 EL Erdnussoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1310
+  name: Spinat TK
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1311
+  name: Ingwerwurzel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1312
+  name: Sesamsaat
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1313
+  name: dunkles Sesamoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1314
+  name: â€“ 12 EL Teriyakisauce
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1315
+  name: Klebreis
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1316
+  name: unbehandelte
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1317
+  name: Rotbarschfilets a 135 g TK
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1318
+  name: gehackter Koriander
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1319
+  name: Erdnussoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1320
+  name: gelbfleischige Suesskartoffeln
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1321
+  name: weisse Zwiebeln
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1322
+  name: Fruehstuecksspeck
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1323
+  name: je 2 Zweige Rosmarin und Thymian
+  veg_type: vegetarian
+  side_dish: false
+  unit: null
+- ingredient_id: 1324
+  name: bunte Salatmischung
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1325
+  name: duenne Kalbsschnitzel a 75 g
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1326
+  name: Parmaschinken
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1327
+  name: Fischfond
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1328
+  name: Zanderfilet ohne Haut a 175 g
+  veg_type: meat
+  side_dish: false
+  unit: null
+- ingredient_id: 1329
+  name: â€“ 3 EL grober Senf
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1330
+  name: â€“ 2 TL Zitronensaft
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1331
+  name: Fenchelsamen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1332
+  name: mehlig kochende Kartoffeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1333
+  name: Roestzwiebeln
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1334
+  name: mittlere Tomaten
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1335
+  name: gemischtes Backobst
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1336
+  name: duenne Rumpsteaks
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1337
+  name: Pakete Kartoffelpueree
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1338
+  name: Cannelonituben
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1339
+  name: getrocknete Tomaten in Oel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1340
+  name: Cashew-Nuesse
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1341
+  name: Bananen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1342
+  name: '- 2 Chilischoten'
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1343
+  name: â€“ 3 EL Sojasosse
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1344
+  name: Tofu
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1345
+  name: unbehandelte Zitronen
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1346
+  name: Risotto
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1347
+  name: Nussoel
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1348
+  name: â€“3 EL milder Essig
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1349
+  name: uralter Gauda
+  veg_type: vegan
+  side_dish: false
+  unit: null
+- ingredient_id: 1350
+  name: Bambus
+  veg_type: vegan
+  unit: null
+  side_dish: false

@@ -106,6 +106,9 @@ def api_get_recipe(recipe_id):
     recipe_ingredients = data.get("recipe_ingredients", [])
     ingredients = data.get("ingredients", [])
 
+    #next(iterator, default=None)
+    #(r for r in recipes if r.get("recipe_id") == recipe_id) erzeugt Generator der erst auf anfrage einzeln werte Ausgibt
+    #deswegen next
     recipe = next(
         (r for r in recipes if r.get("recipe_id") == recipe_id),
         None

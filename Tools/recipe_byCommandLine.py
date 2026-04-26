@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-recipe_tool.py — Add new recipes (and link ingredients)
+recipe_byCommandLine.py — Add new recipes (and link ingredients)
 Usage examples:
 
 # Minimal recipe (no ingredients yet)
-python recipe_tool.py \
+python recipe_byCommandLine.py \
   --recipes recipes.yaml \
   --recipe-ingredients recipe_ingredients.yaml \
   --name "Chili sin Carne" \
@@ -14,7 +14,7 @@ python recipe_tool.py \
   --instructions "Sauté onions; add beans, tomatoes, spices; simmer 30 min."
 
 # Recipe with ingredients (ingredient_id:quantity:unit)
-python recipe_tool.py \
+python recipe_byCommandLine.py \
   --recipes recipes.yaml \
   --recipe-ingredients recipe_ingredients.yaml \
   --ingredients-file ingredients.yaml \

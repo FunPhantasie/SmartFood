@@ -434,6 +434,7 @@ const RECIPE_TYPE_TO_SECTION = {
 };
 
 const LIMIT_DEFAULTS = { main_dish: 3, snack: 3 };
+//Objetc Mit KEy PAirs
 
 /** -------------------------
  *  Utilities
@@ -451,9 +452,9 @@ function prettyMealType(type){
 }
 
 /** -------------------------
- *  Backend calls (safe stubs)
+ *  Check If BAckend IS Online (Ping) Not Implenetet Server=
  *  ------------------------- */
-async function pingBackend(){
+async function checkBackendOnline(){
   // Optional endpoint: /api/ping -> {ok:true}
   try{
     const r = await fetch("/api/ping", {method:"GET"});
@@ -468,7 +469,7 @@ async function pingBackend(){
   el.style.background = state.backendOk ? "rgba(76,212,166,.12)" : "rgba(255,255,255,.04)";
 }
 
-async function sendDismiss(recipe, context){
+async function dismissSuggestion(recipe, context){
   // context: {mode:"defaults"|"results", section:"main"|"snack"|"results"}
   const payload = {
     recipe_id: recipe?.id,
@@ -578,7 +579,7 @@ function renderSection(sectionKey){
   wrap.innerHTML = "";
   cfg.shown.forEach((r, idx)=>{
     wrap.appendChild(cardEl(r, async ()=>{
-      await sendDismiss(r, {mode:"defaults", section: sectionKey});
+      await dismissSuggestion(r, {mode:"defaults", section: sectionKey});
       // remove
       cfg.shown.splice(idx, 1);
       // refill to keep 3
@@ -586,7 +587,8 @@ function renderSection(sectionKey){
         cfg.shown.push(cfg.buffer.shift());
       }else{
         // if buffer empty, generate a few more mock items to keep the promise "always 3"
-        cfg.buffer.push(..."hi");
+        console.log("No Cards")
+        cfg.buffer.push(..."hi"); //This need to be feixed
         cfg.shown.push(cfg.buffer.shift());
       }
       renderSection(sectionKey);
@@ -602,7 +604,7 @@ function renderResults(){
   wrap.innerHTML = "";
   state.results.shown.forEach((r, idx)=>{
     wrap.appendChild(cardEl(r, async ()=>{
-      await sendDismiss(r, {mode:"results", section:"results"});
+      await dismissSuggestion(r, {mode:"results", section:"results"});
       state.results.shown.splice(idx, 1);
       if(state.results.buffer.length > 0){
         state.results.shown.push(state.results.buffer.shift());
@@ -745,8 +747,9 @@ document.getElementById("backToDefaultsBtn").addEventListener("click", ()=>{
 
 });
 
+
 (async function boot(){
-  await pingBackend();
+  await checkBackendOnline();
   await initDefaultsFromBackend();
   setMode("defaults");
 })();
