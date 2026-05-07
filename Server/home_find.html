@@ -60,8 +60,8 @@
       background: rgba(255,255,255,.04);
     }
     main{
-      max-width:1200px;
-      margin: 18px auto 50px;
+      display: flex;
+      justify-content: center;
       padding:0 18px;
     }
     .grid{
@@ -242,10 +242,8 @@
       cursor:pointer;
       user-select:none;
     }
-    .smalllink:hover{ text-decoration:underline; }
-
-
-    code.inline{
+    .panel .bd.collapsed { display: none; }
+    #filterSection.collapsed { display: none; }
       background: rgba(255,255,255,.08);
       padding: 1px 6px;
       border-radius: 8px;
@@ -264,20 +262,21 @@
         <button class="btn good" id="btnAddRecipe">Add recipe</button>
         </div>
       </div>
-
+      <span class="pill" id="backendState">Backend: unknown</span>
     </div>
   </header>
 
   <main>
-    <div class="grid">
-      <!-- LEFT: FILTERS -->
-      <section class="panel" aria-label="filters">
-        <div class="hd">
-          <h2>Filter</h2>
-          <span class="pill" id="backendState">Backend: unknown</span>
-        </div>
+    <!-- SUGGESTIONS -->
+    <section class="panel" aria-label="suggestions" style="max-width:800px; width:100%;">
+      <div class="hd">
+        <h2>Suggestions</h2>
+        <button class="secondary" type="button" id="toggleFilter" style="font-size:12px; padding:6px 10px;">Show Filters</button>
+      </div>
 
-        <div class="bd">
+      <div class="bd">
+        <!-- FILTER SECTION -->
+        <div id="filterSection" class="collapsed">
           <div class="row2">
             <div>
               <label for="mealType">Meal type</label>
@@ -360,53 +359,26 @@
 
           <div class="btnrow">
             <button type="button" id="proposeBtn">Propose</button>
-            <button class="secondary" type="button" id="backToDefaultsBtn" style="display:none;">Back to defaults</button>
-            <button class="secondary" type="button" id="addRecipeBtn">Add recipe</button>
-          </div>
-
-
-        </div>
-      </section>
-
-      <!-- RIGHT: SUGGESTIONS -->
-      <section class="panel" aria-label="suggestions">
-        <div class="hd">
-          <h2>Suggestions</h2>
-          <span class="pill" id="suggestionMode">Mode: defaults</span>
-        </div>
-
-        <div class="bd">
-          <!-- DEFAULT PANELS -->
-          <div id="defaultsWrap">
-            <div class="splitHd">
-              <h3>3 Main Gerichte</h3>
-              <span class="muted" style="font-size:12px" id="mainCount"></span>
-            </div>
-            <div class="cards" id="mainCards"></div>
-
-            <div style="height:14px"></div>
-
-            <div class="splitHd">
-              <h3>3 Snack Vorschläge</h3>
-              <span class="muted" style="font-size:12px" id="snackCount"></span>
-            </div>
-            <div class="cards" id="snackCards"></div>
-          </div>
-
-          <!-- PROPOSE RESULTS -->
-          <div id="resultsWrap" style="display:none;">
-            <div class="splitHd">
-              <h3>Results (Selection)</h3>
-              <span class="muted" style="font-size:12px" id="resultsCount"></span>
-            </div>
-            <div class="cards" id="resultCards"></div>
-            <div class="help" style="margin-top:10px;">
-              Tipp: Wegklicken schickt <code class="inline">/api/dismiss</code> und zieht den nächsten Eintrag aus dem Puffer nach.
-            </div>
           </div>
         </div>
-      </section>
-    </div>
+
+        <!-- DEFAULT PANELS -->
+        <div id="defaultsWrap">
+          <div class="splitHd">
+            <h3>5 Main Gerichte</h3>
+            <span class="muted" style="font-size:12px" id="mainCount"></span>
+          </div>
+          <div class="cards" id="mainCards"></div>
+
+          <div class="btnrow" style="margin-top:14px;">
+            <button type="button" id="generateBtn">Generate New Proposal</button>
+            
+          </div>
+        </div>
+
+        </div>
+      </div>
+    </section>
   </main>
 
 <script>
@@ -418,9 +390,7 @@ const state = {
   exclude: [],
   defaults: {
     main_dish: { shown: [], buffer: [] },
-    snack:{ shown: [], buffer: [] },
   },
-  results: { shown: [], buffer: [] },
   backendOk: null
 };
 
@@ -433,7 +403,7 @@ const RECIPE_TYPE_TO_SECTION = {
   "wuerzung": "Gewürzmischung",
 };
 
-const LIMIT_DEFAULTS = { main_dish: 3, snack: 3 };
+const LIMIT_DEFAULTS = { main_dish: 5 };
 //Objetc Mit KEy PAirs
 
 /** -------------------------
@@ -488,25 +458,39 @@ async function dismissSuggestion(recipe, context){
   }
 }
 
-async function requestPropose(filters){
-  // Expected backend response (recommended):
-  // { recipes: [ {id,name,meal_type,...}, ... ] }
-  // We'll fallback to mock if backend offline / error.
+async function fetchRecipes(filters = null){
+  // Fetch recipes from backend - with or without filters
+  // If filters provided: POST request
+  // If no filters: GET request (defaults)
   try{
-    const r = await fetch("/api/propose", {
-      method:"POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(filters)
-    });
-    if(!r.ok) throw new Error("propose not ok");
+    let r;
+    if(filters){
+      r = await fetch("/api/propsals", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify(filters)
+      });
+    } else {
+      r = await fetch("/api/propsals", {method: "GET"});
+    }
+    
+    if(!r.ok) throw new Error("fetch failed");
     const data = await r.json();
-    const recipes = Array.isArray(data?.recipes) ? data.recipes : [];
-    if(recipes.length === 0) throw new Error("empty");
-    return {recipes, from:"backend"};
+    
+    if(filters){
+      // POST response expects {recipes: [...]}
+      const recipes = Array.isArray(data?.recipes) ? data.recipes : [];
+      if(recipes.length === 0) throw new Error("empty");
+      return recipes;
+    } else {
+      // GET response expects {main_dish: [...]}
+      const recipes = Array.isArray(data?.main_dish) ? data.main_dish : [];
+      if(recipes.length === 0) throw new Error("empty");
+      return recipes;
+    }
   }catch(e){
-    // mock: generate 10 for selected meal type
-    const type = filters.meal_type || "main";
-    return {recipes: "hi", from:"mock"};
+    console.warn("Backend fetch failed", e);
+    return [];
   }
 }
 
@@ -585,11 +569,6 @@ function renderSection(sectionKey){
       // refill to keep 3
       if(cfg.buffer.length > 0){
         cfg.shown.push(cfg.buffer.shift());
-      }else{
-        // if buffer empty, generate a few more mock items to keep the promise "always 3"
-        console.log("No Cards")
-        cfg.buffer.push(..."hi"); //This need to be feixed
-        cfg.shown.push(cfg.buffer.shift());
       }
       renderSection(sectionKey);
     }));
@@ -599,89 +578,32 @@ function renderSection(sectionKey){
   countEl.textContent = `${cfg.shown.length}/${LIMIT_DEFAULTS[sectionKey]} shown · buffer ${cfg.buffer.length}`;
 }
 
-function renderResults(){
-  const wrap = document.getElementById("resultCards");
-  wrap.innerHTML = "";
-  state.results.shown.forEach((r, idx)=>{
-    wrap.appendChild(cardEl(r, async ()=>{
-      await dismissSuggestion(r, {mode:"results", section:"results"});
-      state.results.shown.splice(idx, 1);
-      if(state.results.buffer.length > 0){
-        state.results.shown.push(state.results.buffer.shift());
-      }
-      renderResults();
-    }));
-  });
-  document.getElementById("resultsCount").textContent =
-    `${state.results.shown.length} shown · buffer ${state.results.buffer.length}`;
-}
 
-/** -------------------------
- *  Modes: defaults vs results
- *  ------------------------- */
-function setMode(mode){
-  // mode: "defaults" | "results"
-  const defaultsWrap = document.getElementById("defaultsWrap");
-  const resultsWrap  = document.getElementById("resultsWrap");
-  const modePill = document.getElementById("suggestionMode");
-  const backBtn = document.getElementById("backToDefaultsBtn");
-
-  if(mode === "defaults"){
-    defaultsWrap.style.display = "";
-    resultsWrap.style.display = "none";
-    modePill.textContent = "Mode: defaults";
-    backBtn.style.display = "none";
-  }else{
-    defaultsWrap.style.display = "none";
-    resultsWrap.style.display = "";
-    modePill.textContent = "Mode: selection";
-    backBtn.style.display = "";
-  }
-}
 
 /** -------------------------
  *  Defaults generation on load
  *  ------------------------- */
 function initDefaults(){
-  // always generate 3 main + 3 snack on load
+  // always generate 5 main on load
   const mainAll = "none";
-  state.defaults.main_dish.shown  = mainAll.slice(0, LIMIT_DEFAULTS.main);
-  state.defaults.main_dish.buffer = mainAll.slice(LIMIT_DEFAULTS.main);
-
-  const snackAll = "none";
-  state.defaults.snack.shown  = snackAll.slice(0, LIMIT_DEFAULTS.snack);
-  state.defaults.snack.buffer = snackAll.slice(LIMIT_DEFAULTS.snack);
+  state.defaults.main_dish.shown  = mainAll.slice(0, LIMIT_DEFAULTS.main_dish);
+  state.defaults.main_dish.buffer = mainAll.slice(LIMIT_DEFAULTS.main_dish);
 
   renderSection("main_dish");
-  renderSection("snack");
 }
-async function initDefaultsFromBackend(){
-  try{
-    const r = await fetch("/api/defaults", {method:"GET"});
-    if(!r.ok) throw new Error("defaults not ok");
-    const data = await r.json();
-
-    const main_dish = Array.isArray(data?.main_dish) ? data.main_dish : [];
-    const snack = Array.isArray(data?.snack) ? data.snack : [];
-    console.log(main_dish)
-    state.defaults.main_dish.shown  = main_dish.slice(0, LIMIT_DEFAULTS.main_dish);
-    state.defaults.main_dish.buffer = main_dish.slice(LIMIT_DEFAULTS.main_dish);
-
-    state.defaults.snack.shown  = snack.slice(0, LIMIT_DEFAULTS.snack);
-    state.defaults.snack.buffer = snack.slice(LIMIT_DEFAULTS.snack);
-
-    // Wenn Backend zwar läuft, aber keine Rezepte liefert -> fallback
-    if(state.defaults.main_dish.shown.length === 0 && state.defaults.snack.shown.length === 0){
-      throw new Error("empty defaults");
-    }
-
-  }catch(e){
-    console.warn("Backend defaults failed -> fallback to mock", e);
-    initDefaults(); // dein Mock-Fallback
+async function loadDefaultRecipes(){
+  // Load default recipes on page load
+  const recipes = await fetchRecipes();
+  
+  if(recipes.length === 0){
+    console.warn("No default recipes, using mock fallback");
+    initDefaults();
+  } else {
+    state.defaults.main_dish.shown = recipes.slice(0, LIMIT_DEFAULTS.main_dish);
+    state.defaults.main_dish.buffer = recipes.slice(LIMIT_DEFAULTS.main_dish);
   }
-
+  
   renderSection("main_dish");
-  renderSection("snack");
 }
 
 
@@ -700,14 +622,13 @@ async function onPropose(){
   };
 
   const showN = parseInt(document.getElementById("numShow").value, 10) || 5;
+  
+  const recipes = await fetchRecipes(filters);
+  
+  state.defaults.main_dish.shown = recipes.slice(0, showN);
+  state.defaults.main_dish.buffer = recipes.slice(showN);
 
-  const {recipes, from} = await requestPropose(filters);
-
-  state.results.shown = recipes.slice(0, showN);
-  state.results.buffer = recipes.slice(showN);
-
-  setMode("results");
-  renderResults();
+  renderSection("main_dish");
 
 
 
@@ -740,18 +661,20 @@ document.getElementById("excludeInput").addEventListener("keydown", (e)=>{
   if(e.key === "Enter"){ e.preventDefault(); document.getElementById("addExclude").click(); }
 });
 
-document.getElementById("proposeBtn").addEventListener("click", onPropose);
-document.getElementById("addRecipeBtn").addEventListener("click", onAddRecipe);
-document.getElementById("backToDefaultsBtn").addEventListener("click", ()=>{
-  setMode("defaults");
-
+document.getElementById("toggleFilter").addEventListener("click", () => {
+  const filterSec = document.getElementById("filterSection");
+  filterSec.classList.toggle("collapsed");
+  const btn = document.getElementById("toggleFilter");
+  btn.textContent = filterSec.classList.contains("collapsed") ? "Show Filters" : "Hide Filters";
 });
+
+document.getElementById("proposeBtn").addEventListener("click", onPropose);
+document.getElementById("generateBtn").addEventListener("click", onPropose);
 
 
 (async function boot(){
   await checkBackendOnline();
-  await initDefaultsFromBackend();
-  setMode("defaults");
+  await loadDefaultRecipes();
 })();
 </script>
 </body>

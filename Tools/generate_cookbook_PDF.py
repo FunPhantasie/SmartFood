@@ -50,6 +50,11 @@ SECTION_ORDER = ["Hauptgerichte", "Nebenspeisen", "Snacks", "Dip", "Süßspeisen
 
 
 def fmt_qty(q: Optional[float]) -> str:
+    """
+    Converts Float into String Rounded Format
+    :param q:
+    :return string:
+    """
     if q is None:
         return ""
     if abs(q - round(q)) < 1e-9:
@@ -58,6 +63,11 @@ def fmt_qty(q: Optional[float]) -> str:
 
 
 def bool_de(x: Optional[bool]) -> str:
+    """
+    Turned Bool in Deutsche Sprache
+    :param x:
+    :return Sprache:
+    """
     if x is None:
         return "-"
     return "Ja" if x else "Nein"

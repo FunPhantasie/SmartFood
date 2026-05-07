@@ -60,6 +60,9 @@ def save_yaml(path, data):
     with open(path, "w", encoding="utf-8") as f:
         yaml.safe_dump(data, f, sort_keys=False, allow_unicode=True)
 
+def update_yaml(path, key,val):
+    with open(path, "w", encoding="utf-8") as f:
+        yaml.safe_dump({ key: val if isinstance(val, list) else [] }, f, sort_keys=False, allow_unicode=True)
 
 def next_id(doc: dict, collection_key: str, id_key: str) -> int:
     """Return the next numeric id for a list inside a YAML document."""
