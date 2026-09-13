@@ -91,12 +91,15 @@ def compile_to_pdf(tex_content: str, out_pdf: Path) -> None:
     latexmk = shutil.which("latexmk")
     pdflatex = shutil.which("pdflatex")
 
-    if not latexmk and not pdflatex:
+    if not latexmk:
         raise RuntimeError(
             "Kein LaTeX-Compiler gefunden. Installiere TeX Live (inkl. latexmk) "
             "oder mindestens pdflatex."
         )
-
+    if not pdflatex:
+        raise RuntimeError(
+            "Kein LaTeX-Compiler gefunden. Installiere TeX Live (inkl. pdflatex)."
+        )
     out_pdf.parent.mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory(prefix="kochbuch_build_") as td:

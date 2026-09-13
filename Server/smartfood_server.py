@@ -1,11 +1,11 @@
-
+#Kommentar
 import os, json, yaml
 from pathlib import Path
 from flask import Flask, send_from_directory, request, jsonify
 from Tools import YamlEditor as yr
 from Tools.YamlEditor import Ingredient, Recipe, RecipeIngredientLink
 APP_DIR = Path(__file__).parent.resolve()
-DATA_DIR = APP_DIR / "data"
+DATA_DIR = APP_DIR / "server_data"
 DATA_DIR.mkdir(exist_ok=True)
 
 FILES = {
@@ -52,9 +52,11 @@ def recipe_proposer():
 @app.get("/recipe")
 def recipe_page():
     return send_from_directory(str(APP_DIR), "recipe.html")
+
 @app.get("/api/ping")
 def api_ping():
     return jsonify({"ok": True})
+
 @app.post("/api/dismiss")
 def ditch_prop():
     try:
