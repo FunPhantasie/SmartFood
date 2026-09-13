@@ -1,0 +1,26 @@
+recipes:
+- cook_minutes: 5
+  instructions: Die getrockneten Pilze in eine Schuessel geben und mit kochendem Wasser
+    uebergiessen. Mindestens 1 Stunde einweichen lassen. Glasnudeln ebenfalls in eine
+    Schuessel geben, mit heissem Wasser begiessen und 5 Min. einweichen. Das Fleisch
+    in eine Schuessel geben und 2 TL Salz, 1 TL Zucker, 1 EL Maisstaerke und 2 TL
+    Wasser zugeben. Gut verruehren und mindestens 20 Min. marinieren lassen. Das Fleisch
+    portionsweise anbraten und beiseite stellen. Die Pilze abschuetten, ausdruecken
+    und in schmale Streifen schneiden. Glasnudeln ebenfalls abschuetten, ausdruecken
+    und beiseite stellen. Nun Wasser in einem Topf erhitzen und die Bruehwuerfel hineingeben.
+    Bambussprossen, Reisessig, Tomatenmark, Zucker, Pilze, Ingwer, Schalotten, Chilioel
+    und Pfeffer zugeben. Gut umruehren. Das Fleisch, Glasnudeln, Austernsauce, Chilisauce,
+    Ketchup und Erbsen beimischen und alles kurz aufkochen lassen. Zwischenzeitlich
+    das Ei schlagen und 2 EL Maisstaerke mit 2 EL Wasser anruehren (am besten mit
+    dem Schneebesen, damit sich keine Kluempchen bilden). Beides getrennt bis zur
+    weiteren Verwertung beiseite stellen. Zum Schluss Reiswein und Sojasauce zugeben,
+    nochmals kraeftig abschmecken. Das geschlagene Ei langsam einfliessen lassen und
+    die angeruehrte Maisstaerke zugeben. Kurz aufkochen lassen und sofort servieren.
+    Ei Verschlagen. Frühlingzwiebel Geschnitten. Ingwer in Scheiben.
+  name: Pekingsuppe
+  prep_minutes: 5
+  recipe_id: 52
+  recipe_type: main_dish
+  sweet: false
+  variant_of: null
+  veg_type: meat
