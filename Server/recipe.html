@@ -19,22 +19,114 @@
       padding:16px;
       margin-bottom:16px;
     }
-    ul{ padding-left:20px }
+    .ing-layout{
+      display:flex;
+      gap:16px;
+      align-items:flex-start;
+    }
+    .img-placeholder{
+      flex:0 0 22%;
+      max-width:22%;
+      aspect-ratio: 1 / 1;
+      background:#151f33;
+      border:2px dashed #2a3a58;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#5c6f96;
+      font-size:12px;
+      text-align:center;
+      padding:6px;
+    }
+    .ing-grid{
+      flex:1 1 auto;
+      min-width:0;
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap:10px;
+      align-content:start;
+    }
+    @media (max-width: 480px){
+      .ing-layout{ flex-direction: column-reverse; }
+      .img-placeholder{ flex:0 0 auto; max-width:35%; align-self:flex-end; }
+    }
+    .ing-item{
+      background:#1a2436;
+      border-radius:8px;
+      padding:10px 12px;
+      font-size:14px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      margin-top:16px;
+    }
+    .actions{ flex-wrap:wrap; }
+    .btn{
+      border-radius:10px;
+      padding:10px 16px;
+      border:none;
+      background:#22d3ee;
+      color:#0f172a;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .btn:disabled{ opacity:.55; cursor:default; }
+    .btn.secondary{ background:#1a2436; color:#e9eefc; border:1px solid #2a3a58; }
+    .btn.muted{ background:#151f33; color:#a7b4d6; border:1px dashed #2a3a58; cursor:pointer; }
+    .btn.muted.active{ background:#22d3ee; color:#0f172a; border-style:solid; font-weight:700; }
+    .variant-picker{
+      display:none;
+      margin-bottom:16px;
+      align-items:center;
+      gap:8px;
+    }
+    .variant-picker label{ color:#a7b4d6; font-size:14px; }
+    .variant-picker select{
+      background:#121a2a;
+      color:#e9eefc;
+      border:1px solid #2a3a58;
+      border-radius:8px;
+      padding:6px 10px;
+    }
   </style>
 </head>
 <body>
+<script src="/static/nav.js"></script>
+
+<div class="actions" style="margin-bottom:16px;">
+  <button class="btn secondary" id="btnHome">🏠 Home</button>
+  <button class="btn" id="btnEdit">Rezept ändern</button>
+  <button class="btn secondary" id="btnCurrentPick">🛒 Als aktuelle Auswahl merken</button>
+</div>
 
 <h1 id="title">Rezept</h1>
 <div class="meta" id="meta"></div>
+<div style="margin-bottom:16px;"><span id="sf-user-slot" style="display:inline-flex; align-items:center; gap:6px;"></span></div>
 
-<div class="block">
-  <h3>Zutaten</h3>
-  <ul id="ingredients"></ul>
+<div class="variant-picker" id="variantPicker">
+  <label for="variantSelect">Varianten:</label>
+  <select id="variantSelect"></select>
 </div>
 
 <div class="block">
+  <h3>Zutaten</h3>
+  <div class="ing-layout">
+    <div class="ing-grid" id="ingredients"></div>
+    <div class="img-placeholder" id="imgPlaceholder">🖼️ Kein Bild</div>
+  </div>
   <h3>Zubereitung</h3>
   <p id="instructions"></p>
+</div>
+
+<div class="actions">
+  <button class="btn secondary" id="btnCooked">✓ Einmal gekocht</button>
+  <button class="btn" id="btnRate">⭐ Gekocht &amp; bewerten</button>
+  <button class="btn muted" id="btnUpcoming">Auf demnächst setzen</button>
 </div>
 
 <script>
@@ -50,7 +142,96 @@ async function loadRecipe(){
     return;
   }
 
-  const r = await fetch(`/api/recipe/${id}`);
+  document.getElementById("btnEdit").onclick = () => {
+    location.href = window.SmartFoodUser.decorate(`/create?id=${encodeURIComponent(id)}`);
+  };
+
+  document.getElementById("btnHome").onclick = () => {
+    location.href = window.SmartFoodUser.decorate("/");
+  };
+
+  // "Einmal gekocht": schneller Log-Eintrag - speichert nur user_id + Datum in history,
+  // ohne Bewertungsformular. Fuer die ausfuehrliche Bewertung siehe btnRate -> /rating.
+  // Beim allerersten Mal (dieser User hat das Rezept noch nie gekocht/bewertet) fehlen
+  // noch Referenzzeiten - dann fuehrt der Klick stattdessen direkt zur Bewertungsseite.
+  let hasCooked = false;
+  const btnCooked = document.getElementById("btnCooked");
+  btnCooked.onclick = async () => {
+    if(!hasCooked){
+      location.href = window.SmartFoodUser.decorate(`/rating?id=${encodeURIComponent(id)}`);
+      return;
+    }
+    const userId = window.SmartFoodUser.get();
+    btnCooked.disabled = true;
+    try {
+      const res = await fetch("/api/history/cooked", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipe_id: Number(id), user_id: userId || null }),
+      });
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      // Nach dem Loggen ist die "aktuelle Auswahl" erledigt - zurueck zur Startseite.
+      if(isCurrentPick()) localStorage.removeItem(CURRENT_PICK_KEY);
+      location.href = window.SmartFoodUser.decorate("/");
+    } catch (e) {
+      btnCooked.disabled = false;
+      alert("Konnte nicht gespeichert werden: " + e.message);
+    }
+  };
+
+  const btnRate = document.getElementById("btnRate");
+  btnRate.onclick = () => {
+    location.href = window.SmartFoodUser.decorate(`/rating?id=${encodeURIComponent(id)}`);
+  };
+
+  // "Aktuelle Auswahl": es gibt immer nur EIN gemerktes Rezept (wird ueberschrieben,
+  // keine Liste) - damit man beim Einkaufen direkt wieder hierher springen kann.
+  // Erneutes Klicken auf ein bereits gemerktes Rezept entfernt die Auswahl wieder.
+  const CURRENT_PICK_KEY = "smartfood_current_pick";
+  const btnCurrentPick = document.getElementById("btnCurrentPick");
+  function isCurrentPick(){
+    return localStorage.getItem(CURRENT_PICK_KEY) === String(id);
+  }
+  function refreshCurrentPickButton(){
+    btnCurrentPick.textContent = isCurrentPick() ? "✓ Aktuelle Auswahl (entfernen)" : "🛒 Als aktuelle Auswahl merken";
+  }
+  btnCurrentPick.onclick = () => {
+    if(isCurrentPick()){
+      localStorage.removeItem(CURRENT_PICK_KEY);
+    }else{
+      localStorage.setItem(CURRENT_PICK_KEY, String(id));
+    }
+    refreshCurrentPickButton();
+  };
+  refreshCurrentPickButton();
+
+  // "Auf demnaechst setzen": user-abhaengige Wunschliste, gespeichert als eigener
+  // history-Eintrag (type: "wishlist") - genauso user-abhaengig abfragbar wie history/gekocht.
+  const userId = window.SmartFoodUser.get();
+  const btnUpcoming = document.getElementById("btnUpcoming");
+  function refreshUpcomingButton(wishlisted){
+    btnUpcoming.classList.toggle("active", !!wishlisted);
+    btnUpcoming.textContent = wishlisted ? "✓ Auf der Wunschliste" : "Auf demnächst setzen";
+  }
+  btnUpcoming.onclick = async () => {
+    btnUpcoming.disabled = true;
+    try {
+      const res = await fetch("/api/wishlist/toggle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipe_id: Number(id), user_id: window.SmartFoodUser.get() || null }),
+      });
+      const result = await res.json();
+      if(!res.ok) throw new Error(result.error || ("HTTP " + res.status));
+      refreshUpcomingButton(result.wishlisted);
+    } catch (e) {
+      alert("Konnte nicht gespeichert werden: " + e.message);
+    } finally {
+      btnUpcoming.disabled = false;
+    }
+  };
+
+  const r = await fetch(`/api/recipe/${id}?user=${encodeURIComponent(userId || "")}`);
   if(!r.ok){
     document.body.innerHTML = "❌ Rezept nicht gefunden";
     return;
@@ -59,24 +240,49 @@ async function loadRecipe(){
   const data = await r.json();
   const recipe = data.recipe;
   const ingredients = data.ingredients || [];
+  refreshUpcomingButton(data.wishlisted);
+
+  hasCooked = !!data.has_cooked;
+  if(!hasCooked){
+    btnCooked.title = "Erstes Mal - führt zur Bewertung, damit Zeiten erfasst werden";
+  }
 
   document.getElementById("title").textContent = recipe.name;
   document.getElementById("meta").textContent =
-    `${recipe.veg_type} · ${recipe.duration_minutes} min`;
+    `${recipe.veg_type} · Vorbereitung: ${recipe.prep_minutes ?? 0} min · Kochzeit: ${recipe.cook_minutes ?? 0} min`;
+
+  // Varianten-Liste: nur anzeigen, wenn es welche gibt. Auswahl navigiert auf
+  // /recipe?id=<id> -> neuer Seitenaufruf -> neuer fetch("/api/recipe/<id>") oben.
+  const variants = data.variants || [];
+  const picker = document.getElementById("variantPicker");
+  const variantSelect = document.getElementById("variantSelect");
+  if(variants.length > 0){
+    picker.style.display = "flex";
+    variantSelect.innerHTML =
+      `<option value="">${recipe.name} (aktuell)</option>` +
+      variants.map(v => `<option value="${v.recipe_id}">${v.name}</option>`).join("");
+    variantSelect.value = "";
+    variantSelect.onchange = () => {
+      if(variantSelect.value){
+        location.href = window.SmartFoodUser.decorate(`/recipe?id=${encodeURIComponent(variantSelect.value)}`);
+      }
+    };
+  }
 
   document.getElementById("instructions").textContent =
     recipe.instructions || "—";
 
-  const ul = document.getElementById("ingredients");
-  ul.innerHTML = "";
+  const grid = document.getElementById("ingredients");
+  grid.innerHTML = "";
 
   if(ingredients.length === 0){
-    ul.innerHTML = "<li>Keine Zutaten hinterlegt</li>";
+    grid.innerHTML = "<div>Keine Zutaten hinterlegt</div>";
   }else{
     ingredients.forEach(i => {
-      const li = document.createElement("li");
-      li.textContent = `Menge: ${i.quantity} ${i.unit}   Name: ${i.name} , Art: ${i.veg_type},     ID: ${i.ingredient_id}`;
-      ul.appendChild(li);
+      const div = document.createElement("div");
+      div.className = "ing-item";
+      div.textContent = `${i.quantity ?? ""} ${i.unit ?? ""} ${i.name ?? ""}`.replace(/\s+/g, " ").trim();
+      grid.appendChild(div);
     });
   }
 }

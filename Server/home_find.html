@@ -252,14 +252,17 @@
   </style>
 </head>
 <body>
+  <script src="/static/nav.js"></script>
   <header>
     <div class="row">
       <div class="brand">
         <div style="width:28px;height:28px;border-radius:10px;background:rgba(122,162,255,.25);border:1px solid rgba(122,162,255,.35);display:grid;place-items:center;font-weight:900;">SF</div>
         <div>SmartFood</div>
+        <span id="sf-user-slot" style="display:flex; align-items:center; gap:6px; margin-left:6px;"></span>
         <div class="button-row">
-        <button class="btn" onclick="location.href='/create'">Create Recipe</button>
-        <button class="btn good" id="btnAddRecipe">Add recipe</button>
+        <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/create')">Create Recipe</button>
+        <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/ingredients')">Ingredients</button>
+        <button class="btn good" id="btnAddRecipe" style="display:none;" onclick="location.href=window.SmartFoodUser.decorate(`/recipe?id=${localStorage.getItem('smartfood_current_pick')}`)">🛒 Aktuelle Auswahl laden</button>
         </div>
       </div>
       <span class="pill" id="backendState">Backend: unknown</span>
@@ -527,11 +530,7 @@ function addChip(kind, value){
  *  ------------------------- */
 
 function edit(recipe){
-  location.href = `/recipe?id=${encodeURIComponent(recipe.id)}`;
-}
-function gotoRecipe(recipe) {
-  // Variante A: relativ (empfohlen, wenn über Server)
-  location.href = `/create?${recipe.id}`
+  location.href = window.SmartFoodUser.decorate(`/recipe?id=${encodeURIComponent(recipe.id)}`);
 }
 function cardEl(recipe, onClose){
   const div = document.createElement("div");
@@ -546,7 +545,7 @@ function cardEl(recipe, onClose){
     </div>
   `;
   // Klick auf die Karte -> Detailseite
-  div.addEventListener("click", () => gotoRecipe(recipe));
+  div.addEventListener("click", () => edit(recipe));
 
   // Klick auf X -> nur dismiss, nicht navigieren
   div.querySelector(".closebtn").addEventListener("click", (e) => {
@@ -671,6 +670,11 @@ document.getElementById("toggleFilter").addEventListener("click", () => {
 document.getElementById("proposeBtn").addEventListener("click", onPropose);
 document.getElementById("generateBtn").addEventListener("click", onPropose);
 
+
+// "Aktuelle Auswahl" (von recipe.html gesetzt) nur anzeigen, wenn es eine gibt.
+if (localStorage.getItem('smartfood_current_pick')) {
+  document.getElementById('btnAddRecipe').style.display = '';
+}
 
 (async function boot(){
   await checkBackendOnline();

@@ -168,13 +168,14 @@
   </style>
 </head>
 <body>
+  <script src="/static/nav.js"></script>
   <header>
-    <h1>SmartFood — Recipe & Ingredient Manager <span class="badge">(auto-save to YAML)</span></h1>
+    <h1>SmartFood — Recipe & Ingredient Manager <span class="badge">(auto-save to YAML)</span> <span id="sf-user-slot" style="display:inline-flex; align-items:center; gap:6px; vertical-align:middle;"></span></h1>
     <div class="toolbar">
-      <span class="status" id="saveStatus">Loading…</span>
-      <button onclick="location.href='/'" style="border-radius:10px;padding:8px 14px;border:none;background:#22d3ee;color:#0f172a;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.2);">
-        🍳 Go to Recipe Proposer
+      <button onclick="location.href=window.SmartFoodUser.decorate('/')" style="border-radius:10px;padding:8px 14px;border:none;background:#22d3ee;color:#0f172a;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.2);">
+        🏠 Home
       </button>
+      <span class="status" id="saveStatus">Loading…</span>
       <button id="resetAll" class="btn danger">Reset (clear in-memory only)</button>
     </div>
   </header>
@@ -274,6 +275,25 @@
           </div>
         </div>
 
+        <div class="row" style="margin-top:8px;">
+          <div class="col">
+            <label>Variante von (Hauptrezept)</label>
+            <select id="rec_variant_of">
+              <option value="">— dies ist ein Hauptrezept —</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Season</label>
+            <select id="rec_season">
+              <option value="always">Immer</option>
+              <option value="spring">Frühling</option>
+              <option value="summer">Sommer</option>
+              <option value="autumn">Herbst</option>
+              <option value="winter">Winter</option>
+            </select>
+          </div>
+        </div>
+
         <div class="row">
           <div class="col">
             <label>Instructions</label>
@@ -337,7 +357,7 @@
         <div style="max-height: 360px; overflow:auto;">
           <table id="recipesTable">
             <thead><tr>
-              <th>ID</th><th>Name</th><th>Veg</th><th>Zubereitung</th><th>Kochzeit</th><th>Sweet</th>
+              <th>ID</th><th>Name</th><th>Veg</th><th>Zubereitung</th><th>Kochzeit</th><th>Sweet</th><th>Season</th><th>Variante von</th>
             </tr></thead>
             <tbody></tbody>
           </table>
@@ -354,6 +374,7 @@
   let recipes = [];           // [{recipe_id, veg_type, prep_minutes, cook_minutes, name, sweet, instructions, recipe_type, ...}]
   let recipeIngredients = []; // [{ingredient_id, recipe_id, quantity, unit}]
   let history = [];
+  let users = []; // nur durchgereicht (kein UI hier), damit save_all() users.yaml nicht leert
 
   let selectedIngredientId = null;
   let currentRecipeItems = []; // [{ingredient_id, quantity, unit}]
@@ -542,10 +563,13 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     $('#rec_sweet').checked = false;
     $('#rec_instructions').value = '';
     $('#rec_type').value = 'main_dish';
+    $('#rec_season').value = 'always';
 
     currentRecipeItems = [];
     renderRecipeIngredientList();
     setEditingRecipe(null);
+    renderVariantOfOptions();
+    $('#rec_variant_of').value = '';
     autoResizeTextarea($('#rec_instructions'));
 
     // ensure ingredient suggestions do NOT open after clearing
@@ -746,23 +770,43 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     }
   }
 
+  // Fixed unit choices instead of a free-text field (covers what's already used in the data)
+  const UNIT_OPTIONS = ['g', 'kg', 'ml', 'l', 'EL', 'TL', 'Stück', 'Prise', 'Bund', 'Scheibe', 'Packung', 'Dose', 'Becher', 'Zehe'];
+
+  function unitOptionHtml(current) {
+    const cur = (current ?? '').toString();
+    const opts = UNIT_OPTIONS.includes(cur) || cur === '' ? UNIT_OPTIONS : [cur, ...UNIT_OPTIONS];
+    return `<option value=""></option>` + opts.map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('');
+  }
+
   function renderRecipeIngredientList() {
     const tbody = $('#rec_ing_table tbody');
     tbody.innerHTML = '';
 
-    // Build option HTML once (native select supports type-to-search)
     const sortedIngs = [...ingredients].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-    const optionHtml = sortedIngs.map(i => `<option value="${Number(i.ingredient_id)}">${escapeHtml(i.name)}</option>`).join('');
 
     currentRecipeItems.forEach((it, idx) => {
       const ing = ingredients.find(i => Number(i.ingredient_id) === Number(it.ingredient_id));
       const veg = ing ? (ing.veg_type || 'vegan') : 'vegan';
 
+      // Zutaten, die bereits in einer ANDEREN Zeile dieses Rezepts stehen, hier nicht
+      // nochmal anbieten (verhindert, dieselbe Zutat zweimal auszuwaehlen). Die eigene
+      // aktuell zugewiesene Zutat dieser Zeile bleibt natuerlich in ihrer eigenen Auswahl.
+      const usedByOtherRows = new Set(
+        currentRecipeItems
+          .filter((_, j) => j !== idx)
+          .map(other => Number(other.ingredient_id))
+      );
+      const rowOptionHtml = sortedIngs
+        .filter(i => !usedByOtherRows.has(Number(i.ingredient_id)))
+        .map(i => `<option value="${Number(i.ingredient_id)}">${escapeHtml(i.name)}</option>`)
+        .join('');
+
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>
           <select class="ing-select" data-idx="${idx}">
-            ${optionHtml}
+            ${rowOptionHtml}
           </select>
         </td>
         <td><span class="pill ${veg}">${veg}</span></td>
@@ -770,7 +814,9 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
           <input class="qty-input" data-idx="${idx}" type="number" step="any" min="0" value="${Number(it.quantity) || 0}" />
         </td>
         <td>
-          <input class="unit-input" data-idx="${idx}" type="text" value="${escapeHtml((it.unit ?? '').toString())}" />
+          <select class="unit-input" data-idx="${idx}">
+            ${unitOptionHtml(it.unit)}
+          </select>
         </td>
         <td><button class="btn danger" data-rm="${idx}" type="button">Remove</button></td>
       `;
@@ -778,6 +824,9 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
       // set selected ingredient id
       const sel = tr.querySelector('select.ing-select');
       if (sel) sel.value = String(Number(it.ingredient_id));
+
+      const unitSel = tr.querySelector('select.unit-input');
+      if (unitSel) unitSel.value = (it.unit ?? '').toString();
 
       tbody.appendChild(tr);
     });
@@ -813,15 +862,15 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     });
 
     // edit unit inline (merge duplicates when unit changes)
-    tbody.querySelectorAll('input.unit-input').forEach(inp => {
-      const handler = () => {
-        const idx = Number(inp.dataset.idx);
-        currentRecipeItems[idx].unit = (inp.value ?? '').toString();
+    tbody.querySelectorAll('select.unit-input').forEach(sel => {
+      sel.addEventListener('change', () => {
+        const idx = Number(sel.dataset.idx);
+        currentRecipeItems[idx].unit = (sel.value ?? '').toString();
+        const before = currentRecipeItems.length;
         dedupeRecipeItems();
-        renderRecipeIngredientList();
-      };
-      inp.addEventListener('change', handler);
-      inp.addEventListener('blur', handler);
+        // Only rebuild the (expensive, many-option) table when a merge actually happened
+        if (currentRecipeItems.length !== before) renderRecipeIngredientList();
+      });
     });
 
     // remove row
@@ -878,6 +927,10 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     tbody.innerHTML = '';
 
     for (const r of recipes) {
+      const mainRecipe = r.variant_of != null
+        ? recipes.find(x => Number(x.recipe_id) === Number(r.variant_of))
+        : null;
+
       const tr = document.createElement('tr');
       tr.style.cursor = 'pointer';
       tr.innerHTML = `
@@ -887,11 +940,33 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
         <td>${r.prep_minutes ?? ''}</td>
         <td>${r.cook_minutes ?? ''}</td>
         <td>${r.sweet ? '✓' : ''}</td>
+        <td>${escapeHtml(r.season || 'always')}</td>
+        <td>${mainRecipe ? escapeHtml(mainRecipe.name) : '—'}</td>
       `;
 
       tr.addEventListener('click', () => loadRecipeIntoForm(Number(r.recipe_id)));
       tbody.appendChild(tr);
     }
+
+    renderVariantOfOptions();
+  }
+
+  // Only recipes that are themselves a "Hauptrezept" (variant_of == null) can be
+  // picked as the main dish, and a recipe can never be a variant of itself.
+  // This keeps the hierarchy flat: exactly one main, everyone else points directly to it.
+  function renderVariantOfOptions() {
+    const sel = $('#rec_variant_of');
+    if (!sel) return;
+    const currentValue = sel.value;
+
+    const mains = recipes.filter(r =>
+      r.variant_of == null && Number(r.recipe_id) !== Number(editingRecipeId)
+    );
+
+    sel.innerHTML = '<option value="">— dies ist ein Hauptrezept —</option>' +
+      mains.map(r => `<option value="${Number(r.recipe_id)}">${escapeHtml(r.name)}</option>`).join('');
+
+    sel.value = mains.some(r => String(Number(r.recipe_id)) === currentValue) ? currentValue : '';
   }
 
   function loadRecipeIntoForm(recipeId) {
@@ -904,6 +979,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     $('#rec_sweet').checked = !!r.sweet;
     $('#rec_instructions').value = normalizeInstructions(r.instructions ?? '');
     $('#rec_type').value = r.recipe_type || 'main_dish';
+    $('#rec_season').value = r.season || 'always';
 
     currentRecipeItems = recipeIngredients
       .filter(ri => Number(ri.recipe_id) === Number(recipeId))
@@ -914,6 +990,8 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
       }));
 
     setEditingRecipe(Number(recipeId));
+    renderVariantOfOptions();
+    $('#rec_variant_of').value = r.variant_of != null ? String(Number(r.variant_of)) : '';
 
     // do not auto-open ingredient suggestions when loading a recipe
     comboOpen = false;
@@ -960,6 +1038,9 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     const sweet = $('#rec_sweet').checked;
     const instructions = normalizeInstructions($('#rec_instructions').value);
     const recipe_type = $('#rec_type').value;
+    const variantOfRaw = $('#rec_variant_of').value;
+    const variant_of = variantOfRaw === '' ? null : Number(variantOfRaw);
+    const season = $('#rec_season').value;
 
     if (!name) { alert('Recipe name required'); return; }
     if (!Number.isFinite(prep) || prep < 0) { alert('Zubereitungszeit muss ≥ 0 sein'); return; }
@@ -970,6 +1051,16 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     const isUpdate = editingRecipeId !== null;
     const recipe_id = isUpdate ? Number(editingRecipeId) : nextId(recipes, 'recipe_id');
 
+    // Keep the hierarchy flat: exactly one main per family, everyone else points
+    // directly to it. A recipe that already has variants can't become a variant itself.
+    if (variant_of != null) {
+      const hasOwnVariants = recipes.some(r => Number(r.variant_of) === recipe_id);
+      if (hasOwnVariants) {
+        alert('Dieses Rezept hat bereits eigene Varianten, die auf es verweisen. Ein Rezept kann nicht gleichzeitig Hauptrezept und Variante sein. Bitte zuerst die Varianten neu zuordnen.');
+        return;
+      }
+    }
+
     const recObj = {
       recipe_id,
       name,
@@ -979,7 +1070,8 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
       cook_minutes: cook,
       sweet,
       instructions,
-      variant_of: null
+      variant_of,
+      season
     };
 
     // Console JSON output (Recipe + Ingredients)
@@ -1029,7 +1121,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
 
   async function saveAll() {
     try {
-      const payload = { ingredients, recipes, recipe_ingredients: recipeIngredients, history };
+      const payload = { ingredients, recipes, recipe_ingredients: recipeIngredients, history, users };
       const res = await fetch('/api/all', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1082,6 +1174,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
       }));
 
       history = Array.isArray(data.history) ? data.history : [];
+      users = Array.isArray(data.users) ? data.users : [];
 
       renderIngredients();
       renderRecipes();
@@ -1107,29 +1200,44 @@ function renderCombo(filter = '') {
   comboList.innerHTML = '';
   const f = (filter || '').toLowerCase();
 
+  // Zutaten, die im aktuellen Rezept schon drin sind, nicht nochmal zur Auswahl anbieten
+  // (verhindert z.B. Zwiebeln dreimal in der Liste). Bleiben in der Zutaten-Datenbank
+  // natuerlich weiterhin vollstaendig erhalten - nur hier ausgeblendet.
+  const usedIds = new Set(currentRecipeItems.map(it => Number(it.ingredient_id)));
+
   const list = ingredients
+    .filter(i => !usedIds.has(Number(i.ingredient_id)))
     .filter(i => (i.name || '').toLowerCase().includes(f))
-    .slice(0, 200);
+    .slice(0, 50);
 
   for (const i of list) {
     const div = document.createElement('div');
     div.className = 'combo-item';
     div.textContent = i.name;
-    div.addEventListener('click', () => {
-      comboInput.value = i.name;
-      comboInput.dataset.id = i.ingredient_id;
-
-      autoSizeInputToContent(comboInput);
-
-      comboOpen = false;
-      comboList.style.display = 'none';
-    });
+    div.dataset.id = i.ingredient_id;
     comboList.appendChild(div);
   }
 
   // Only show suggestions when user is interacting with the field
   comboList.style.display = (comboOpen && list.length) ? 'block' : 'none';
 }
+
+// Single delegated click handler instead of one listener per rendered item
+comboList?.addEventListener('click', (e) => {
+  const item = e.target.closest('.combo-item');
+  if (!item) return;
+  const id = Number(item.dataset.id);
+  const ing = ingredients.find(x => Number(x.ingredient_id) === id);
+  if (!ing) return;
+
+  comboInput.value = ing.name;
+  comboInput.dataset.id = ing.ingredient_id;
+
+  autoSizeInputToContent(comboInput);
+
+  comboOpen = false;
+  comboList.style.display = 'none';
+});
 
 // Keep the selector input nicely sized
 autoSizeInputToContent(comboInput);
@@ -1140,10 +1248,13 @@ comboInput?.addEventListener('focus', () => {
   renderCombo(comboInput.value);
 });
 
+let comboDebounceTimer = null;
 comboInput?.addEventListener('input', (e) => {
   comboOpen = true;
   autoSizeInputToContent(comboInput);
-  renderCombo(e.target.value);
+  const value = e.target.value;
+  clearTimeout(comboDebounceTimer);
+  comboDebounceTimer = setTimeout(() => renderCombo(value), 80);
 });
 
 comboInput?.addEventListener('blur', () => {
