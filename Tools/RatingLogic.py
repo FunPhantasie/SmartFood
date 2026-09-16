@@ -121,9 +121,11 @@ def has_cooked(data: dict, recipe_id: int, user_id) -> bool:
 def log_cooked(data: dict, recipe_id: int, user_id) -> dict:
     """'Einmal gekocht'-Button: User + Datum in history vermerken, keine Bewertung. Traegt
     trotzdem einen Zeit-Eintrag ins rollierende cook_log des Rezepts ein (mit dem bisherigen
-    Mittelwert als Platzhalter), siehe record_cook_time."""
+    Mittelwert als Platzhalter), siehe record_cook_time. Ein Rezept, das gerade gekocht wurde,
+    muss nicht mehr auf der Wunschliste stehen - wird also automatisch entfernt."""
     recipe = _find_recipe(data, recipe_id)  # 404 schon hier, bevor irgendwas geschrieben wird
     record_cook_time(recipe, None, None)
+    remove_wishlist(data, recipe_id, user_id)
 
     history = data.setdefault("history", [])
     entry = _new_history_entry(history, recipe_id, user_id, "cooked")
@@ -199,6 +201,8 @@ def rate_recipe(
     - taste_rating/repeat_rating/effort_rating (je 1-5) ergeben den history-Score, siehe
       compute_score. effort_rating ist eine subjektive Aufwands-Einschaetzung des Users
       (z.B. Anzahl Toepfe/Handgriffe) und unabhaengig von actual_prep/actual_cook.
+    - Das Original-Rezept wird fuer diesen User von der Wunschliste entfernt (es wurde ja
+      gerade gekocht).
 
     Rueckgabe: {"history_entry", "recipe", "new_variant"} - new_variant ist None, wenn
     keine neue Variante angelegt wurde.
@@ -229,6 +233,7 @@ def rate_recipe(
         _replace_recipe_ingredients(data, recipe_id, ingredient_overrides)
 
     record_cook_time(target_recipe, actual_prep, actual_cook)
+    remove_wishlist(data, recipe_id, user_id)
 
     history = data.setdefault("history", [])
     entry = _new_history_entry(
