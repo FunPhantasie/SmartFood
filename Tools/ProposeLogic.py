@@ -26,6 +26,7 @@ def build_propose_dataset(data: dict) -> dict:
     for h in history:
         history_by_recipe[h.get("recipe_id")].append(h)
 
+    
     ingredients_by_recipe: dict = defaultdict(list)
     for ri in recipe_ingredients:
         ingredients_by_recipe[ri.get("recipe_id")].append(ri)
