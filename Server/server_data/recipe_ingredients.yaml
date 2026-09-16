@@ -31,7 +31,6 @@ recipe_ingredients:
   ingredient_id: 164
   quantity: 1
   unit: ''
-  note: In Ringe Geschnitten
 - recipe_id: 52
   ingredient_id: 242
   quantity: 1
