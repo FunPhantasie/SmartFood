@@ -50,6 +50,11 @@
       cursor:pointer;
     }
     .star-btn.active{ background:#22d3ee; color:#0f172a; border-color:#22d3ee; font-weight:700; }
+    .star-btn.half{
+      /* --fill wird per JS auf den echten Nachkomma-Anteil (in %) gesetzt, kein festes 50/50 */
+      background:linear-gradient(90deg, #22d3ee var(--fill, 50%), #0b1220 var(--fill, 50%));
+      color:#e9eefc; border-color:#22d3ee; font-weight:700;
+    }
     .variant-choice{ display:flex; flex-direction:column; gap:8px; }
     .variant-choice label{ color:#e9eefc; font-size:14px; display:flex; align-items:center; gap:8px; }
     .variant-choice .hint{ color:#a7b4d6; font-size:12px; margin:0 0 6px; }
@@ -148,10 +153,19 @@ function getRecipeId(){
   return p.get("id");
 }
 
-function buildStars(container, initial){
+function buildStars(container){
   container.innerHTML = "";
-  let value = initial || 0;
+  let value = 0;
   const buttons = [];
+
+  function applyActive(v){
+    buttons.forEach((b, idx) => {
+      b.classList.toggle("active", idx < v);
+      b.classList.remove("half");
+      b.style.removeProperty("--fill");
+    });
+  }
+
   for(let i = 1; i <= 5; i++){
     const btn = document.createElement("button");
     btn.type = "button";
@@ -159,12 +173,29 @@ function buildStars(container, initial){
     btn.textContent = String(i);
     btn.onclick = () => {
       value = i;
-      buttons.forEach((b, idx) => b.classList.toggle("active", idx < value));
+      applyActive(value); // Klick ueberschreibt den vorbefuellten Default - kein Halb-Stern mehr
     };
     buttons.push(btn);
     container.appendChild(btn);
   }
-  return { get: () => value };
+
+  return {
+    get: () => value,
+    // Vorbefuellung mit dem (aufgerundeten) Durchschnitt aus default_ratings. avg ist der
+    // ungerundete Mittelwert (z.B. 4.2) - liegt er echt zwischen zwei Sternen, wird der
+    // oberste aktive Stern anteilig gefuellt dargestellt (20% bei 4.2, nicht pauschal halb) -
+    // rein visuell, gesendet wird immer die ganze Zahl v.
+    set: (v, avg) => {
+      value = v;
+      applyActive(v);
+      if (v >= 1 && typeof avg === "number" && Math.ceil(avg) === v && avg % 1 !== 0){
+        const fillPct = (avg % 1) * 100;
+        const btn = buttons[v - 1];
+        btn.classList.add("half");
+        btn.style.setProperty("--fill", `${fillPct}%`);
+      }
+    },
+  };
 }
 
 let originalIngredients = [];
@@ -181,9 +212,9 @@ async function loadRating(){
     location.href = window.SmartFoodUser.decorate(`/recipe?id=${encodeURIComponent(id)}`);
   };
 
-  tasteRating = buildStars(document.getElementById("tasteStars"), 0);
-  repeatRating = buildStars(document.getElementById("repeatStars"), 0);
-  effortRating = buildStars(document.getElementById("effortStars"), 0);
+  tasteRating = buildStars(document.getElementById("tasteStars"));
+  repeatRating = buildStars(document.getElementById("repeatStars"));
+  effortRating = buildStars(document.getElementById("effortStars"));
 
   document.querySelectorAll('input[name="variantMode"]').forEach(radio => {
     radio.addEventListener("change", () => {
@@ -203,9 +234,17 @@ async function loadRating(){
 
   document.getElementById("meta").textContent = `${recipe.name} · ${recipe.veg_type}`;
 
+  const defaults = data.default_ratings || {};
+  tasteRating.set(defaults.taste_rating ?? 3, defaults.taste_rating_avg);
+  repeatRating.set(defaults.repeat_rating ?? 3, defaults.repeat_rating_avg);
+  effortRating.set(defaults.effort_rating ?? 3, defaults.effort_rating_avg);
+
+  // recipe.prep_minutes/cook_minutes sind bereits der (auf 10 gerundete) Durchschnitt ueber
+  // alle Zeiten-Eintraege (siehe RatingLogic.update_recipe_times) - last_actual_times (der
+  // letzte Einzelwert) ist nur noch Fallback, falls das Rezept ausnahmsweise keine Zeiten haette.
   const last = data.last_actual_times || {};
-  document.getElementById("actualPrep").value = last.prep_minutes ?? recipe.prep_minutes ?? 0;
-  document.getElementById("actualCook").value = last.cook_minutes ?? recipe.cook_minutes ?? 0;
+  document.getElementById("actualPrep").value = recipe.prep_minutes ?? last.prep_minutes ?? 0;
+  document.getElementById("actualCook").value = recipe.cook_minutes ?? last.cook_minutes ?? 0;
 
   const body = document.getElementById("ingBody");
   body.innerHTML = "";
@@ -252,9 +291,9 @@ async function submitRating(id, recipe){
     user_id: userId || null,
     actual_prep: Number.isFinite(actualPrep) ? actualPrep : null,
     actual_cook: Number.isFinite(actualCook) ? actualCook : null,
-    taste_rating: tasteRating.get() || null,
-    repeat_rating: repeatRating.get() || null,
-    effort_rating: effortRating.get() || null,
+    taste_rating: tasteRating.get(),
+    repeat_rating: repeatRating.get(),
+    effort_rating: effortRating.get(),
     ingredient_overrides: ingredientOverrides,
     save_as_variant: saveAsVariant,
     variant_name: saveAsVariant ? variantName : null,

@@ -1,5 +1,48 @@
 from __future__ import annotations
+from collections import defaultdict
 from typing import Optional
+
+from Tools import RatingLogic as rl
+
+
+def build_propose_dataset(data: dict) -> dict:
+    """Grunddaten fuer die naechste Propose-Mechanik: pro Rezept-ID (= 'die Keys') das
+    Rezept selbst, seine komplette history und die verknuepften Zutaten (recipe_ingredients).
+    Rezepte ganz ohne history bekommen hier einen niedrigen Seed-Eintrag (repeat_rating=1,
+    siehe RatingLogic.ensure_uncooked_seed), damit sie in einer history-basierten Auswertung
+    nicht wie neutral-bewaehrte Rezepte (DEFAULT_SCORE) behandelt werden - dieser Aufruf
+    schreibt also in data['history'], nicht nur lesend.
+
+    Baut noch KEINE Gewichtung/Auswahl - das ist der naechste Schritt fuer die eigentliche
+    Vorschlags-Logik, die on top von diesem Dataset gebaut wird.
+
+    Rueckgabe: {recipe_id: {"recipe": {...}, "history": [...], "ingredients": [...]}}
+    """
+    recipes = data.get("recipes", [])
+    history = data.get("history", [])
+    recipe_ingredients = data.get("recipe_ingredients", [])
+
+    history_by_recipe: dict = defaultdict(list)
+    for h in history:
+        history_by_recipe[h.get("recipe_id")].append(h)
+
+    ingredients_by_recipe: dict = defaultdict(list)
+    for ri in recipe_ingredients:
+        ingredients_by_recipe[ri.get("recipe_id")].append(ri)
+
+    dataset = {}
+    for r in recipes:
+        rid = r.get("recipe_id")
+        if not history_by_recipe.get(rid):
+            seed = rl.ensure_uncooked_seed(data, rid)
+            if seed is not None:
+                history_by_recipe[rid].append(seed)
+        dataset[rid] = {
+            "recipe": r,
+            "history": history_by_recipe.get(rid, []),
+            "ingredients": ingredients_by_recipe.get(rid, []),
+        }
+    return dataset
 
 
 def recipe_to_frontend(r: dict) -> dict:

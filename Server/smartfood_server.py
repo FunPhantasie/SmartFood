@@ -15,6 +15,7 @@ FILES = {
     "recipes": DATA_DIR / "recipes.yaml",
     "recipe_ingredients": DATA_DIR / "recipe_ingredients.yaml",
     "history": DATA_DIR / "history.yaml",
+    "wishlist": DATA_DIR / "wishlist.yaml",
     "users": DATA_DIR / "users.yaml",
 }
 CACHE = {}
@@ -81,12 +82,21 @@ def api_get_users():
 
 @app.post("/api/dismiss")
 def ditch_prop():
-    #Set Lust Score Lower
+    """'Nicht interessiert'-Button beim Vorschlag: senkt den Wiederholungswunsch (repeat_rating=1)
+    fuer dieses Rezept per neuem history-Eintrag (siehe RatingLogic.log_dismissed)."""
     try:
         payload = request.get_json(force=True) or {}
-        print(payload)
-        print("Dissmis Recipe ID:", payload["recipe_id"])
-        return jsonify({"ok": True})
+        recipe_id = payload.get("recipe_id")
+        if recipe_id is None:
+            return jsonify({"error": "recipe_id required"}), 400
+
+        data = load_all()
+        entry = rl.log_dismissed(data, int(recipe_id))
+        save_all(data)
+
+        return jsonify({"ok": True, "history_entry": entry})
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500 # 500Intern Error
 
@@ -115,7 +125,7 @@ def get_default_recipes():
         filtered = pl.filter_recipes(data.get("recipes", []), meal_type="main_dish", diet="any")
 
         mapped = [pl.recipe_to_frontend(r) for r in filtered]
-        scores = rl.recipe_scores(data, user_id=request.args.get("user"))
+        scores = rl.recipe_scores(data)
         mapped = rl.weighted_shuffle(mapped, scores, id_key="id")
 
         return jsonify({
@@ -140,7 +150,7 @@ def propose_meal():
         )
 
         mapped = [pl.recipe_to_frontend(r) for r in filtered]
-        scores = rl.recipe_scores(data, user_id=payload.get("user_id"))
+        scores = rl.recipe_scores(data)
         mapped = rl.weighted_shuffle(mapped, scores, id_key="id")
 
         return jsonify({
@@ -252,7 +262,7 @@ def api_get_recipe1(recipe_id):
         "ingredients": resolved_ingredients,
         "variants": variants,
         "wishlisted": rl.is_wishlisted(data, recipe_id, request.args.get("user")),
-        "has_cooked": rl.has_cooked(data, recipe_id, request.args.get("user")),
+        "has_cooked": rl.has_cooked(data, recipe_id),
     })
 
 
@@ -331,6 +341,7 @@ def api_rating_get(recipe_id):
             "recipe": recipe,
             "ingredients": resolved_ingredients,
             "last_actual_times": rl.last_actual_times(data, recipe_id),
+            "default_ratings": rl.default_ratings(data, recipe_id),
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
