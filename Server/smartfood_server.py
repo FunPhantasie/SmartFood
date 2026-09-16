@@ -81,6 +81,7 @@ def api_get_users():
 
 @app.post("/api/dismiss")
 def ditch_prop():
+    #Set Lust Score Lower
     try:
         payload = request.get_json(force=True) or {}
         print(payload)
