@@ -190,7 +190,10 @@ async function loadRecipe(){
   const CURRENT_PICK_KEY = "smartfood_current_pick";
   const btnCurrentPick = document.getElementById("btnCurrentPick");
   function isCurrentPick(){
-    return localStorage.getItem(CURRENT_PICK_KEY) === String(id);
+    const raw = localStorage.getItem(CURRENT_PICK_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    return data.id === String(id);
   }
   function refreshCurrentPickButton(){
     btnCurrentPick.textContent = isCurrentPick() ? "✓ Aktuelle Auswahl (entfernen)" : "🛒 Als aktuelle Auswahl merken";
@@ -199,7 +202,11 @@ async function loadRecipe(){
     if(isCurrentPick()){
       localStorage.removeItem(CURRENT_PICK_KEY);
     }else{
-      localStorage.setItem(CURRENT_PICK_KEY, String(id));
+      const data = {
+      id: String(id),
+      name: recipe?.name ?? ""
+    };
+      localStorage.setItem(CURRENT_PICK_KEY, JSON.stringify(data));
     }
     refreshCurrentPickButton();
   };

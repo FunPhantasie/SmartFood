@@ -262,7 +262,7 @@
         <div class="button-row">
         <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/create')">Create Recipe</button>
         <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/ingredients')">Ingredients</button>
-        <button class="btn good" id="btnAddRecipe" style="display:none;" onclick="location.href=window.SmartFoodUser.decorate(`/recipe?id=${localStorage.getItem('smartfood_current_pick')}`)">🛒 Aktuelle Auswahl laden</button>
+        <button class="btn good" id="btnAddRecipe" style="display:none;" >🛒 Aktuelle Auswahl laden</button>
         </div>
       </div>
       <span class="pill" id="backendState">Backend: unknown</span>
@@ -672,8 +672,15 @@ document.getElementById("generateBtn").addEventListener("click", onPropose);
 
 
 // "Aktuelle Auswahl" (von recipe.html gesetzt) nur anzeigen, wenn es eine gibt.
-if (localStorage.getItem('smartfood_current_pick')) {
-  document.getElementById('btnAddRecipe').style.display = '';
+const currentPickRaw = localStorage.getItem('smartfood_current_pick');
+if (currentPickRaw) {
+  const currentPick = JSON.parse(currentPickRaw);
+  const btnAddRecipe = document.getElementById('btnAddRecipe');
+  btnAddRecipe.style.display = '';
+  btnAddRecipe.textContent = `🛒 Weiter mit: ${currentPick.name}`; // zeigt den Rezeptnamen an
+  btnAddRecipe.onclick = () => {
+    location.href = window.SmartFoodUser.decorate(`/recipe?id=${encodeURIComponent(currentPick.id)}`);
+  };
 }
 
 (async function boot(){

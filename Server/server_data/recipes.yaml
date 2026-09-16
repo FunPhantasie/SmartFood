@@ -18,7 +18,7 @@ recipes:
     die angeruehrte Maisstaerke zugeben. Kurz aufkochen lassen und sofort servieren.
     Ei Verschlagen. Frühlingzwiebel Geschnitten. Ingwer in Scheiben.
   cook_minutes: 0
-  prep_minutes: 0
+  prep_minutes: 10
   recipe_id: 52
   recipe_type: main_dish
   sweet: false

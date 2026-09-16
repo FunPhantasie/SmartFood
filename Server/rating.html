@@ -271,7 +271,7 @@ async function submitRating(id, recipe){
     const result = await res.json();
     if(!res.ok) throw new Error(result.error || ("HTTP " + res.status));
 
-    location.href = window.SmartFoodUser.decorate(`/recipe?id=${encodeURIComponent(result.recipe_id)}`);
+    location.href = window.SmartFoodUser.decorate("/");
   } catch (e) {
     btn.disabled = false;
     btn.textContent = "Bewertung speichern";
