@@ -19,7 +19,11 @@ EFFORT_WEIGHT = 0.2
 DEFAULT_SCORE = 3.0  # Score fuer Rezepte ohne jede Bewertung (neutral, weder bevorzugt noch benachteiligt)
 MIN_WEIGHT = 0.2      # Rezepte mit sehr schlechtem Score sollen trotzdem noch (selten) vorkommen
 
-COOK_LOG_MAX = 20  # rollierendes Zeiten-Log pro Rezept (siehe record_cook_time) - aeltester Eintrag faellt raus
+# Fuer prep_minutes/cook_minutes zaehlen nur die letzten COOK_LOG_WINDOW gemessenen
+# Zeiten-Eintraege eines Rezepts aus der history (siehe _recent_history_times) - so kann
+# sich eine veraltete erste Messung nicht auf ewig im Mittelwert festsetzen. Die history
+# selbst wird dafuer NICHT gekuerzt (bleibt vollstaendig, u.a. fuer recipe_scores).
+COOK_LOG_WINDOW = 20
 
 
 def round_to_10(minutes: float) -> int:
@@ -58,14 +62,25 @@ def _find_recipe(data: dict, recipe_id: int) -> dict:
     return recipe
 
 
+def _recent_history_times(data: dict, recipe_id: int) -> list[dict]:
+    """Die letzten COOK_LOG_WINDOW history-Eintraege dieses Rezepts mit tatsaechlich
+    gemessenen Zeiten (prep_minutes und/oder cook_minutes), aelteste zuerst - history wird
+    nur angehaengt, der letzte Eintrag der Liste ist also auch der zeitlich juengste."""
+    entries = [
+        h for h in data.get("history", [])
+        if h.get("recipe_id") == recipe_id
+        and (h.get("prep_minutes") is not None or h.get("cook_minutes") is not None)
+    ]
+    return entries[-COOK_LOG_WINDOW:]
+
+
 def last_actual_times(data: dict, recipe_id: int) -> dict:
-    """Letzter Zeiten-Eintrag aus dem rollierenden cook_log des Rezepts, zum Vorbefuellen
-    des Bewertungsformulars - falls das Rezept schonmal gekocht wurde."""
-    recipe = _find_recipe(data, recipe_id)
-    log = recipe.get("cook_log") or []
-    if not log:
+    """Letzter Zeiten-Eintrag aus der history dieses Rezepts, zum Vorbefuellen des
+    Bewertungsformulars - falls das Rezept schonmal mit gemessenen Zeiten gekocht wurde."""
+    entries = _recent_history_times(data, recipe_id)
+    if not entries:
         return {"prep_minutes": None, "cook_minutes": None}
-    last = log[-1]
+    last = entries[-1]
     return {"prep_minutes": last.get("prep_minutes"), "cook_minutes": last.get("cook_minutes")}
 
 
@@ -119,12 +134,11 @@ def has_cooked(data: dict, recipe_id: int, user_id) -> bool:
 
 
 def log_cooked(data: dict, recipe_id: int, user_id) -> dict:
-    """'Einmal gekocht'-Button: User + Datum in history vermerken, keine Bewertung. Traegt
-    trotzdem einen Zeit-Eintrag ins rollierende cook_log des Rezepts ein (mit dem bisherigen
-    Mittelwert als Platzhalter), siehe record_cook_time. Ein Rezept, das gerade gekocht wurde,
-    muss nicht mehr auf der Wunschliste stehen - wird also automatisch entfernt."""
-    recipe = _find_recipe(data, recipe_id)  # 404 schon hier, bevor irgendwas geschrieben wird
-    record_cook_time(recipe, None, None)
+    """'Einmal gekocht'-Button: User + Datum in history vermerken, keine Bewertung und keine
+    gemessenen Zeiten (die gibt's nur ueber die volle Bewertung, siehe rate_recipe). Ein
+    Rezept, das gerade gekocht wurde, muss nicht mehr auf der Wunschliste stehen - wird also
+    automatisch entfernt."""
+    _find_recipe(data, recipe_id)  # 404 schon hier, bevor irgendwas geschrieben wird
     remove_wishlist(data, recipe_id, user_id)
 
     history = data.setdefault("history", [])
@@ -133,36 +147,20 @@ def log_cooked(data: dict, recipe_id: int, user_id) -> dict:
     return entry
 
 
-def _log_average(log: list, key: str, fallback) -> Optional[float]:
-    values = [e[key] for e in log if e.get(key) is not None]
-    if not values:
-        return fallback
-    return sum(values) / len(values)
+def update_recipe_times(data: dict, recipe: dict) -> None:
+    """Leitet recipe.prep_minutes/cook_minutes als gerundeten Mittelwert ueber die letzten
+    COOK_LOG_WINDOW history-Eintraege dieses Rezepts mit gemessenen Zeiten neu her (siehe
+    _recent_history_times). Die history-Eintraege selbst sind die einzige Quelle der
+    gemessenen Zeiten - im YAML des Rezepts steht dann nur noch der aktuelle Mittelwert, und
+    ein Rezept ohne jede Zeiten-history behaelt einfach seinen letzten/initialen Wert."""
+    entries = _recent_history_times(data, recipe["recipe_id"])
+    prep_values = [e["prep_minutes"] for e in entries if e.get("prep_minutes") is not None]
+    cook_values = [e["cook_minutes"] for e in entries if e.get("cook_minutes") is not None]
 
-
-def record_cook_time(recipe: dict, actual_prep: Optional[int], actual_cook: Optional[int]) -> None:
-    """Haengt einen Zeit-Eintrag an das rollierende cook_log des Rezepts (max COOK_LOG_MAX
-    Eintraege - der aelteste faellt beim naechsten Kochen raus) und leitet recipe.prep_minutes/
-    cook_minutes als gerundeten Mittelwert ueber das ganze Log neu her.
-
-    Wird kein tatsaechlicher Wert mitgegeben (z.B. beim schnellen 'Einmal gekocht'-Log ohne
-    Formular), wird stattdessen der bisherige Mittelwert eingetragen - nur das Datum ist dann
-    wirklich neu. Da der bisherige Mittelwert selbst wieder in den Mittelwert eingeht, aendert
-    das den Durchschnitt nicht, belegt aber (bewusst) einen der 20 Slots.
-    """
-    log = recipe.setdefault("cook_log", [])
-
-    prep = actual_prep if actual_prep is not None else _log_average(log, "prep_minutes", recipe.get("prep_minutes"))
-    cook = actual_cook if actual_cook is not None else _log_average(log, "cook_minutes", recipe.get("cook_minutes"))
-
-    log.append({"date": date.today().isoformat(), "prep_minutes": prep, "cook_minutes": cook})
-    if len(log) > COOK_LOG_MAX:
-        del log[0]
-
-    if prep is not None:
-        recipe["prep_minutes"] = round_to_10(_log_average(log, "prep_minutes", prep))
-    if cook is not None:
-        recipe["cook_minutes"] = round_to_10(_log_average(log, "cook_minutes", cook))
+    if prep_values:
+        recipe["prep_minutes"] = round_to_10(sum(prep_values) / len(prep_values))
+    if cook_values:
+        recipe["cook_minutes"] = round_to_10(sum(cook_values) / len(cook_values))
 
 
 def _replace_recipe_ingredients(data: dict, recipe_id: int, ingredient_overrides: list[dict]) -> None:
@@ -196,8 +194,9 @@ def rate_recipe(
     - Zutaten-Abweichungen (ingredient_overrides) werden entweder direkt in das gekochte
       Rezept uebernommen (save_as_variant=False) oder als neue Variante mit eigenem Namen
       gespeichert (save_as_variant=True, variant_name erforderlich).
-    - Zeiten werden auf dem Ziel-Rezept (Original oder neue Variante) fortgeschrieben,
-      siehe record_cook_time (rollierendes 20er-Log pro Rezept).
+    - Zeiten (actual_prep/actual_cook) werden direkt am history-Eintrag gespeichert und
+      prep_minutes/cook_minutes des Ziel-Rezepts (Original oder neue Variante) danach als
+      Mittelwert ueber alle history-Eintraege neu berechnet, siehe update_recipe_times.
     - taste_rating/repeat_rating/effort_rating (je 1-5) ergeben den history-Score, siehe
       compute_score. effort_rating ist eine subjektive Aufwands-Einschaetzung des Users
       (z.B. Anzahl Toepfe/Handgriffe) und unabhaengig von actual_prep/actual_cook.
@@ -220,11 +219,10 @@ def rate_recipe(
         main_id = recipe.get("variant_of") or recipe.get("recipe_id")
         new_id = yr.next_id({"recipes": recipes}, "recipes", "recipe_id")
         new_variant = {
-            **{k: v for k, v in recipe.items() if k not in ("recipe_id", "name", "variant_of", "cook_log")},
+            **{k: v for k, v in recipe.items() if k not in ("recipe_id", "name", "variant_of")},
             "recipe_id": new_id,
             "name": variant_name.strip(),
             "variant_of": main_id,
-            "cook_log": [],  # eigenstaendiges Log - nicht die (mutable) Liste des Original-Rezepts teilen
         }
         recipes.append(new_variant)
         target_recipe = new_variant
@@ -232,18 +230,21 @@ def rate_recipe(
     elif ingredient_overrides is not None:
         _replace_recipe_ingredients(data, recipe_id, ingredient_overrides)
 
-    record_cook_time(target_recipe, actual_prep, actual_cook)
     remove_wishlist(data, recipe_id, user_id)
 
     history = data.setdefault("history", [])
     entry = _new_history_entry(
         history, target_recipe["recipe_id"], user_id, "rated",
+        prep_minutes=actual_prep,
+        cook_minutes=actual_cook,
         taste_rating=taste_rating,
         repeat_rating=repeat_rating,
         effort_rating=effort_rating,
         score=compute_score(taste_rating, repeat_rating, effort_rating),
     )
     history.append(entry)
+
+    update_recipe_times(data, target_recipe)
 
     return {"history_entry": entry, "recipe": target_recipe, "new_variant": new_variant}
 

@@ -33,7 +33,9 @@ def load_all():
     data = {}
     for key, p in FILES.items():
         doc = yr.load_yaml(p)
-        data[key] = doc.get(key, [])
+        # doc.get(key, []) faellt nur bei fehlendem Key auf [] zurueck - eine leere YAML-Liste
+        # wird aber je nach Editor auch als "key:" (also null) statt "key: []" gespeichert.
+        data[key] = doc.get(key) or []
     return data
 
 def save_all(data):

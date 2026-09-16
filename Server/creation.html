@@ -1074,16 +1074,9 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
       season
     };
 
-    // Neues Rezept: die hier eingegebene Zeit ist noch eine Schaetzung, aber schon ein
-    // erster Datenpunkt - wird direkt als erster Eintrag ins rollierende Zeiten-Log
-    // gesetzt (siehe Tools/RatingLogic.py record_cook_time, max. 20 Eintraege pro Rezept).
-    if (!isUpdate) {
-      recObj.cook_log = [{
-        date: new Date().toISOString().slice(0, 10),
-        prep_minutes: prep,
-        cook_minutes: cook,
-      }];
-    }
+    // prep_minutes/cook_minutes hier sind nur die anfaengliche Schaetzung. Sobald das
+    // Rezept ueber die Bewertungsseite mit echten Zeiten gekocht wird, ueberschreibt
+    // RatingLogic.py (update_recipe_times) diese Werte mit dem Mittelwert aus der history.
 
     // Console JSON output (Recipe + Ingredients)
     console.log('Save/Update JSON (Recipe + Ingredients):', buildRecipeJsonForConsole(recObj));
