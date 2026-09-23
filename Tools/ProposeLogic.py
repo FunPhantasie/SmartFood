@@ -5,21 +5,36 @@ from typing import Optional
 from Tools import RatingLogic as rl
 
 
+def calcAvgDistanceScore(avg_distance):
+    if avg_distance ==0:
+        return 0
+    return max(0,3-10/avg_distance)
+def repeatScore(history):
+    dates=history.get("dates",[])
+    if dates is []:
+        avg=1
+    else:
+        datetoday="today"
+        dates.append(datatoday)
+        avg=np.mean(dates[1:]-dates[:-1])
+    WDH_Lust=history.get("repeat_rating",3)
+    diff_lastcooked=datetoday-history.get("last_date")
+    return 10*WDH_Lust/5 (np.exp(-8/diff_lastcooked*calcAvgDistanceScore(avg_dist)))
+
+
+def dopaminscore(recipes):
+    geschmack=recipes.get("geschmack",3)
+    aufwand=recipes.get("aufwand",3)
+    zeit=recipes.get("cook_time",np.nan)+recipes.get("prep_time",np.nan)
+    kochscore=softmax(zeit/7.5)#7,5 Min
+    
 def build_propose_dataset(data: dict) -> dict:
-    """Grunddaten fuer die naechste Propose-Mechanik: pro Rezept-ID (= 'die Keys') das
-    Rezept selbst, seine komplette history und die verknuepften Zutaten (recipe_ingredients).
-    Rezepte ganz ohne history bekommen hier einen niedrigen Seed-Eintrag (repeat_rating=1,
-    siehe RatingLogic.ensure_uncooked_seed), damit sie in einer history-basierten Auswertung
-    nicht wie neutral-bewaehrte Rezepte (DEFAULT_SCORE) behandelt werden - dieser Aufruf
-    schreibt also in data['history'], nicht nur lesend.
 
-    Baut noch KEINE Gewichtung/Auswahl - das ist der naechste Schritt fuer die eigentliche
-    Vorschlags-Logik, die on top von diesem Dataset gebaut wird.
-
-    Rueckgabe: {recipe_id: {"recipe": {...}, "history": [...], "ingredients": [...]}}
-    """
     recipes = data.get("recipes", [])
     history = data.get("history", [])
+    #Read Dates Calc Average Distance
+    date_score=repeatScore(history)
+    tastevsaufwand_score=dopaminscore(recipes)
     recipe_ingredients = data.get("recipe_ingredients", [])
 
     history_by_recipe: dict = defaultdict(list)
