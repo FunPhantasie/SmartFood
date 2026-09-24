@@ -1,27 +1,46 @@
 from __future__ import annotations
 from collections import defaultdict
+from datetime import date
 from typing import Optional
+import math
 
 from Tools import RatingLogic as rl
+
+# Formeln & Sanity-Checks dazu: docs/ProposeLogic.md
 
 
 def calcAvgDistanceScore(avg_distance):
     if avg_distance ==0:
         return 0
     return max(0,3-10/avg_distance)
-def repeatScore(history):
-    dates=history.get("dates",[])
-    if dates is []:
-        avg=1
+
+
+def repeatScore(entry: dict, today: Optional[date] = None) -> float:
+    """date_score fuer EINEN history-Eintrag (ein Rezept):
+        10 * WDH_Lust/5 * exp(-8/diff_lastcooked * calcAvgDistanceScore(avg_dist))
+    today ist injizierbar fuer reproduzierbare Tests (Default: heute)."""
+    today = today or date.today()
+
+    dates = sorted(date.fromisoformat(d) for d in entry.get("dates") or [])
+    if not dates:
+        avg_dist = 1
     else:
-        datetoday="today"
-        dates.append(datatoday)
-        avg=np.mean(dates[1:]-dates[:-1])
-    WDH_Lust=history.get("repeat_rating",3)
-    diff_lastcooked=datetoday-history.get("last_date")
-    return 10*WDH_Lust/5 (np.exp(-8/diff_lastcooked*calcAvgDistanceScore(avg_dist)))
+        dates.append(today)  # Kopie - die history selbst wird nicht veraendert
+        gaps = [(b - a).days for a, b in zip(dates[:-1], dates[1:])]
+        avg_dist = sum(gaps) / len(gaps)
+
+    repeats = [v for v in entry.get("repeat_rating") or [] if v is not None]
+    WDH_Lust = sum(repeats) / len(repeats) if repeats else 3
+
+    last_date = entry.get("last_date")
+    if not last_date:
+        return 10 * WDH_Lust / 5  # nie gekocht: diff_lastcooked = unendlich -> exp(0) = 1
+    diff_lastcooked = max((today - date.fromisoformat(last_date)).days, 1)  # heute gekocht -> 1 Tag
+
+    return 10 * WDH_Lust / 5 * math.exp(-8 / diff_lastcooked * calcAvgDistanceScore(avg_dist))
 
 
+# TODO: noch in Arbeit - wird noch nicht aufgerufen (np/softmax fehlen noch)
 def dopaminscore(recipes):
     geschmack=recipes.get("geschmack",3)
     aufwand=recipes.get("aufwand",3)
@@ -32,9 +51,7 @@ def build_propose_dataset(data: dict) -> dict:
 
     recipes = data.get("recipes", [])
     history = data.get("history", [])
-    #Read Dates Calc Average Distance
-    date_score=repeatScore(history)
-    tastevsaufwand_score=dopaminscore(recipes)
+    # TODO: tastevsaufwand_score = dopaminscore(...) pro Rezept, sobald fertig
     recipe_ingredients = data.get("recipe_ingredients", [])
 
     history_by_recipe: dict = defaultdict(list)
@@ -53,10 +70,13 @@ def build_propose_dataset(data: dict) -> dict:
             seed = rl.ensure_uncooked_seed(data, rid)
             if seed is not None:
                 history_by_recipe[rid].append(seed)
+        entries = history_by_recipe.get(rid, [])
         dataset[rid] = {
             "recipe": r,
-            "history": history_by_recipe.get(rid, []),
+            "history": entries,
             "ingredients": ingredients_by_recipe.get(rid, []),
+            # Pro Rezept genau ein history-Eintrag (siehe RatingLogic)
+            "date_score": repeatScore(entries[0]) if entries else None,
         }
     return dataset
 
