@@ -58,7 +58,7 @@ time      = cook_minutes + prep_minutes
 cookscore = 1/(1+exp((-50+time) / 7.5))               # 7.5 min as unit – 
 Were bei 50min = 0.5 40min= 0.8
 
-reward    = cookscore*(taste_rating+1.5*effort_rating)/2.5 ∈ (0, 6]
+reward    = cookscore*(taste_rating+1.5*effort_rating)*0,4 ∈ (0, 5]
 ```
 
 
@@ -69,16 +69,29 @@ reward    = cookscore*(taste_rating+1.5*effort_rating)/2.5 ∈ (0, 6]
 load the last 3 cooked meals → last_supper (array[ids])
 ignore if longer than 4 days ago
 load ingredients from recipe_ingredients for last_supper
-
+init damp_score_mult= 1
+damp_score_offset=0
 create filter list:
   - side_dish
   - meat
   - main ingredient
   - recipe specs soup soup
   - sweet
+If Season Overlap(All also)  offset  +3
+If Origin double offset  -1
+If Cooking method double Nothing
+If sweet, soup ,Casserole again damp_score_mult* (1-80%) 
+If side_dish double offset  -3
+If meal_type=meat==True    damp_score_mult *(1-10% * number)
+mit (1-x)**n >= 1-nx | (1-xn)**n >= 1-n**2x
+If meat double offset -5
+If main Ingredient (exists) and double  
+    If Main Incredient ==sidedish damp_score_mult *(1-10%)
+    If Main Incredient ==meat  damp_score_mult *(1-10%)
+    If Above Both False: offset  -3
 ```
 
-💡 Damping per match, e.g. `damp_score = Π (1 − d_i)` with `d_i` = 0.1 … 0.5 per filter and hit.
+💡
 
 ## 4. `filter_score()` → final list
 
@@ -89,17 +102,12 @@ filter out all repeats of variants and original (last_supper)
 
 # III. Generation List
 
-> Uses: date_score | reward_score | never_cooked | wishlist
-> Calculate score and choose top 5
+> Uses: date_score | reward_score | never_cooked | wishlist | blacklist
+If wishlist Wishlistscore = 6
+score= (date_score+reward_score+Wishlistscore)*damp_score_mult+damp_score_offset
 
-**Total score** ⬜
-
-```
-score = w_date · date_score + w_reward · reward_score + …     # TODO: weights
-```
-
-💡 Or multiplicative, so that the damping from II.3 applies directly:
-`score = date_score · reward_score · damp_score`
+> Calculate score And Randmomize Draw mit Rausnehmen with Score Choose 5.
+> For Drawing 1 Already Remove than the Variants out of Drawing Cointainer
 
 **Swapping out recipes**
 
