@@ -6,9 +6,8 @@ Jede Formel steht hier so, wie sie im Code umgesetzt ist, damit Code und Idee sp
 > Status: **IN Arbeit** Umgesetzt:
 - DateScore
 
+---
 
----
----
 #  Overview I
 
 1. Lade Alle Daten (Könnte Ineffizient sein) \
@@ -75,7 +74,26 @@ Pro Rezept gibt es genau **einen** history-Eintrag. Die Arrays darin rotieren (m
 | `prep_minutes` / `cook_minutes` | recipe | int | Zeiten | – |
 | `season` | recipe | str | Saison | `always` |
 
-## 3. Teil-Scores
+#  DateBase Structure V
+## Recipes
+Season: All , Frühling Sommer....
+
+Recipe Typ: Main Dish, Nachspeise, Dip, Würzmischun,g Sidedish, Snack, Vorspeise
+
+Recipe Specs: Soup, Salad,Auflauf, Rest?,
+
+Zubereitungart: Ofen Pfanne Grill Roh
+
+Herkunft Asia Oriatnalisch Mecxaikanisch Haussamn Mediteran (Can be Specrum Multiple)
+
+Main INcredient (When not specified) Check only when Created Titel match Ingredients 
+    -Can be speciefied to also NoneSpecific
+
+## Incredients
+
+ingredient_id, name ,   unit,  veg_type, laktose_free,glutenfree,specs_incredient
+
+specs_incredient: side_dish, gewürz, basics (eg. Water,Flour..)
 
 ### 3.1 `date_score` – Wiederholung / Abstand ✅
 
