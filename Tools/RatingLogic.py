@@ -6,13 +6,15 @@ import random
 
 from Tools import YamlEditor as yr
 
-DEFAULT_SCORE = 3.0  # Score fuer Rezepte ohne jede Bewertung (neutral, weder bevorzugt noch benachteiligt)
+DEFAULT_SCORE = 5.0  # Score fuer Rezepte ohne jede Bewertung (neutral auf der 0-10 Geschmacks-Skala)
 MIN_WEIGHT = 0.2      # Rezepte mit sehr schlechtem Score sollen trotzdem noch (selten) vorkommen
 
 # Pro Rezept gibt es GENAU EINEN history-Eintrag (Key: recipe_id). taste_rating/repeat_rating/
 # effort_rating/prep_minutes/cook_minutes/dates sind darin je ein rollierendes Array - beim
 # naechsten Eintrag faellt bei allen gemeinsam der aelteste Wert raus (siehe _push_rotating).
 # So bleiben die Arrays synchron: Index i in jedem Array gehoert zur selben Bewertung.
+# Skalen: taste_rating 0-10 (10 = super lecker), repeat_rating 1-5, effort_rating 1-5
+# (1 = sehr einfach, 5 = sehr aufwendig).
 HISTORY_ARRAY_MAX = 20
 
 
@@ -120,14 +122,15 @@ def _ceil_avg(values: list) -> Optional[float]:
 
 def default_ratings(data: dict, recipe_id: int) -> dict:
     """Durchschnitt der letzten Bewertungen dieses Rezepts (aufgerundet auf ganze Sterne),
-    zum Vorbefuellen der Bewertungsseite. Ohne jede history: neutraler Default (3). Die
-    *_avg Werte sind die ungerundeten Mittelwerte, fuer eine optionale Halb-Stern-Anzeige."""
+    zum Vorbefuellen der Bewertungsseite. Ohne jede history: neutraler Default (Geschmack 5
+    auf 0-10, Rest 3 auf 1-5). Die *_avg Werte sind die ungerundeten Mittelwerte, fuer eine
+    optionale Halb-Stern-Anzeige."""
     entry = _find_history_entry(data, recipe_id)
     taste_avg = _ceil_avg(entry.get("taste_rating", []) if entry else [])
     repeat_avg = _ceil_avg(entry.get("repeat_rating", []) if entry else [])
     effort_avg = _ceil_avg(entry.get("effort_rating", []) if entry else [])
     return {
-        "taste_rating": math.ceil(taste_avg) if taste_avg is not None else 3,
+        "taste_rating": math.ceil(taste_avg) if taste_avg is not None else 5,
         "repeat_rating": math.ceil(repeat_avg) if repeat_avg is not None else 3,
         "effort_rating": math.ceil(effort_avg) if effort_avg is not None else 3,
         "taste_rating_avg": taste_avg,
