@@ -1,193 +1,215 @@
-# Propose-Logik – Formeln & Sanity-Checks
+# Propose Logic – Formulas & Sanity Checks
 
-Referenz für die Vorschlagslogik in [Tools/ProposeLogic.py](../Tools/ProposeLogic.py).
-Jede Formel steht hier so, wie sie im Code umgesetzt ist, damit Code und Idee später gegeneinander geprüft werden können.
 
-> Status: **IN Arbeit** Umgesetzt:
-- DateScore
+Every formula is written down here as planned or as implemented, so code and idea can be checked against each other later.
+
+> Status: **work in progress**
+> - ✅ date_score (old formula in code, see VI – new formula in II.1 not implemented yet)
+> - 🚧 reward_score
+> - ⬜ damp_score, filter, generation list
+>
+> 💡 = suggestion, not decided yet
 
 ---
 
-#  Overview I
+# I. Overview
 
-1. Lade Alle Daten (Könnte Ineffizient sein) \
-     1.1 Rezepte \
-     1.2 History \
-     1.3 Rezepte Zutaten 
-2. Aus History berechne DateScore
-   - Messe Abstände in **dates** array[date]
-   - Mess Abstand letztes mal Today **last_date** date
-   - Use WiederholungsScore  **repeat_rating** int
-3. Aus History berechne Abschätzung Arbeit Gegen Result 
-   - d
-# Methods II
-## 1.  def repeatScore() => return date_score
-     take dates
-     if dates.size <=1  faktor=1 without today
-     calc average distance between days floor down to Days **avg_dist**
-     calc distance to last_date and today floor down to Days **dist_last**
-     faktor = max(1,4-avg_dist/14) 14 Repeat Still Good Rescaling
-     ToDo Later Calibrated with Vielzahl/Number of Recipes 
-     faktor => g(fakor :exp) => (0,1)  
-     Entschiede zwischen 1-exp(-x) oder exp(-1/x)
-     Nehme 1-exp(-x) besser zu manipulieren predikten
-     date_score = 10/5 * repeat_rating * exp (-faktor*dist_last/8)
-     Result:= date_score => 0 to 10
-## 2. def dopaminscore() => reward_score
-      taste_rating
-## 2. def damping_score() => damp_score, last_supper
-     load all of last 3 Cooked Meals **last_supper** array[ids]
-     ignore if longer than 4 days 
-     load incredients of recipe_incredients for **last_supper**
-     createfilter list 
-          - SIDEDISH
-          - Meat
+1. Load all data (could be inefficient)
+   1. Recipes
+   2. History
+   3. Recipe ingredients
+   4. BlackListed Recipe (User Doesnt Like at all)
+2. From history calculate **date_score**
+   - Distances in `dates` (array[date])
+   - Distance last cooked ↔ today: `last_date` (date)
+   - Repeat score: `repeat_rating` (int)
+3. From history estimate effort vs. result (**reward_score**)
+   - `taste_rating`, `effort_rating`, `prep_minutes` + `cook_minutes`
+4. Damp recently cooked meals (**damp_score**)
+5. Filter out variants of recently cooked meals
+6. Generate list (top 5 + swapping)
 
-## X. filter_score FinalList
-     load all Variants **last_supper**
-     filter all repeatance of variants and original (last_supper)  out
+# II. Methods
 
-# Generation List 
-> Uses : date_score | reward_score | never_cooked | wishlist \
-> Calc Score and Choose Top 5  
+## 1. `repeatScore()` → date_score
 
-> Swapping out Recipes
-- X: Gericht wird vorgeschlagen („Proposed“)
-- ¬X: Gericht wird nie gekocht („Never Cooked“)
--  Y = Number of  X with tries n = 5, Y ~ Bin(5, p).
-- **Gegeben:** P(Y = 5) = p⁵ = 0,8
-- P(¬X) = 1 − p ≈ 0,044 = w
+```
+take dates
+if len(dates) <= 1: factor = 1                (without today)
+avg_dist  = mean distance between dates, floored to days
+dist_last = distance last_date ↔ today, floored to days
 
-For Each Propose Choose to Swap with Propability 1-p \
-Skip if on Wishlist 
-#  Gemessene Variablen / Größen IV
+factor = max(1, 4 - avg_dist/14)              # repeating every 14 days results in a good score
+         TODO later: calibrate with number of recipes
 
-Pro Rezept gibt es genau **einen** history-Eintrag. Die Arrays darin rotieren (max. 20 Werte, siehe `RatingLogic.HISTORY_ARRAY_MAX`).
+factor → g(factor) ∈ (0, 1)
+  choose between 1 - exp(-x) and exp(-1/x)
+  → take 1 - exp(-x) (easier to tune / predict)
 
-| Feld | Quelle | Typ | Bedeutung | Default / fehlt |
+date_score = 10/5 · repeat_rating · exp(-factor · dist_last / 8)
+Result: date_score ∈ [0, 10]
+```
+
+## 2. `dopaminscore()` → reward_score
+
+```
+Filter Same Day Cooking If either cook_minutes | prep_minutes >= 1h Out
+time      = cook_minutes + prep_minutes
+cookscore = 1/(1+exp((-50+time) / 7.5))               # 7.5 min as unit – 
+Were bei 50min = 0.5 40min= 0.8
+
+reward    = cookscore*(taste_rating+1.5*effort_rating)/2.5 ∈ (0, 6]
+```
+
+
+
+## 3. `damping_score()` → damp_score, last_supper
+
+```
+load the last 3 cooked meals → last_supper (array[ids])
+ignore if longer than 4 days ago
+load ingredients from recipe_ingredients for last_supper
+
+create filter list:
+  - side_dish
+  - meat
+  - main ingredient
+  - recipe specs soup soup
+  - sweet
+```
+
+💡 Damping per match, e.g. `damp_score = Π (1 − d_i)` with `d_i` = 0.1 … 0.5 per filter and hit.
+
+## 4. `filter_score()` → final list
+
+```
+load all variants of last_supper (recipe field variant_of)
+filter out all repeats of variants and original (last_supper)
+```
+
+# III. Generation List
+
+> Uses: date_score | reward_score | never_cooked | wishlist
+> Calculate score and choose top 5
+
+**Total score** ⬜
+
+```
+score = w_date · date_score + w_reward · reward_score + …     # TODO: weights
+```
+
+💡 Or multiplicative, so that the damping from II.3 applies directly:
+`score = date_score · reward_score · damp_score`
+
+**Swapping out recipes**
+
+- X: meal is proposed ("proposed")
+- ¬X: meal is never cooked ("never cooked")
+- Y = number of X with n = 5 tries, Y ~ Bin(5, p)
+- **Given:** P(Y = 5) = p⁵ = 0.8 → p ≈ 0.956
+- P(¬X) = 1 − p ≈ 0.044 = w
+
+For each proposal: swap with probability 1 − p.
+Skip if on wishlist.
+
+💡 Swap candidates: never cooked recipes first, then random from the rest (excluding last_supper and its variants).
+
+# IV. Measured Variables
+
+Per recipe there is exactly **one** history entry. The arrays inside rotate (max. 20 values, see `RatingLogic.HISTORY_ARRAY_MAX`).
+
+| Field | Source | Type | Meaning | Default / missing |
 |---|---|---|---|---|
-| `dates` | history | Liste ISO-Datum | Tage, an denen bewertet (gekocht) wurde | `[]` |
-| `last_date` | history | ISO-Datum | zuletzt gekocht (auch über „Einmal gekocht“) | fehlt → nie gekocht |
-| `repeat_rating` | history | Liste int 1–5 | Wiederholungs-Lust | `3`; Seed ungekochter Rezepte: `[1]` |
-| `taste_rating` | history | Liste int 1–5 | Geschmack | – |
-| `effort_rating` | history | Liste int 1–5 | Aufwand | – |
-| `prep_minutes` / `cook_minutes` | recipe | int | Zeiten | – |
-| `season` | recipe | str | Saison | `always` |
+| `dates` | history | list ISO date | days when rated (cooked) | `[]` |
+| `last_date` | history | ISO date | last cooked (also via "cooked once") | missing → never cooked |
+| `repeat_rating` | history | list int 1–5 | desire to repeat | `3`; seed for uncooked recipes: `[1]` |
+| `taste_rating` | history | list int 1–5 | taste | – |
+| `effort_rating` | history | list int 1–5 | effort | – |
+| `prep_minutes` / `cook_minutes` | recipe | int | times | – |
+| `season` | recipe | str | season | `always` |
 
-#  DateBase Structure V
+# V. Database Structure
+
 ## Recipes
-Season: All , Frühling Sommer....
 
-Recipe Typ: Main Dish, Nachspeise, Dip, Würzmischun,g Sidedish, Snack, Vorspeise
+- **Season:** all, spring, summer, autumn, winter
+- **Recipe type:** main dish, dessert, dip, spice mix, side dish, snack, starter
+- **Recipe specs:** soup, salad, casserole, bowl, sandwich, others
+  - 💡 keep it one value per recipe, so damping (II.3) stays simple
+- **Cooking method:** oven, pan, grill, raw,steam
+  
+- **Origin:** asian, oriental, mexican,indian, italian, home-style, mediterranean (can have multiple)
+  
+- **Main ingredient** (if not specified): only check on creation whether the title matches the ingredients
+  - can also be set to "not specific"
 
-Recipe Specs: Soup, Salad,Auflauf, Rest?,
+- **Varaints**  If an Recipe is Saved with Noodles a Variant can be just with Rice for Example 
+When Creating a Recipe and Choosing Rice and incredient (Its saved as Sidedish) there can be an option to create Automatically Varaints for different Choices Noodles etc.
 
-Zubereitungart: Ofen Pfanne Grill Roh
+## Ingredients
 
-Herkunft Asia Oriatnalisch Mecxaikanisch Haussamn Mediteran (Can be Specrum Multiple)
+`ingredient_id, name, unit, veg_type, lactose_free, gluten_free, specs_ingredient`
 
-Main INcredient (When not specified) Check only when Created Titel match Ingredients 
-    -Can be speciefied to also NoneSpecific
+- **specs_ingredient:** side_dish, spice, basics (e.g. water, flour,butter,oil, …)
+ 
 
-## Incredients
+# VI. Current Code: `date_score` (old formula)
 
-ingredient_id, name ,   unit,  veg_type, laktose_free,glutenfree,specs_incredient
-
-specs_incredient: side_dish, gewürz, basics (eg. Water,Flour..)
-
-### 3.1 `date_score` – Wiederholung / Abstand ✅
-
-Code: `repeatScore(entry, today)` und `calcAvgDistanceScore(avg_dist)`
-
-**Formel**
+Code: `repeatScore(entry, today)` and `calcAvgDistanceScore(avg_dist)` – to be replaced by II.1.
 
 ```
-avg_dist       = Mittelwert der Tagesabstände zwischen aufeinanderfolgenden (dates + heute)
-s(avg_dist)    = max(0, 3 − 10 / avg_dist)          (0, falls avg_dist = 0)
-WDH_Lust       = Mittelwert(repeat_rating)
-d_last         = Tage seit last_date
+avg_dist    = mean day distance between consecutive (dates + today)
+s(avg_dist) = max(0, 3 − 10 / avg_dist)          (0 if avg_dist = 0)
+repeat      = mean repeat_rating
+d_last      = days since last_date
 
-date_score     = 10 · WDH_Lust/5 · exp( −8 · s / d_last )
+date_score  = 10 · repeat/5 · exp(−8 · s / d_last)
 ```
 
-**Variablen**
+**Edge cases**
 
-| Symbol | Bereich | Wirkung |
-|---|---|---|
-| `WDH_Lust/5` | 0.2 – 1 | skaliert den Maximalwert → date_score ∈ [0, 10] |
-| `s` | 0 – 3 | wie stark „kürzlich gekocht“ bestraft wird; `s = 0` für `avg_dist ≤ 3.33` Tage |
-| `exp(…)` | 0 – 1 | → 1, je länger `last_date` her ist |
-
-**Randfälle**
-
-| Fall | Behandlung |
+| Case | Handling |
 |---|---|
-| keine `dates` | `avg_dist = 1` → `s = 0` → keine Strafe |
-| kein `last_date` (nie gekocht) | `d_last = ∞` → Faktor 1 → `date_score = 2 · WDH_Lust` |
-| `d_last = 0` (heute gekocht) | wird auf 1 Tag gesetzt (keine Division durch 0) |
-| leeres `repeat_rating` | `WDH_Lust = 3` |
+| no `dates` | `avg_dist = 1` → `s = 0` → no penalty |
+| no `last_date` (never cooked) | `d_last = ∞` → factor 1 → `date_score = 2 · repeat` |
+| `d_last = 0` (cooked today) | set to 1 day (no division by 0) |
+| empty `repeat_rating` | `repeat = 3` |
 
-**Rechenbeispiele** (heute = 2026-09-23, mit dem echten Code berechnet)
+**Examples** (today = 2026-09-23, calculated with the real code)
 
-| # | Situation | avg_dist | s | d_last | WDH_Lust | date_score |
+| # | Situation | avg_dist | s | d_last | repeat | date_score |
 |---|---|---|---|---|---|---|
-| A | nie gekocht (Seed) | – | 0 | ∞ | 1 | **2.00** |
-| B | 1× gekocht, heute | 0 | 0 | 1 | 4 | **8.00** ⚠️ |
-| C | Rezept 52: 1×, vor 7 Tagen | 7 | 1.57 | 7 | 3 | **1.00** |
-| D | alle 20 Tage, zuletzt vor 13 | 17.7 | 2.43 | 13 | 4 | **1.79** |
-| E | alle ~90 Tage, zuletzt vor 90 | 90 | 2.89 | 90 | 5 | **7.74** |
-| F | alle 3 Tage, zuletzt vor 3 | 3 | 0 | 3 | 5 | **10.00** ⚠️ |
+| A | never cooked (seed) | – | 0 | ∞ | 1 | **2.00** |
+| B | cooked once, today | 0 | 0 | 1 | 4 | **8.00** ⚠️ |
+| C | recipe 52: once, 7 days ago | 7 | 1.57 | 7 | 3 | **1.00** |
+| D | every 20 days, last 13 days ago | 17.7 | 2.43 | 13 | 4 | **1.79** |
+| E | every ~90 days, last 90 days ago | 90 | 2.89 | 90 | 5 | **7.74** |
+| F | every 3 days, last 3 days ago | 3 | 0 | 3 | 5 | **10.00** ⚠️ |
 
-### 3.2 `dopamin_score` – Geschmack vs. Aufwand 🚧
+# VII. Sanity Checks
 
-Code: `dopaminscore(...)` (in Arbeit, wird noch nicht aufgerufen)
+Expected behavior. Every row should match an example above (or a test).
 
-```
-zeit       = cook_time + prep_time
-kochscore  = softmax(zeit / 7.5)        # 7.5 min als Einheit – TODO: Definition festlegen
-dopamin    = f(geschmack, aufwand, kochscore)   # TODO
-```
-
-| Symbol | Bereich | Wirkung |
-|---|---|---|
-| TODO | | |
-
-### 3.3 Weitere Scores ⬜
-
-- Saison (`season` vs. aktueller Monat)
-- Wunschliste (`wishlist.yaml`) → Bonus?
-- include/exclude von Zutaten (eher Filter als Score?)
-
-## 4. Gesamtscore ⬜
-
-```
-score = w_date · date_score + w_dopamin · dopamin_score + …     # TODO: Gewichte / Kombination
-```
-
-Danach eine gewichtete Zufallsauswahl (heute: `RatingLogic.weighted_shuffle`).
-
-## 5. Sanity-Checks
-
-Erwartetes Verhalten. Jede Zeile sollte zu einem Beispiel oben (oder einem Test) passen.
-
-| Situation | Erwartung | Aktuell (date_score) | OK? |
+| Situation | Expected | Current (date_score, old) | OK? |
 |---|---|---|---|
-| gerade eben gekocht | sehr niedrig (~0) | B: 8.00 | ❌ |
-| sehr oft gekocht, zuletzt vor kurzem | niedrig | F: 10.00 | ❌ |
-| selten gekocht, lange her | hoch (~2·Lust) | E: 7.74 von max. 10 | ✅ |
-| normaler Rhythmus, mittendrin | mittel | D: 1.79 | ❓ |
-| nie gekocht | neutral-niedrig (Seed-Lust 1) | A: 2.00 | ✅ |
-| höhere Lust ⇒ höherer Score (sonst gleich) | monoton steigend | linear in WDH_Lust | ✅ |
-| länger her ⇒ höherer Score (sonst gleich) | monoton steigend | ja, solange s > 0 | ✅ |
+| just cooked | very low (~0) | B: 8.00 | ❌ |
+| cooked very often, recently | low | F: 10.00 | ❌ |
+| cooked rarely, long ago | high (~2·repeat) | E: 7.74 of max. 10 | ✅ |
+| normal rhythm, in between | medium | D: 1.79 | ❓ |
+| never cooked | neutral-low (seed repeat 1) | A: 2.00 | ✅ |
+| higher repeat ⇒ higher score (rest equal) | monotonically increasing | linear in repeat | ✅ |
+| longer ago ⇒ higher score (rest equal) | monotonically increasing | yes, as long as s > 0 | ✅ |
 
-## 6. Offene Fragen
+# VIII. Open Questions
 
-1. **Häufig gekochte Rezepte werden nicht bestraft (B, F).** `s = max(0, 3 − 10/avg_dist)` ist 0 für kleine Abstände. Die Strafe greift also gerade bei oft gekochten Rezepten *nicht*. Ist das so gewollt, oder soll die Strafe mit kleinerem `avg_dist` *steigen*?
-2. `today` wird an `dates` angehängt. Dadurch zählt die aktuelle Pause mit in `avg_dist`. Gewollt?
-3. Wie soll `d_last = 0` behandelt werden (derzeit = 1 Tag)?
-4. Default `avg_dist = 1` ohne `dates` bedeutet keine Strafe. Passt das zu Rezepten, die nur per „Einmal gekocht“ ein `last_date` haben?
-5. Soll `date_score` auf 0–1 normiert werden, damit er sich mit anderen Scores kombinieren lässt?
+1. **II.1 direction of exp:** `1 − exp(−x)` is chosen, but the formula says `exp(−factor · dist_last / 8)`. That makes the score *smaller* the longer ago `last_date` is (cooked today → maximum). Probably meant: `date_score = 2 · repeat_rating · (1 − exp(−dist_last / (8 · factor)))`?
+2. **II.1 factor:** only bounded by `max(1, …)` → factor ∈ [1, 4]. Should `g(factor)` be applied separately afterwards, or is it already part of the exp formula?
+3. **II.1 "without today":** should `today` count for `avg_dist` (old code: yes)?
+4. `repeat_rating` is an array → mean or last value?
+5. Normalize `date_score` to 0–1 so it can be combined with reward_score?
 
 ## Changelog
 
-- 2026-09-23 – Entwurf angelegt, `date_score` umgesetzt und dokumentiert.
+- 2026-09-23 – Draft created, `date_score` (old formula) implemented and documented.
+- 2026-09-27 – New plan (II–V) added, cleaned up; old formula moved to VI.
+- 2026-09-27 – Translated to English, suggestions (💡) added for filter list, recipe specs and more.
