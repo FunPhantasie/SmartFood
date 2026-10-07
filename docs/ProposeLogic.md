@@ -9,7 +9,7 @@ Every formula is written down here as planned or as implemented, so code and ide
 > 💡 = suggestion, not decided yet · ⚠️ = found by logic test (IX)
 >
 > All tuning knobs are constants at the top of `ProposeLogic.py`. Example scenarios: IX.
-
+> Currently Working At Implementing Logic test Cases import Recipes
 ---
 
 # I. Overview – `propose()`, `build_propose_dataset()` ✅ 🧪
@@ -41,29 +41,79 @@ Every formula is written down here as planned or as implemented, so code and ide
 # II. Methods
 
 ## 1. `date_score()` → date_score, remove ✅ 🧪 ❓ (VIII.2)
+Bewertet, wie stark ein Rezept wiederholt werden sollte, basierend darauf, wann es zuletzt gekocht wurde
+und wie regelmäßig es wiederholt wird.
 
-```
-take dates (without today)
-dist_last = distance last_date ↔ today, floored to days
-repeat    = mean(repeat_rating)
+**Wenn noch nie bewertet soll repeat_score=2 und damit die Avergen Datümer nciht bestimmt werden könnnen keine Verstärkung 
+factor=1**
+
+**Wenn noch nie gekocht soll date_score=5**
+
+**Wenn Score Negativ Fall bei DistLast <4 nie gekocht Wird Removed From Proposal**
+## Params
+
+| Variable       | Bedeutung                                                    |
+|----------------|--------------------------------------------------------------|
+| `dates`        | Liste der Tage, an denen das Rezept gekocht & bewertet wurde |
+| `last_date`    | Tag an dem das Rezept als letzes gekocht wurde               |
+| `repeat_score` | Mittelwert aller `repeat_rating`s                            |
+| `dist_last`    | Abstand von  zwischen last cooked und tody (abgerundet)      |
+| `avg_dist-1`   | Mittlerer Abstand zwischen dates (abgerundet) minus 1        |
+### Formeln
+
+**Wiederholungsfaktor**
+
+$$
+\text{factor} = \max\left(1,\; 4 - \frac{avg\_dist}{14}\right), \qquad \text{factor} \in [1, 4]
+$$
+
+ Wer schneller als 14 Tage wiederholt results in High score.
+
+**Zeitfunktion**
+
+$$
+g(\text{factor},dist\_last) = \tanh\left(\frac{\text{factor}}{c} \cdot (dist\_last - b)\right), \qquad c = 30,\; b = 4
+$$
+
+**Ergebnis**
+
+$$
+\text{date}\_\text{score} = \max\left(0,\; 10/5 \cdot \text{repeat}\_\text{score} \cdot g(\text{factor}, \text{dist}\_\text{last}\right) \in [0, 10]
+$$
+Geteilt durch 5 weil repeat_score $\in$ [0,5] ist und auf 10 Normiert werden soll.
+## Ablauf
+
+```python
+if not last_date:
+   return 5,False
+dist_last    = (today - last_date).days
+if not repeat_ratings:
+    repeat_score=2
+else:
+    repeat_score = mean(repeat_ratings)
 
 if len(dates) <= 1:
-    factor = 1                                     # no distance between dates yet
+    factor = 1                                  # noch kein Abstand vorhanden
 else:
-    avg_dist = mean distance between dates, floored to days
-    factor   = max(1, 4 - avg_dist/14)             # repeating every 14 days results in a good score
-    TODO later: calibrate with number of recipes
+    distance_dates=(dates[1:].days-dates[:-1]).days
+    avg_dist = mean(distance_dates)               # n-1 Abstände, in Tagen
+    factor   = max(1, 4 - avg_dist / 14)        # alle 14 Tage → guter Score
 
-factor → g(factor, dist_last) ∈ (0, 1)
-       → tanh(factor/c · (x - b))                  with c = 30, b = 4
+date_score = 10 / 5 * repeat_score * tanh(factor / 30 * (dist_last - 4))
 
-date_score = 10/5 · repeat · tanh(factor/30 · (dist_last - 4))
 if date_score <= 0:
-    remove = True
-date_score = max(0, date_score)
+    return 0, True                               # zu kürzlich gekocht
 
-Result: date_score ∈ [0, 10]
+date_score = max(0, date_score)
+return date_score,False
+
 ```
+
+## TODO
+
+- [ ] Divisor 14 an die Anzahl der Rezepte anpassen
+ - [ ] Konstanten c,b Überarbeiten Testcases
+
 
 Tuning knobs in `ProposeLogic.py`: `DATE_SLOPE` (c = 30), `DATE_BLOCK` (b = 4), `NEVER_COOKED_DATE`, `EMPTY_REPEAT`.
 
@@ -77,14 +127,9 @@ Tuning knobs in `ProposeLogic.py`: `DATE_SLOPE` (c = 30), `DATE_BLOCK` (b = 4), 
 
 → often cooked recipes (favorites) come back **faster** than rarely cooked ones.
 
-**Edge cases**
 
-| Case | Handling |
-|---|---|
-| never cooked (no `last_date`) | `date_score = 5`, not removed |
-| cooked within 4 days (`dist_last ≤ 4`) | `date_score ≤ 0` → `remove = True` |
-| ≤ 1 date (also 0 dates + `last_date` from "cooked once") | `factor = 1` |
-| empty `repeat_rating` | `repeat = 2` |
+
+
 
 ## 2. `reward_score()` → reward_score ✅ 🧪
 
