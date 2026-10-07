@@ -82,6 +82,9 @@
   font-size: 13px;
   transform: translateY(9px); /* move text down */
 }
+/* Herkunft-Gruppe: Checkboxen stehen in einer Reihe, nicht neben Eingabefeldern -> nicht absenken */
+#rec_origin .checkbox input[type="checkbox"], #rec_origin .checkbox span { transform: none; }
+#rec_origin { gap: 14px; margin-top: 6px; }
     .btn {
       cursor:pointer;
       padding: 10px 14px;
@@ -217,6 +220,25 @@
             </div>
           </div>
 
+          <div class="row">
+            <div class="col">
+              <label>Laktosefrei</label>
+              <select id="ing_lactose">
+                <option value="">unbekannt</option>
+                <option value="true">ja</option>
+                <option value="false">nein</option>
+              </select>
+            </div>
+            <div class="col">
+              <label>Glutenfrei</label>
+              <select id="ing_gluten">
+                <option value="">unbekannt</option>
+                <option value="true">ja</option>
+                <option value="false">nein</option>
+              </select>
+            </div>
+          </div>
+
           <div class="inline">
             <button id="addIngredient" class="btn primary">Add ingredient</button>
             <button id="updateIngredient" class="btn secondary" disabled>Update selected</button>
@@ -290,6 +312,56 @@
               <option value="summer">Sommer</option>
               <option value="autumn">Herbst</option>
               <option value="winter">Winter</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Felder fuer die Daempfung in ProposeLogic (erlaubte Werte: YamlEditor.ORIGINS / COOKING_METHODS / RECIPE_SPECS) -->
+        <div class="row" style="margin-top:8px;">
+          <div class="col">
+            <label>Herkunft (mehrere möglich)</label>
+            <div id="rec_origin" class="inline">
+              <label class="checkbox"><input type="checkbox" value="asian" /> <span>Asiatisch</span></label>
+              <label class="checkbox"><input type="checkbox" value="oriental" /> <span>Orientalisch</span></label>
+              <label class="checkbox"><input type="checkbox" value="mexican" /> <span>Mexikanisch</span></label>
+              <label class="checkbox"><input type="checkbox" value="indian" /> <span>Indisch</span></label>
+              <label class="checkbox"><input type="checkbox" value="italian" /> <span>Italienisch</span></label>
+              <label class="checkbox"><input type="checkbox" value="home-style" /> <span>Hausmannskost</span></label>
+              <label class="checkbox"><input type="checkbox" value="mediterranean" /> <span>Mediterran</span></label>
+              <label class="checkbox"><input type="checkbox" value="american" /> <span>Amerikanisch</span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:8px;">
+          <div class="col">
+            <label>Zubereitungsart</label>
+            <select id="rec_method">
+              <option value="">— nicht gesetzt —</option>
+              <option value="oven">Ofen</option>
+              <option value="pan">Pfanne</option>
+              <option value="pot">Topf</option>
+              <option value="grill">Grill</option>
+              <option value="raw">Roh</option>
+              <option value="steam">Dampf</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Gerichtart</label>
+            <select id="rec_spec">
+              <option value="">— nicht gesetzt —</option>
+              <option value="soup">Suppe</option>
+              <option value="salad">Salat</option>
+              <option value="casserole">Auflauf</option>
+              <option value="bowl">Bowl</option>
+              <option value="sandwich">Sandwich</option>
+              <option value="others">Sonstiges</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Hauptzutat</label>
+            <select id="rec_main">
+              <option value="">— nicht gesetzt —</option>
             </select>
           </div>
         </div>
@@ -564,6 +636,9 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     $('#rec_instructions').value = '';
     $('#rec_type').value = 'main_dish';
     $('#rec_season').value = 'always';
+    setOrigins([]);
+    $('#rec_method').value = '';
+    $('#rec_spec').value = '';
 
     currentRecipeItems = [];
     renderRecipeIngredientList();
@@ -599,9 +674,15 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     $('#ing_veg').value = 'vegan';
     $('#ing_unit').value = '';
     $('#ing_side').checked = false;
+    $('#ing_lactose').value = '';
+    $('#ing_gluten').value = '';
     selectedIngredientId = null;
     $('#updateIngredient').disabled = true;
   }
+
+  // lactose_free / gluten_free: true / false / null (= unbekannt, filtert nicht)
+  function triToSelect(v) { return v === true ? 'true' : v === false ? 'false' : ''; }
+  function selectToTri(v) { return v === '' ? null : v === 'true'; }
 
   function renderIngredients() {
     const tbody = $('#ingredientsTable tbody');
@@ -625,6 +706,8 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
         $('#ing_veg').value = ing.veg_type || 'vegan';
         $('#ing_unit').value = ing.unit ?? '';
         $('#ing_side').checked = !!ing.side_dish;
+        $('#ing_lactose').value = triToSelect(ing.lactose_free);
+        $('#ing_gluten').value = triToSelect(ing.gluten_free);
         $('#updateIngredient').disabled = false;
       });
 
@@ -657,6 +740,8 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     const unitRaw = $('#ing_unit').value.trim();
     const unit = unitRaw === '' ? null : unitRaw;
     const side_dish = $('#ing_side').checked;
+    const lactose_free = selectToTri($('#ing_lactose').value);
+    const gluten_free = selectToTri($('#ing_gluten').value);
 
     if (!name) { alert('Ingredient name required'); return; }
 
@@ -668,13 +753,15 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
       $('#ing_veg').value = existing.veg_type || veg_type;
       $('#ing_unit').value = existing.unit ?? (unit ?? '');
       $('#ing_side').checked = !!existing.side_dish;
+      $('#ing_lactose').value = triToSelect(existing.lactose_free);
+      $('#ing_gluten').value = triToSelect(existing.gluten_free);
       $('#updateIngredient').disabled = false;
       setStatus(`Ingredient already exists (ID ${existing.ingredient_id}) — reused instead of creating duplicate.`);
       return;
     }
 
     const ingredient_id = nextId(ingredients, 'ingredient_id');
-    ingredients.push({ ingredient_id, name, veg_type, unit, side_dish });
+    ingredients.push({ ingredient_id, name, veg_type, unit, side_dish, lactose_free, gluten_free });
 
     renderIngredients();
     renderRecipes();
@@ -706,6 +793,8 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     const unitRaw = $('#ing_unit').value.trim();
     ing.unit = unitRaw === '' ? null : unitRaw;
     ing.side_dish = $('#ing_side').checked;
+    ing.lactose_free = selectToTri($('#ing_lactose').value);
+    ing.gluten_free = selectToTri($('#ing_gluten').value);
 
     renderIngredients();
     renderRecipes();
@@ -883,8 +972,39 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     });
 
     refreshCalculatedVeg();
+    renderMainIngredientOptions();
 
     autoSizeRecIngWrap();
+  }
+
+  // ---------------------- Origin / main ingredient ----------------------
+  function getOrigins() {
+    return [...document.querySelectorAll('#rec_origin input:checked')].map(cb => cb.value);
+  }
+
+  function setOrigins(list) {
+    const wanted = Array.isArray(list) ? list : (list ? [list] : []);
+    document.querySelectorAll('#rec_origin input').forEach(cb => { cb.checked = wanted.includes(cb.value); });
+  }
+
+  // Hauptzutat = eine der Zutaten des aktuellen Rezepts (ingredient_id) oder "not specific".
+  function renderMainIngredientOptions() {
+    const sel = $('#rec_main');
+    if (!sel) return;
+    const current = sel.value;
+    const opts = currentRecipeItems.map(it => {
+      const ing = ingredients.find(i => Number(i.ingredient_id) === Number(it.ingredient_id));
+      return `<option value="${Number(it.ingredient_id)}">${escapeHtml(ing?.name ?? it.ingredient_id)}</option>`;
+    });
+    sel.innerHTML = '<option value="">— nicht gesetzt —</option>' +
+      '<option value="not specific">nicht spezifisch</option>' + opts.join('');
+    sel.value = [...sel.options].some(o => o.value === current) ? current : '';
+  }
+
+  function readMainIngredient() {
+    const v = $('#rec_main').value;
+    if (v === '') return null;
+    return v === 'not specific' ? v : Number(v);
   }
 
   function refreshCalculatedVeg() {
@@ -980,6 +1100,9 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     $('#rec_instructions').value = normalizeInstructions(r.instructions ?? '');
     $('#rec_type').value = r.recipe_type || 'main_dish';
     $('#rec_season').value = r.season || 'always';
+    setOrigins(r.origin);
+    $('#rec_method').value = r.cooking_method || '';
+    $('#rec_spec').value = r.recipe_spec || '';
 
     currentRecipeItems = recipeIngredients
       .filter(ri => Number(ri.recipe_id) === Number(recipeId))
@@ -998,6 +1121,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     if (comboList) comboList.style.display = 'none';
 
     renderRecipeIngredientList();
+    $('#rec_main').value = r.main_ingredient != null ? String(r.main_ingredient) : '';   // Optionen erst nach renderRecipeIngredientList da
     autoResizeTextarea($('#rec_instructions'));
   }
 
@@ -1071,7 +1195,11 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
       sweet,
       instructions,
       variant_of,
-      season
+      season,
+      origin: getOrigins(),
+      cooking_method: $('#rec_method').value || null,
+      recipe_spec: $('#rec_spec').value || null,
+      main_ingredient: readMainIngredient()
     };
 
     // prep_minutes/cook_minutes hier sind nur die anfaengliche Schaetzung. Sobald das
@@ -1151,6 +1279,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
 
       ingredients = Array.isArray(data.ingredients) ? data.ingredients : [];
       ingredients = ingredients.map(i => ({
+        ...i,   // weitere Felder (lactose_free, gluten_free, kcal, ...) nicht verlieren
         ingredient_id: Number(i.ingredient_id),
         name: i.name,
         veg_type: i.veg_type || 'vegan',

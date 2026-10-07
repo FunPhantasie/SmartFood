@@ -6,6 +6,7 @@ import math
 import random
 
 from Tools import RatingLogic as rl
+from Tools import YamlEditor as yr
 
 # Formeln, Wertebereiche & Sanity-Checks dazu: docs/ProposeLogic.md
 # Beispiel-Szenarien / Logik-Test:             tests/test_propose_plan.py
@@ -25,7 +26,7 @@ EFFORT_WEIGHT = 0.5       # II.2 max. Verlust durch Aufwand (bei taste 10 und ef
 NEVER_COOKED_TASTE = 8    # II.2 taste ohne Bewertung
 NEVER_COOKED_EFFORT = 3   # II.2 effort ohne Bewertung
 MISSING_TIME = 45         # II.2 Gesamtzeit, wenn keine Zeiten hinterlegt sind
-SAME_DAY_LIMIT = 60       # II.4 prep oder cook >= so viele Minuten -> raus
+SAME_DAY_LIMIT = 60       # II.4 prep oder cook > so viele Minuten -> raus (genau 60 ist noch ok)
 LAST_SUPPER_SIZE = 3      # II.3 die letzten n gekochten Gerichte ...
 LAST_SUPPER_DAYS = 4      # II.3 ... sofern hoechstens so viele Tage her
 DAMP_SPECS = {"sweet", "soup", "casserole"}   # II.3 nur diese Specs daempfen
@@ -122,6 +123,7 @@ def recipe_features(recipe: dict, data: dict) -> dict:
     ids = [ri.get("ingredient_id") for ri in data.get("recipe_ingredients", [])
            if ri.get("recipe_id") == recipe.get("recipe_id")]
     origin = recipe.get("origin") or []
+    main = recipe.get("main_ingredient")
     specs = {recipe.get("recipe_spec")} & DAMP_SPECS
     if recipe.get("sweet"):
         specs.add("sweet")
@@ -131,7 +133,7 @@ def recipe_features(recipe: dict, data: dict) -> dict:
         "method": recipe.get("cooking_method"),
         "specs": specs,
         "sides": {i for i in ids if ingredients.get(i, {}).get("side_dish")},
-        "main": recipe.get("main_ingredient"),
+        "main": None if main == yr.NOT_SPECIFIC else main,
         "meats": {i for i in ids if ingredients.get(i, {}).get("veg_type") == "meat"},
     }
 
@@ -194,7 +196,31 @@ def variant_root(recipe: dict) -> int:
 
 
 def is_same_day(recipe: dict) -> bool:
-    return any((recipe.get(k) or 0) >= SAME_DAY_LIMIT for k in ("prep_minutes", "cook_minutes"))
+    return any((recipe.get(k) or 0) > SAME_DAY_LIMIT for k in ("prep_minutes", "cook_minutes"))
+
+
+def user_blacklist(data: dict, user_id) -> set:
+    """recipe_ids, die der User gar nicht mag (blacklist.yaml, gleicher Aufbau wie wishlist.yaml)."""
+    if user_id is None:
+        return set()
+    return {b.get("recipe_id") for b in data.get("blacklist", []) if str(b.get("user_id")) == str(user_id)}
+
+
+def _matches(ingredient: dict, wanted) -> bool:
+    """include/exclude-Eintrag aus dem Frontend: Zutaten-ID oder Name (Gross/Klein egal)."""
+    wanted = str(wanted).strip().lower()
+    return wanted in (str(ingredient.get("ingredient_id")), str(ingredient.get("name") or "").strip().lower())
+
+
+def ingredient_ok(ingredients: list[dict], include=(), exclude=(), allergies=()) -> bool:
+    """include: ALLE muessen vorkommen, exclude: KEINE darf vorkommen.
+    allergies z.B. ["lactose", "gluten"] -> raus, wenn eine Zutat lactose_free / gluten_free == False
+    hat. Fehlt das Feld, ist es unbekannt und filtert (noch) nicht."""
+    if not all(any(_matches(i, w) for i in ingredients) for w in include):
+        return False
+    if any(_matches(i, w) for i in ingredients for w in exclude):
+        return False
+    return not any(i.get(f"{a}_free") is False for i in ingredients for a in allergies)
 
 
 # ================= III total score, draw, swap =================
@@ -260,6 +286,7 @@ def build_propose_dataset(data: dict, user_id=None, today: Optional[date] = None
     for ri in data.get("recipe_ingredients", []):
         ingredients_by_recipe[ri.get("recipe_id")].append(ri)
 
+    ingredient_by_id = {i.get("ingredient_id"): i for i in data.get("ingredients", [])}
     by_id = {r.get("recipe_id"): r for r in recipes}
     ls_ids = last_supper(data, today)
     ls = merge_last_supper([recipe_features(by_id[i], data) for i in ls_ids if i in by_id])
@@ -277,6 +304,8 @@ def build_propose_dataset(data: dict, user_id=None, today: Optional[date] = None
             "recipe": r,
             "history": history_by_recipe.get(rid, []),
             "ingredients": ingredients_by_recipe.get(rid, []),
+            "ingredient_info": [ingredient_by_id[ri.get("ingredient_id")] for ri in ingredients_by_recipe.get(rid, [])
+                                if ri.get("ingredient_id") in ingredient_by_id],
             "never_cooked": not (entry or {}).get("last_date"),
             "date_score": d_score,
             "remove": remove,
@@ -291,9 +320,9 @@ def build_propose_dataset(data: dict, user_id=None, today: Optional[date] = None
 
 
 def hard_filter(dataset: dict, last_supper_ids: list, meal_type: str = "main_dish",
-                diet: str = "any", blacklist: Optional[set] = None) -> list:
-    """II.4 - recipe_ids, die nach allen harten Filtern uebrig bleiben.
-    Allergien: noch nicht moeglich (lactose_free / gluten_free fehlen in den Daten)."""
+                diet: str = "any", blacklist: Optional[set] = None,
+                include=(), exclude=(), allergies=()) -> list:
+    """II.4 - recipe_ids, die nach allen harten Filtern uebrig bleiben."""
     blacklist = blacklist or set()
     ls_roots = {variant_root(dataset[i]["recipe"]) for i in last_supper_ids if i in dataset}
     allowed = {r.get("recipe_id") for r in
@@ -305,20 +334,24 @@ def hard_filter(dataset: dict, last_supper_ids: list, meal_type: str = "main_dis
         and variant_root(d["recipe"]) not in ls_roots
         and rid not in blacklist
         and not is_same_day(d["recipe"])
+        and ingredient_ok(d["ingredient_info"], include, exclude, allergies)
     ]
 
 
 def propose(data: dict, user_id=None, today: Optional[date] = None, meal_type: str = "main_dish",
-            diet: str = "any", blacklist: Optional[set] = None, rng=random) -> list[dict]:
-    """Ganze Vorschlags-Pipeline (I.1 - I.6 im Doc). Gibt die vorgeschlagenen Rezept-Dicts zurueck.
-    Wird vom Server noch NICHT benutzt."""
+            diet: str = "any", blacklist: Optional[set] = None, rng=random, k: int = PROPOSAL_COUNT,
+            include=(), exclude=(), allergies=()) -> list[dict]:
+    """Ganze Vorschlags-Pipeline (I.1 - I.6 im Doc). Gibt bis zu k vorgeschlagene Rezept-Dicts zurueck.
+    blacklist kommt zusaetzlich zur blacklist.yaml des Users dazu."""
     today = today or date.today()
     dataset = build_propose_dataset(data, user_id, today)
-    candidates = hard_filter(dataset, last_supper(data, today), meal_type, diet, blacklist)
+    blacklist = set(blacklist or ()) | user_blacklist(data, user_id)
+    candidates = hard_filter(dataset, last_supper(data, today), meal_type, diet, blacklist,
+                             include, exclude, allergies)
     if not candidates:
         return []
     root_of = {rid: variant_root(dataset[rid]["recipe"]) for rid in candidates}
-    picks = draw_proposals({rid: dataset[rid]["score"] for rid in candidates}, root_of, rng=rng)
+    picks = draw_proposals({rid: dataset[rid]["score"] for rid in candidates}, root_of, k=k, rng=rng)
     picks = swap_proposals(
         picks, candidates, root_of,
         never_cooked={rid for rid in candidates if dataset[rid]["never_cooked"]},
@@ -342,47 +375,19 @@ def recipe_to_frontend(r: dict) -> dict:
     }
 
 
-def filter_recipes(
-    recipes: list[dict],
-    meal_type: str = "main_dish",
-    diet: str = "any",
-    include: Optional[list] = None,
-    exclude: Optional[list] = None,
-) -> list[dict]:
-    """
-    Zentrale Filter-Logik fuer Rezeptvorschlaege (genutzt von GET und POST /api/propsals).
+def diet_ok(veg_type: Optional[str], diet: str) -> bool:
+    """diet aus dem Frontend: any, vegan, vegetarian (vegan zaehlt mit), nonvegan, meat."""
+    if diet == "any":
+        return True
+    if diet == "vegetarian":
+        return veg_type in ("vegan", "vegetarian")
+    if diet == "nonvegan":
+        return veg_type != "vegan"
+    return veg_type == diet
 
-    HIER ist der Ort, um weitere Filter-Kriterien einzubauen (season, include/exclude
-    von Zutaten, History/Bewertung, ...) - einfach unten in der for-Schleife eine
-    weitere "continue"-Bedingung ergaenzen. include/exclude werden aktuell schon als
-    Parameter durchgereicht, aber noch NICHT ausgewertet - das ist der naechste Schritt.
 
-    Parameter:
-      recipes:   Liste aller rohen Rezept-Dicts (direkt aus recipes.yaml, ungefiltert)
-      meal_type: gewuenschter recipe_type, z.B. "main_dish", "sweet", "side_dish", ...
-      diet:      gewuenschter veg_type ("vegan", "vegetarian", "meat") oder "any"
-      include:   Liste von Zutaten-IDs, die im Rezept enthalten sein MUESSEN (noch offen)
-      exclude:   Liste von Zutaten-IDs, die NICHT enthalten sein DUERFEN (noch offen)
-
-    Rueckgabe: gefilterte Liste von rohen Rezept-Dicts (noch NICHT frontend-formatiert -
-               dafuer nach dem Aufruf recipe_to_frontend() auf jedes Element anwenden).
-    """
-    include = include or []
-    exclude = exclude or []
-
-    filtered = []
-    for r in recipes:
-        # --- Pflicht-Filter ---
-        if r.get("recipe_type") != meal_type:
-            continue
-        if diet != "any" and r.get("veg_type") != diet:
-            continue
-
-        # --- Ab hier weitere Filter ergaenzen, z.B.: ---
-        # if r.get("season") not in (gewuenschte_season, "always"): continue
-        # if include and nicht alle include-Zutaten im Rezept: continue
-        # if exclude and irgendeine exclude-Zutat im Rezept: continue
-
-        filtered.append(r)
-
-    return filtered
+def filter_recipes(recipes: list[dict], meal_type: str = "main_dish", diet: str = "any") -> list[dict]:
+    """Typ-/Diaet-Filter (Teil von hard_filter). Zutaten-Filter (include/exclude/Allergien)
+    brauchen die Zutaten und laufen deshalb in hard_filter ueber ingredient_ok.
+    Rueckgabe: rohe Rezept-Dicts (fuers Frontend danach recipe_to_frontend())."""
+    return [r for r in recipes if r.get("recipe_type") == meal_type and diet_ok(r.get("veg_type"), diet)]

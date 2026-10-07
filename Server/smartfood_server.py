@@ -16,6 +16,7 @@ FILES = {
     "recipe_ingredients": DATA_DIR / "recipe_ingredients.yaml",
     "history": DATA_DIR / "history.yaml",
     "wishlist": DATA_DIR / "wishlist.yaml",
+    "blacklist": DATA_DIR / "blacklist.yaml",
     "users": DATA_DIR / "users.yaml",
 }
 CACHE = {}
@@ -40,10 +41,12 @@ def load_all():
     return data
 
 def save_all(data):
+    """Schreibt nur die Collections, die in data enthalten sind - creation.html / ingredients.html
+    schicken z.B. kein wishlist/blacklist mit, die sollen dabei nicht geleert werden."""
     _ensure_files()
     for key, p in FILES.items():
-        val = data.get(key, [])
-        yr.update_yaml(p, key, val)
+        if key in data:
+            yr.update_yaml(p, key, data[key])
 
 
 app = Flask(__name__, static_folder=str(APP_DIR), static_url_path="/static")
@@ -119,42 +122,38 @@ def api_post_all():
 
 @app.get("/api/propsals")
 def get_default_recipes():
-    """GET: Zufaellige Hauptgerichte ohne Filter (Startbildschirm)."""
+    """GET: Hauptgerichte ohne Filter (Startbildschirm) - Vorschlags-Pipeline ProposeLogic.propose."""
     try:
         data = load_all()
-        filtered = pl.filter_recipes(data.get("recipes", []), meal_type="main_dish", diet="any")
-
-        mapped = [pl.recipe_to_frontend(r) for r in filtered]
-        scores = rl.recipe_scores(data)
-        mapped = rl.weighted_shuffle(mapped, scores, id_key="id")
+        picks = pl.propose(data, user_id=request.args.get("user") or None)
 
         return jsonify({
-            "main_dish": mapped[:5],  # Return 5 main dishes
+            "main_dish": [pl.recipe_to_frontend(r) for r in picks],
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @app.post("/api/propsals")
 def propose_meal():
-    """POST: Gefilterte Rezeptvorschlaege basierend auf Kriterien im Request-Body."""
+    """POST: Gefilterte Rezeptvorschlaege basierend auf Kriterien im Request-Body.
+    count Vorschlaege (Standard 10): die ersten werden angezeigt, der Rest ist Puffer fuers Wegklicken."""
     try:
         payload = request.get_json(force=True) or {}
 
         data = load_all()
-        filtered = pl.filter_recipes(
-            data.get("recipes", []),
+        picks = pl.propose(
+            data,
+            user_id=payload.get("user_id") or None,
             meal_type=payload.get("meal_type", "main_dish"),
             diet=payload.get("diet", "any"),
-            include=payload.get("include", []),
-            exclude=payload.get("exclude", []),
+            include=payload.get("include") or [],
+            exclude=payload.get("exclude") or [],
+            allergies=payload.get("allergies") or [],
+            k=int(payload.get("count") or 10),
         )
 
-        mapped = [pl.recipe_to_frontend(r) for r in filtered]
-        scores = rl.recipe_scores(data)
-        mapped = rl.weighted_shuffle(mapped, scores, id_key="id")
-
         return jsonify({
-            "recipes": mapped,
+            "recipes": [pl.recipe_to_frontend(r) for r in picks],
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -4,91 +4,127 @@ ingredients:
   side_dish: false
   unit: null
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 78
   name: Tomatenmark
   side_dish: false
   unit: null
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 313
   name: Erbsen
   side_dish: false
   unit: Tasse
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 205
   name: Ei
   side_dish: false
   unit: null
   veg_type: vegetarian
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 98
   name: Sojasauce
   side_dish: false
   unit: null
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 310
   name: Rinderbruehe
   side_dish: false
   unit: Liter
   veg_type: meat
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 7
   name: Zucker
   side_dish: false
   unit: TL
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 299
   name: Reiswein
   side_dish: false
   unit: TL
   veg_type: vegetarian
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 298
   name: Chilisauce
   side_dish: false
   unit: EL
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 300
   name: Mu-Err-Pilze
   side_dish: false
   unit: null
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 301
   name: Ketchup
   side_dish: false
   unit: EL
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 302
   name: Austersauce
   side_dish: false
   unit: EL
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 34
   name: Reisessig
   side_dish: false
   unit: EL
   veg_type: vegetarian
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 303
   name: Chilioel
   side_dish: false
   unit: TL
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 164
   name: Fruehlingszwiebel
   side_dish: false
   unit: null
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 242
   name: Ingwer
   side_dish: false
   unit: null
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 306
   name: Glasnudeln
   side_dish: false
   unit: g
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 52
   name: Camemberts
   side_dish: false
   unit: null
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 732
   name: Haehnchenbrustfilet
   side_dish: false
@@ -99,6 +135,8 @@ ingredients:
   protein: null
   carbs: null
   fat: null
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 775
   name: Ananas
   side_dish: false
@@ -109,14 +147,20 @@ ingredients:
   protein: null
   carbs: null
   fat: null
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 277
   name: Wasser
   side_dish: false
   spice: true
   unit: EL
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null
 - ingredient_id: 309
   name: Maisstaerke
   side_dish: false
   unit: EL
   veg_type: vegan
+  lactose_free: null
+  gluten_free: null

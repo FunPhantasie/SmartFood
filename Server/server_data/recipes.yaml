@@ -24,3 +24,8 @@ recipes:
   sweet: false
   variant_of: null
   veg_type: meat
+  origin:
+  - asian
+  cooking_method: pot
+  recipe_spec: soup
+  main_ingredient: 732

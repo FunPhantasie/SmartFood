@@ -18,6 +18,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # project root -> "Tools" importable
 from Tools import ProposeLogic as pl  # noqa: E402
+from Tools import YamlEditor as yr  # noqa: E402
 
 TODAY = date(2026, 9, 28)   # fixed, so every run gives the same numbers (autumn)
 
@@ -107,6 +108,7 @@ def example_data():
         "recipe_ingredients": [{"recipe_id": r[0], "ingredient_id": i} for r in recipes for i in r[10]],
         "history": [],
         "wishlist": [{"recipe_id": 10, "user_id": "u1"}],
+        "blacklist": [{"recipe_id": 11, "user_id": "u1"}, {"recipe_id": 6, "user_id": "u2"}],
     }
     for rid, (taste, effort, repeat, every, last_ago) in history.items():
         e = entry(repeat, every, last_ago, count=3)
@@ -126,7 +128,7 @@ def run_propose(runs=3000, seed=1):
     hits, max_same_root = Counter(), 0
     by_id = {r["recipe_id"]: r for r in data["recipes"]}
     for _ in range(runs):
-        res = pl.propose(data, user_id="u1", today=TODAY, blacklist={11}, rng=rng)
+        res = pl.propose(data, user_id="u1", today=TODAY, rng=rng)   # blacklist (Liver) from data
         hits.update(r["recipe_id"] for r in res)
         roots = Counter(pl.variant_root(r) for r in res)
         max_same_root = max(max_same_root, max(roots.values(), default=0))
@@ -143,6 +145,83 @@ def run_draws(runs=10000, seed=1, t=None):
     return {n: hits[n] / runs for n in DRAW_SCORES}, together
 
 
+def allowed(data=None, **kw):
+    """hard_filter on the example data (user u1) -> sorted recipe_ids."""
+    data = data or example_data()
+    ds = pl.build_propose_dataset(data, "u1", TODAY)
+    kw.setdefault("blacklist", pl.user_blacklist(data, "u1"))
+    return sorted(pl.hard_filter(ds, pl.last_supper(data, TODAY), **kw))
+
+
+def server_calls():
+    """GET + POST /api/propsals through Flask's test client on the example data (no running server)."""
+    from Server import smartfood_server as srv
+
+    class FixedDate(date):          # server uses date.today() -> pin it to TODAY like the example data
+        @classmethod
+        def today(cls):
+            return TODAY
+
+    load_all, real_date = srv.load_all, pl.date
+    srv.load_all, pl.date = example_data, FixedDate
+    try:
+        client = srv.app.test_client()
+        get = client.get("/api/propsals?user=u1").get_json()
+        post = client.post("/api/propsals", json={"meal_type": "main_dish", "diet": "vegan", "user_id": "u1",
+                                                  "include": [], "exclude": ["tomato"], "count": 10}).get_json()
+    finally:
+        srv.load_all, pl.date = load_all, real_date
+    return [r["id"] for r in get["main_dish"]], [r["id"] for r in post["recipes"]]
+
+
+def save_keeps_missing_keys():
+    """POST /api/all without wishlist (like creation.html / ingredients.html) must not empty
+    wishlist.yaml. Runs on temp copies - the real server_data is never written."""
+    import tempfile
+    from Server import smartfood_server as srv
+    files = srv.FILES
+    with tempfile.TemporaryDirectory() as tmp:
+        srv.FILES = {k: Path(tmp) / p.name for k, p in files.items()}
+        try:
+            srv.save_all({"wishlist": [{"recipe_id": 1, "user_id": "u1"}], "recipes": []})
+            srv.app.test_client().post("/api/all", json={"recipes": [], "ingredients": []})
+            return srv.load_all()["wishlist"] == [{"recipe_id": 1, "user_id": "u1"}]
+        finally:
+            srv.FILES = files
+
+
+def real_data():
+    """The real Server/server_data/*.yaml (read only). Checks on it must hold for ANY data,
+    so they keep working when recipes are added."""
+    from Server import smartfood_server as srv
+    return srv.load_all()
+
+
+def real_propose_ok(data, runs=50):
+    """propose() on real data: only hard-filter-allowed recipes, never two of one family,
+    and as many as possible (k or number of families left)."""
+    today = date.today()
+    ds = pl.build_propose_dataset(data, None, today)
+    allowed_ids = set(pl.hard_filter(ds, pl.last_supper(data, today)))
+    families = {pl.variant_root(ds[i]["recipe"]) for i in allowed_ids}
+    rng = random.Random(1)
+    for _ in range(runs):
+        res = [r["recipe_id"] for r in pl.propose(data, today=today, k=10, rng=rng)]
+        roots = [pl.variant_root(ds[i]["recipe"]) for i in res]
+        if not set(res) <= allowed_ids or len(roots) != len(set(roots)) or len(res) != min(10, len(families)):
+            return False
+    return True
+
+
+def bad_field_data():
+    """Example data with one wrong value per new field -> data_problems must find all 5."""
+    data = example_data()
+    r = data["recipes"][0]   # chicken curry, ingredients rice + chicken
+    r.update(origin=["mars"], cooking_method="boil", recipe_spec="pizza", main_ingredient=6)   # 6 = tomato, not in it
+    data["ingredients"][0]["lactose_free"] = "yes"
+    return data
+
+
 # ================= sanity checks =================
 def sanity_checks():
     """(name, passed) - only for DECIDED behavior (see doc VII)."""
@@ -157,6 +236,13 @@ def sanity_checks():
     data, _, hits, max_same_root = run_propose(500)
     ds = pl.build_propose_dataset(data, "u1", TODAY)
     ts = pl.calc_total_score
+    gluten_data = example_data()
+    gluten_data["ingredients"][1]["gluten_free"] = False          # noodles contain gluten
+    k3 = pl.propose(data, user_id="u1", today=TODAY, k=3, rng=random.Random(2))
+    k10 = pl.propose(data, user_id="u1", today=TODAY, k=10, rng=random.Random(2))
+    srv_get, srv_post = server_calls()
+    rd = real_data()
+    not_specific = dict(data["recipes"][0], main_ingredient=yr.NOT_SPECIFIC)
     return [
         ("date: just cooked -> 0 and removed", d(4, None, 0, 1) == (0.0, True)),
         ("date: within DATE_BLOCK days -> removed", d(5, 3, 3)[1]),
@@ -208,6 +294,34 @@ def sanity_checks():
         ("app: never two variants of one recipe in a list", max_same_root == 1),
         ("app: every allowed recipe can be proposed",
          all(hits[i] > 0 for i in hits if i not in EXPECTED_NEVER)),
+        ("filter: same day only above 60 min (60 ok, 61 out)",
+         not pl.is_same_day({"prep_minutes": 60, "cook_minutes": 60}) and pl.is_same_day({"cook_minutes": 61})),
+        ("filter: blacklist per user from data", pl.user_blacklist(data, "u1") == {11}
+         and pl.user_blacklist(data, "u2") == {6} and pl.user_blacklist(data, None) == set()),
+        ("filter: no extra filters -> all allowed", allowed() == [4, 5, 6, 7, 9, 10]),
+        ("filter: include by name (case-insensitive)", allowed(include=["chicken"]) == [4, 9]),
+        ("filter: include by ingredient_id", allowed(include=[4]) == [6]),
+        ("filter: include needs ALL ingredients", allowed(include=["chicken", "rice"]) == [4]),
+        ("filter: exclude by name", allowed(exclude=["Rice"]) == [5, 6, 7, 9]),
+        ("filter: allergy -> ingredient with gluten_free False removed",
+         allowed(gluten_data, allergies=["gluten"]) == [4, 6, 7, 10]),
+        ("filter: allergy field missing -> not filtered", allowed(allergies=["gluten", "lactose"]) == allowed()),
+        ("filter: diet vegetarian includes vegan", allowed(diet="vegetarian") == [5, 7, 10]),
+        ("filter: diet nonvegan", allowed(diet="nonvegan") == [4, 6, 9]),
+        ("filter: diet meat (exact)", allowed(diet="meat") == [4, 6, 9]),
+        ("propose: k=3 -> 3 recipes", len(k3) == 3),
+        ("propose: k > candidates -> every candidate once",
+         sorted(r["recipe_id"] for r in k10) == allowed()),
+        ("server: GET /api/propsals -> 5 allowed recipes",
+         len(srv_get) == pl.PROPOSAL_COUNT and set(srv_get) <= set(allowed())),
+        ("server: POST vegan, exclude tomato -> only pumpkin risotto", srv_post == [10]),
+        ("server: saving without wishlist/blacklist keeps them", save_keeps_missing_keys()),
+        ("fields: example data valid", yr.data_problems(data) == []),
+        ("fields: every wrong value found", len(yr.data_problems(bad_field_data())) == 5),
+        ("fields: main_ingredient 'not specific' -> no main rule",
+         pl.recipe_features(not_specific, data)["main"] is None),
+        ("real data: field values valid (YamlEditor.data_problems)", yr.data_problems(rd) == []),
+        ("real data: propose() only allowed recipes, one per family", real_propose_ok(rd)),
     ]
 
 
@@ -273,6 +387,23 @@ def main():
         x = ds[rid]
         print(f"{r['name']:26} {x['date_score']:5.2f} {x['reward_score']:5.2f} {x['damp_score_mult']:5.2f} "
               f"{x['damp_score_offset']:+4} {x['score']:6.2f} {hits[rid]:8.1%}  {EXPECTED_NEVER.get(rid, '')}")
+
+    print("\n=== Real data (Server/server_data) ===")
+    rd = real_data()
+    recipes, ingredients = rd["recipes"], rd["ingredients"]
+    print(f"{len(recipes)} recipes, {len(ingredients)} ingredients")
+    for f in ("origin", "cooking_method", "recipe_spec", "main_ingredient"):
+        print(f"  recipes with {f:16} {sum(1 for r in recipes if r.get(f)):4}/{len(recipes)}")
+    for a in yr.ALLERGENS:
+        print(f"  ingredients with {a}_free set {sum(1 for i in ingredients if i.get(f'{a}_free') is not None):4}"
+              f"/{len(ingredients)}")
+    for p in yr.data_problems(rd):
+        print(f"  PROBLEM: {p}")
+    ds = pl.build_propose_dataset(rd, None, date.today())
+    for rid, x in ds.items():
+        print(f"  {x['recipe'].get('name', rid):24} score {x['score']:6.2f}  damping: {', '.join(x['damp_rules']) or '-'}")
+    res = pl.propose(rd, k=10, rng=random.Random(1))
+    print(f"  propose() today -> {[r.get('name') for r in res]}")
 
     print("\n=== Sanity checks ===")
     checks = sanity_checks()

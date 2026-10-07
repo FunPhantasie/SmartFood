@@ -163,6 +163,25 @@
           </div>
         </div>
 
+        <div class="row" style="margin-top:8px;">
+          <div class="col">
+            <label>Laktosefrei</label>
+            <select id="ing_lactose">
+              <option value="">unbekannt</option>
+              <option value="true">ja</option>
+              <option value="false">nein</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Glutenfrei</label>
+            <select id="ing_gluten">
+              <option value="">unbekannt</option>
+              <option value="true">ja</option>
+              <option value="false">nein</option>
+            </select>
+          </div>
+        </div>
+
         <div class="row" style="margin-top:14px;">
           <div class="col" style="flex:0 0 auto;">
             <button class="btn primary" id="saveIngredient">Save new</button>
@@ -189,7 +208,7 @@
           <table id="ingredientsTable">
             <thead><tr>
               <th>ID</th><th>Name</th><th>Veg</th><th>Einheit</th><th>Haltbarkeit</th>
-              <th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th><th>Side</th><th></th>
+              <th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th><th>Side</th><th>Laktosefrei</th><th>Glutenfrei</th><th></th>
             </tr></thead>
             <tbody></tbody>
           </table>
@@ -236,6 +255,8 @@
     $('#ing_protein').value = '';
     $('#ing_carbs').value = '';
     $('#ing_fat').value = '';
+    $('#ing_lactose').value = '';
+    $('#ing_gluten').value = '';
     selectedIngredientId = null;
     $('#updateIngredient').disabled = true;
     $('#formTitle').textContent = 'Neue Zutat';
@@ -252,6 +273,8 @@
     $('#ing_protein').value = ing.protein ?? '';
     $('#ing_carbs').value = ing.carbs ?? '';
     $('#ing_fat').value = ing.fat ?? '';
+    $('#ing_lactose').value = triToSelect(ing.lactose_free);
+    $('#ing_gluten').value = triToSelect(ing.gluten_free);
     $('#updateIngredient').disabled = false;
     $('#formTitle').textContent = `Zutat bearbeiten (ID ${ing.ingredient_id})`;
   }
@@ -268,8 +291,14 @@
       protein: numOrNull($('#ing_protein').value),
       carbs: numOrNull($('#ing_carbs').value),
       fat: numOrNull($('#ing_fat').value),
+      lactose_free: selectToTri($('#ing_lactose').value),
+      gluten_free: selectToTri($('#ing_gluten').value),
     };
   }
+
+  // lactose_free / gluten_free: true / false / null (= unbekannt, filtert nicht)
+  function triToSelect(v) { return v === true ? 'true' : v === false ? 'false' : ''; }
+  function selectToTri(v) { return v === '' ? null : v === 'true'; }
 
   function saveNewIngredient() {
     const v = readFormValues();
@@ -340,6 +369,8 @@
         <td>${ing.carbs ?? ''}</td>
         <td>${ing.fat ?? ''}</td>
         <td>${ing.side_dish ? '✓' : ''}</td>
+        <td>${ing.lactose_free === true ? '✓' : ing.lactose_free === false ? '✗' : ''}</td>
+        <td>${ing.gluten_free === true ? '✓' : ing.gluten_free === false ? '✗' : ''}</td>
         <td><button class="btn danger" data-del="${ing.ingredient_id}" type="button">Delete</button></td>
       `;
       tr.addEventListener('click', (e) => {

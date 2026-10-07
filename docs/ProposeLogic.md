@@ -2,25 +2,17 @@
 
 Every formula is written down here as planned or as implemented, so code and idea can be checked against each other later.
 
-> Status: **work in progress** – what is implemented in the app ([Tools/ProposeLogic.py](../Tools/ProposeLogic.py)):
+> **Status** – shown next to every function heading. Code: [Tools/ProposeLogic.py](../Tools/ProposeLogic.py), used by the server in `GET` + `POST /api/propsals`.
 >
-> | Part | Function in `ProposeLogic.py` | Implemented | Used by the server |
-> |---|---|---|---|
-> | date_score (II.1) | `calc_date_score`, `date_score` | ✅ | ❌ |
-> | reward_score (II.2) | `calc_reward`, `reward_score` | ✅ | ❌ |
-> | damp_score (II.3) | `recipe_features`, `last_supper`, `merge_last_supper`, `calc_damping` | ✅ (rules only fire once the recipe fields from V exist) | ❌ |
-> | hard filter (II.4) | `hard_filter` | ✅ except allergies (no `lactose_free` / `gluten_free` data yet) | ⚠️ server only uses `filter_recipes` (type / diet) |
-> | total score (III) | `calc_total_score` | ✅ | ❌ |
-> | softmax draw + swap (III) | `softmax`, `draw_proposals`, `swap_proposals` | ✅ | ❌ server still uses `RatingLogic.weighted_shuffle` (taste only) |
-> | whole pipeline | `build_propose_dataset`, `propose` | ✅ | ❌ not connected to `/api/propsals` yet |
+> ⬜ not started · ✅ implemented in logic · ❌ logic error · ❓ open question (VIII) · 🧪 has test case ([tests/test_propose_plan.py](../tests/test_propose_plan.py), IX)
+>
+> 💡 = suggestion, not decided yet · ⚠️ = found by logic test (IX)
 >
 > All tuning knobs are constants at the top of `ProposeLogic.py`. Example scenarios: IX.
->
-> 💡 = suggestion, not decided yet · ⚠️ = found by logic test (IX) · ❓ = open question (VIII)
 
 ---
 
-# I. Overview
+# I. Overview – `propose()`, `build_propose_dataset()` ✅ 🧪
 
 1. Load all data (could be inefficient)
    1. Recipes
@@ -38,7 +30,8 @@ Every formula is written down here as planned or as implemented, so code and ide
    - variants of last_supper – they have their own history, so date_score doesn't catch them
    - blacklisted recipes
    - wrong `recipe_type` / `veg_type` (existing `filter_recipes`)
-   - same-day cooking: `prep_minutes` or `cook_minutes` ≥ 60 (II.2)
+   - same-day cooking: `prep_minutes` or `cook_minutes` > 60 (II.2)
+   - include / exclude ingredients (search filter)
    - lactose etc. allergies
 4. From history estimate effort vs. result: **reward_score** (II.2)
    - `taste_rating`, `effort_rating`, `prep_minutes`, `cook_minutes`
@@ -47,7 +40,7 @@ Every formula is written down here as planned or as implemented, so code and ide
 
 # II. Methods
 
-## 1. `date_score()` → date_score, remove
+## 1. `date_score()` → date_score, remove ✅ 🧪 ❓ (VIII.2)
 
 ```
 take dates (without today)
@@ -93,7 +86,7 @@ Tuning knobs in `ProposeLogic.py`: `DATE_SLOPE` (c = 30), `DATE_BLOCK` (b = 4), 
 | ≤ 1 date (also 0 dates + `last_date` from "cooked once") | `factor = 1` |
 | empty `repeat_rating` | `repeat = 2` |
 
-## 2. `reward_score()` → reward_score
+## 2. `reward_score()` → reward_score ✅ 🧪
 
 ```
 time      = cook_minutes + prep_minutes
@@ -110,7 +103,7 @@ effort_part = 1 - 0.5 · (taste / 10) · cost       # effort counts more for tas
 reward = 10 · timescore · taste_part · effort_part     ∈ [0, 10]
 ```
 
-The same-day filter (`cook_minutes` or `prep_minutes` ≥ 60 → remove) is a hard filter, see II.4.
+The same-day filter (`cook_minutes` or `prep_minutes` > 60 → remove) is a hard filter, see II.4.
 
 Idea:
 - effort is a **penalty** (multiplied), not added.
@@ -146,7 +139,7 @@ reward at 20 min (rows: taste 0–10, columns: effort 1–5):
 
 ✅ **Rating UI** ([Server/rating.html](../Server/rating.html)): taste 0–10, effort "1 = sehr einfach, 5 = sehr aufwendig". Existing data converted (taste × 2, effort 6 − x).
 
-## 3. `calc_damping()` → damp_score_mult, damp_score_offset (with `last_supper()`)
+## 3. `calc_damping()` → damp_score_mult, damp_score_offset (with `last_supper()`) ✅ 🧪 ❓ (VIII.10, VIII.11)
 
 ```
 load the last 3 cooked meals → last_supper (array[ids])
@@ -189,21 +182,27 @@ Loop recipe candidates:
 
 ❓ Note: a negative offset might be too strong (VIII.10).
 
-## 4. `hard_filter()` → allowed recipes
+## 4. `hard_filter()` → allowed recipes ✅ 🧪
 
 ```
 remove == True from date_score      → remove   (already removes last_supper itself)
 load all variants of last_supper (recipe field variant_of)
                                     → remove variants and original of last_supper
-blacklist                           → remove
-wrong recipe_type / veg_type        → remove
-cook_minutes or prep_minutes >= 60  → remove   (same-day cooking)
-allergies (lactose, gluten, …)      → remove
+blacklist (blacklist.yaml of the user + optional extra set) → remove
+wrong recipe_type / veg_type        → remove   (diet: vegetarian also allows vegan, nonvegan = not vegan)
+cook_minutes or prep_minutes > 60   → remove   (same-day cooking; exactly 60 is ok)
+include: not ALL ingredients in it  → remove   (ingredient name, case-insensitive, or ingredient_id)
+exclude: ANY ingredient in it       → remove
+allergies (lactose, gluten, …)      → remove if an ingredient has <allergy>_free == false
+                                               (field missing = unknown → not filtered)
 ```
+
+Server: `GET /api/propsals?user=<id>` → `propose()` with 5 results. `POST /api/propsals` takes
+`meal_type, diet, include, exclude, allergies, user_id, count` (default 10: shown + buffer for dismissing).
 
 Runs **after** date_score (I.3), because `remove` comes from date_score.
 
-# III. Generation List
+# III. Generation List – `calc_total_score()` ✅ 🧪
 
 > Uses: date_score | reward_score | damp_score | wishlist
 
@@ -228,7 +227,7 @@ Negative scores need no clamp: `exp` is always > 0.
 | before damping | 0 – 30 |
 | after damping (+ wishlist/5) | ≈ −12 – 35 |
 
-**Drawing**
+**Drawing** – `softmax()`, `draw_proposals()` ✅ 🧪
 
 ```
 repeat 5 times:
@@ -237,7 +236,7 @@ repeat 5 times:
     remove the drawn recipe AND its variants from the container
 ```
 
-**Swapping out recipes**
+**Swapping out recipes** – `swap_proposals()` ✅ 🧪
 
 - X: meal is proposed ("proposed")
 - ¬X: meal is never cooked ("never cooked")
@@ -266,10 +265,10 @@ Per recipe there is exactly **one** history entry. The arrays inside rotate (max
 | `variant_of` | recipe | id / null | original recipe of a variant | `null` |
 | `sweet` | recipe | bool | sweet dish | `false` |
 | `veg_type` | recipe | str | vegan / vegetarian / meat | – |
-| `origin` | recipe | list str | cuisine (II.3) | ⬜ not in data yet |
-| `cooking_method` | recipe | str | oven, pan, … (II.3) | ⬜ not in data yet |
-| `recipe_spec` | recipe | str | soup, casserole, … (II.3) | ⬜ not in data yet |
-| `main_ingredient` | recipe | `ingredient_id` / "not specific" | compared with the meat / side ingredients (II.3) | ⬜ not in data yet |
+| `origin` | recipe | list str | cuisine (II.3) | `[]` |
+| `cooking_method` | recipe | str | oven, pan, … (II.3) | `null` |
+| `recipe_spec` | recipe | str | soup, casserole, … (II.3) | `null` |
+| `main_ingredient` | recipe | `ingredient_id` / "not specific" | compared with the meat / side ingredients (II.3) | `null` |
 | type of meat | ingredients with `veg_type = meat` | `ingredient_id` | chicken, beef, … (II.3 `ls_meats`) | ❓ VIII.11 |
 | `side_dish` | ingredient | bool | ingredient is a side (rice, noodles, …) | `false` |
 | wishlist | wishlist | recipe_id, user_id | "put on next" | – |
@@ -277,28 +276,31 @@ Per recipe there is exactly **one** history entry. The arrays inside rotate (max
 
 # V. Database Structure
 
-## Recipes
+## Recipes – fields + `YamlEditor.data_problems()` ✅ 🧪
 
 - **Season:** all, spring, summer, autumn, winter
 - **Recipe type:** main dish, dessert, dip, spice mix, side dish, snack, starter
 - **Recipe specs:** soup, salad, casserole, bowl, sandwich, others
   - 💡 keep it one value per recipe, so damping (II.3) stays simple
-- **Cooking method:** oven, pan, grill, raw, steam
-- **Origin:** asian, oriental, mexican, indian, italian, home-style, mediterranean (can have multiple)
+- **Cooking method:** oven, pan, pot, grill, raw, steam
+- **Origin:** asian, oriental, mexican, indian, italian, home-style, mediterranean, american (can have multiple)
 - **Main ingredient** (if not specified): only check on creation whether the title matches the ingredients
   - can also be set to "not specific"
 - **Variants:** if a recipe is saved with noodles, a variant can be the same with rice, for example.
   When creating a recipe and choosing rice as an ingredient (saved as side dish), there can be an option to automatically create variants for other choices (noodles etc.).
 
-## Ingredients
+## Ingredients – `lactose_free`, `gluten_free` ✅ 🧪
 
 `ingredient_id, name, unit, veg_type, lactose_free, gluten_free, specs_ingredient`
 
+- **lactose_free / gluten_free:** `true` / `false` / `null` (= unknown, doesn't filter). Set in the ingredient forms.
+
 - **specs_ingredient:** side_dish, spice, basics (e.g. water, flour, butter, oil, …)
 
-## Blacklist 💡
+## Blacklist – filter ✅ 🧪 · button / endpoint to add entries ⬜
 
-Same structure as `wishlist.yaml`: `recipe_id, user_id, date`
+`server_data/blacklist.yaml`, same structure as `wishlist.yaml`: `recipe_id, user_id, date`.
+Read by `propose()` (`user_blacklist`). There is no button / endpoint to add entries yet.
 
 # VI. Old Formula (removed)
 
@@ -364,7 +366,7 @@ Test script [tests/test_propose_plan.py](../tests/test_propose_plan.py): imports
 It contains no formulas itself – tune the knobs in `ProposeLogic.py` and re-run.
 
 ```
-python tests/test_propose_plan.py              # prints all tables + sanity checks (41/41 passed)
+python tests/test_propose_plan.py              # prints all tables + sanity checks (63/63 passed)
 python -m pytest tests/test_propose_plan.py    # only the sanity checks (needs pytest)
 ```
 
@@ -433,7 +435,7 @@ today = 2026-09-28 (autumn). Chicken curry cooked yesterday, pumpkin soup 2 days
 | Veggie pasta | 6.00 | 4.49 | 1.00 | +3 | 13.49 | 95.7 % | |
 | Beef burger | 5.00 | 5.35 | 0.90 | +3 | 12.32 | 95.7 % | never cooked |
 | Tomato soup | 3.31 | 3.10 | 0.20 | +3 | 4.28 | 53.6 % | soup after soup ×0.2 |
-| Lasagne | 5.00 | 0.00 | 0.90 | +3 | 7.50 | 0 % | prep 70 min → same-day filter |
+| Lasagne | 5.00 | 0.00 | 0.90 | +3 | 7.50 | 0 % | prep 70 min → same-day filter (> 60) |
 | Pad thai | 5.00 | 5.35 | 0.90 | −2 | 7.32 | 84.3 % | chicken again −5 |
 | Pumpkin risotto | 5.00 | 4.53 | 1.00 | −3 | 18.53 | 100 % | wishlist |
 | Liver | 1.99 | 0.86 | 0.90 | +3 | 5.56 | 0 % | blacklist |
@@ -449,3 +451,5 @@ today = 2026-09-28 (autumn). Chicken curry cooked yesterday, pumpkin soup 2 days
 - 2026-09-28 – II.1 tanh formula (user) tested; taste scale 0–10, reward 0–10; rating UI + data fixed (taste 0–10, effort 5 = high).
 - 2026-09-28 – II.3 merged last_supper list, meat types, main-ingredient rule; hard filter after date_score; `remove` at date_score ≤ 0; softmax in III. Doc + test (29/29) brought up to date.
 - 2026-09-28 – Formulas moved from the test into `Tools/ProposeLogic.py` (old `repeatScore` removed); test now only feeds example scenarios (41/41). Status table shows app implementation.
+- 2026-10-07 – Server connected: `/api/propsals` (GET + POST) now runs `propose()`. Same-day filter changed to > 60 min (user decision). Hard filter extended: include/exclude ingredients, allergies (`<allergy>_free == false`), diet mapping (vegetarian ⊇ vegan, nonvegan), per-user `blacklist.yaml`. `propose(k=…)` for the frontend buffer. Test 57/57 incl. server endpoints via Flask test client.
+- 2026-10-07 – Recipe fields `origin`, `cooking_method`, `recipe_spec`, `main_ingredient` and ingredient fields `lactose_free`, `gluten_free` added (data, `YamlEditor`, creation + ingredients pages). Allowed values in `YamlEditor` (+ `pot`, `american`), checked by `YamlEditor.data_problems`. Test 63/63, incl. checks on the real data.

@@ -1,8 +1,12 @@
-What's still open
+What's still open (2026-10-07)
 
-The server doesn't use propose() yet. /api/propsals still runs filter_recipes + weighted_shuffle. I checked through Flask's test client (no running server needed) that it behaves as before.
-On your real data propose() returns an empty list. Recipe 52 has prep_minutes: 60, and the same-day filter removes anything at ≥ 60. Should it be > 60?
-Damping doesn't work on real data yet. The recipes still lack origin, cooking_method, recipe_spec and main_ingredient, so those rules don't fire.
-Meat type: the code uses the ingredients with veg_type = meat as the meat types. This is open question 11; it's the only place you'd need to change if you decide otherwise.
-The allergy filter isn't built. lactose_free and gluten_free aren't in the data yet.
-Nothing is committed.
+The propose logic is done and connected: GET + POST /api/propsals run ProposeLogic.propose(). Test: python tests/test_propose_plan.py -> 63/63 (also checks the real server_data, so it keeps working when recipes are added).
+
+Data / UI, not logic:
+1. Recipe fields origin, cooking_method, recipe_spec, main_ingredient exist (creation page). Only Pekingsuppe is filled in.
+2. Ingredient fields lactose_free / gluten_free exist (creation + ingredients page), all 22 still "unknown" (null). The home page doesn't send "allergies" yet (POST field exists).
+3. Blacklist: server_data/blacklist.yaml is read, but there is no button / endpoint to add entries.
+4. Only 1 recipe in server_data/recipes.yaml; data/recipes_generated.yaml has 322 not imported.
+5. RatingLogic.recipe_scores / weighted_shuffle are no longer used by the server.
+
+Open questions (docs/ProposeLogic.md VIII): #2 factor speed, #10 negative offset, #11 meat type (veg_type = meat ingredients).
