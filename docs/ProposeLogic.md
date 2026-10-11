@@ -62,14 +62,16 @@ Notebook: [Testing/date_score.ipynb](Testing/date_score.ipynb)
 Bewertet, wie stark ein Rezept wiederholt werden sollte, basierend darauf, wann es zuletzt gekocht wurde
 und wie regelmäßig es wiederholt wird.
 
-**Wenn noch nciht bewertet,aka Repaet Rating nie angegeben dann default value=2.**
+**Wenn noch nicht bewertet , aka Repaet Rating nie angegeben dann default ?.**
 
-**Wenn Dates list <=1 wird faktor auf 1 gesetzt.**
+**Wenn Dates list <=1 wird amplification auf ? gesetzt.**
 
 **Wenn noch nie gekocht soll date_score=5**
 
-**Wenn date_score Negativ Fall bei DistLast <4 nie gekocht Wird Removed From Proposal**
-Max dnesity insead of average Dinstance recalibration.
+**Wenn date_score Negativ Fall  Wird Removed From Proposal**
+
+** Lowest Wiederholungsscore 1 80% nach 60 Days **
+Anahme Rezepte mit Nidrgem Score sind Gerihcte der not und werden auch nciht erfasst.
 ### Formeln
 
 **Wiederholungsfaktor**
