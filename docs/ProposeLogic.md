@@ -41,15 +41,6 @@ Every formula is written down here as planned or as implemented, so code and ide
 # II. Methods
 
 ## 1. `date_score()` → date_score, remove ✅ 🧪 ❓ (VIII.2)
-Bewertet, wie stark ein Rezept wiederholt werden sollte, basierend darauf, wann es zuletzt gekocht wurde
-und wie regelmäßig es wiederholt wird.
-
-**Wenn noch nie bewertet soll repeat_score=2 und damit die Avergen Datümer nciht bestimmt werden könnnen keine Verstärkung 
-factor=1**
-
-**Wenn noch nie gekocht soll date_score=5**
-
-**Wenn Score Negativ Fall bei DistLast <4 nie gekocht Wird Removed From Proposal**
 ## Params
 
 | Variable       | Bedeutung                                                    |
@@ -59,6 +50,18 @@ factor=1**
 | `repeat_score` | Mittelwert aller `repeat_rating`s                            |
 | `dist_last`    | Abstand von  zwischen last cooked und tody (abgerundet)      |
 | `avg_dist-1`   | Mittlerer Abstand zwischen dates (abgerundet) minus 1        |
+
+Bewertet, wie stark ein Rezept wiederholt werden sollte, basierend darauf, wann es zuletzt gekocht wurde
+und wie regelmäßig es wiederholt wird.
+
+**Wenn noch nciht bewertet,aka Repaet Rating nie angegeben dann default value=2.**
+
+**Wenn Dates list <=1 wird faktor auf 1 gesetzt.**
+
+**Wenn noch nie gekocht soll date_score=5**
+
+**Wenn date_score Negativ Fall bei DistLast <4 nie gekocht Wird Removed From Proposal**
+Max dnesity insead of average Dinstance recalibration.
 ### Formeln
 
 **Wiederholungsfaktor**
