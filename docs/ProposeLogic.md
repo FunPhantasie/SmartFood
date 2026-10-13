@@ -70,7 +70,8 @@ und wie regelmäßig es wiederholt wird.
 
 **Wenn date_score Negativ Fall  Wird Removed From Proposal**
 
-** Lowest Wiederholungsscore 1 80% nach 60 Days **
+**Lowest Wiederholungsscore 1 80% nach 60 Days**
+
 Anahme Rezepte mit Nidrgem Score sind Gerihcte der not und werden auch nciht erfasst.
 ### Formeln
 
