@@ -26,10 +26,11 @@ Notebook: [Testing/test_with_data.ipynb](Testing/test_with_data.ipynb) (empty)
    4. Wishlist
    5. Blacklisted recipes (user doesn't like them at all)
 2. From history calculate **date_score** (II.1)
-   - distances in `dates` (array[date])
+   - mean / std of the gaps in `dates` (last 20)
    - distance last cooked ↔ today: `last_date` (date)
-   - repeat score: `repeat_rating` (array[int])
-   - sets `remove = True` if cooked within the last 4 days
+   - repeat score: `repeat_rating` (array[int], 0–10)
+   - rotation point `M` from all recipes + app usage
+   - sets `remove = True` if cooked within the last 5 days
 3. **Hard filters** (II.4) – remove before the other scores
    - `remove == True` from date_score (this already removes the last_supper recipes themselves)
    - variants of last_supper – they have their own history, so date_score doesn't catch them
@@ -45,73 +46,61 @@ Notebook: [Testing/test_with_data.ipynb](Testing/test_with_data.ipynb) (empty)
 
 # II. Methods
 
-## 1. `date_score()` → date_score, remove ⬜ 🟠 ❓ (VIII.2)
+## 1. `date_score()` → date_score, remove ⬜ 🧪
 
 Notebook: [Testing/date_score.ipynb](Testing/date_score.ipynb)
 
-## Params
+Idea: every recipe has its own rhythm. It should come back close to its **mean** gap, so the **std** of its gaps gets small.
+The Wdh rating decides a small shift of that target towards earlier (liked) or later (not liked).
 
-| Variable       | Bedeutung                                                    |
-|----------------|--------------------------------------------------------------|
-| `dates`        | Liste der Tage, an denen das Rezept gekocht & bewertet wurde |
-| `last_date`    | Tag an dem das Rezept als letzes gekocht wurde               |
-| `repeat_score` | Mittelwert aller `repeat_rating`s                            |
-| `dist_last`    | Abstand von  zwischen last cooked und tody (abgerundet)      |
-| `avg_dist-1`   | Mittlerer Abstand zwischen dates (abgerundet) minus 1        |
+| Variable | Meaning |
+|---|---|
+| `dates` | last 20 days the recipe was cooked (rated **or** "Einmal gekocht"), same day counts once |
+| `dist_last` | days between `last_date` and today |
+| `mean`, `std` | mean / std of the gaps between `dates` |
+| `repeat` | mean of `repeat_rating` (0–10, 5 = neutral) |
+| `n_rotation` | number of recipes with ≥ 2 `dates` |
+| `usage_every` | 30 days / number of cooks (all recipes) in the last 30 days |
+| `M` | rotation point: `n_rotation · usage_every` |
 
-Bewertet, wie stark ein Rezept wiederholt werden sollte, basierend darauf, wann es zuletzt gekocht wurde
-und wie regelmäßig es wiederholt wird.
-
-**Wenn noch nicht bewertet , aka Repaet Rating nie angegeben dann default ?.**
-
-**Wenn Dates list <=1 wird amplification auf ? gesetzt.**
-
-**Wenn noch nie gekocht soll date_score=5**
-
-**Wenn date_score Negativ Fall  Wird Removed From Proposal**
-
-**Lowest Wiederholungsscore 1 80% nach 60 Days**
-
-Anahme Rezepte mit Nidrgem Score sind Gerihcte der not und werden auch nciht erfasst.
-### Formeln
-
-**Wiederholungsfaktor**
+**Rotation point** – e.g. app used 10× a month → every 3 days; 10 recipes in rotation → `M` = 30 days
 
 $$
-\text{factor} = \max\left(1,\; 4 - \frac{avg\_dist}{14}\right), \qquad \text{factor} \in [1, 4]
+M = n\_rotation \cdot usage\_every
 $$
 
- Wer schneller als 14 Tage wiederholt results in High score.
-
-**Zeitfunktion**
+**Shift** – tanh with Wdh 5 in the center: 5 = no shift, 10 → earlier, 0 → later
 
 $$
-g(\text{factor},dist\_last) = \tanh\left(\frac{\text{factor}}{c} \cdot (dist\_last - b)\right), \qquad c = 30,\; b = 4
+w = \tanh\left(\frac{5 - repeat}{k_r}\right) \in (-1, 1), \qquad T = mean + w \cdot |M - mean|
 $$
 
-**Ergebnis**
+**Amplification** – the curve reaches 90 % of max exactly at `T`, clipped to [1, 4]
 
 $$
-\text{date}\_\text{score} = \max\left(0,\; 10/5 \cdot \text{repeat}\_\text{score} \cdot g(\text{factor}, \text{dist}\_\text{last}\right) \in [0, 10]
+amp = \text{clip}\left(\frac{\tau \cdot \operatorname{artanh}(0.9)}{T - b},\; 1,\; 4\right), \qquad \tau = \frac{60 - b}{\operatorname{artanh}(0.8)}
 $$
-Geteilt durch 5 weil repeat_score $\in$ [0,5] ist und auf 10 Normiert werden soll.
 
-## Ablauf
+`amp = 1` → 80 % after 60 days (slowest), `amp = 4` → fastest. Because of the clip, 90 % is reached between `T_min` and `T_max`, never earlier / later.
 
-1. Noch nie gekocht (`last_date` fehlt) → `date_score = 5`, nicht removed.
-2. `dist_last` = Tage zwischen `last_date` und heute.
-3. `repeat_score` = Mittelwert der `repeat_rating`s, ohne Ratings = 2.
-4. `factor` = 1 bei ≤ 1 Datum, sonst aus `avg_dist` (Mittel der n−1 Abstände in Tagen), siehe Formel oben.
-5. `date_score` nach Formel oben.
-6. `date_score ≤ 0` → `0`, removed (zu kürzlich gekocht).
+**Result**
 
-## TODO
+$$
+\text{date\_score} = \max\left(0,\; 10 \cdot \tanh\left(\frac{amp}{\tau} \cdot (dist\_last - b)\right)\right) \in [0, 10], \qquad b = \text{nulldurchgang} = 5
+$$
 
-- [ ] Divisor 14 an die Anzahl der Rezepte anpassen
- - [ ] Konstanten c,b Überarbeiten Testcases
+## Flow
 
+1. Never cooked (`last_date` missing) → `date_score = 5`, not removed.
+2. `mean`, `std` from the last 20 `dates`. < 2 dates → `mean = M` (so `T = M`).
+3. `repeat` = mean of `repeat_rating`, without ratings = 5 (no shift).
+4. `T`, `amp`, `date_score` as above.
+5. raw score ≤ 0 (cooked within `b` days) → `0`, removed.
 
-Idea: often cooked recipes (favorites) come back **faster** than rarely cooked ones.
+Knobs (`b`, `k_r`, 90 %, [1, 4], 30-day window) are tuned in the notebook.
+
+❓ `std` is only computed and shown so far (it is the thing the logic tries to make small) – it is not used inside the formula.
+❓ The shift is `|M − mean|`, so it can be large (rarely cooked, Wdh 9 → `T` jumps from 60 to ~20 days). Cap it?
 
 ## 2. `reward_score()` → reward_score ⬜ 🟠
 
@@ -268,9 +257,9 @@ Per recipe there is exactly **one** history entry. The arrays inside rotate (max
 
 | Field | Source | Type | Meaning | Default / missing |
 |---|---|---|---|---|
-| `dates` | history | list ISO date | days when rated (cooked) | `[]` |
+| `dates` | history | list ISO date | days when cooked (rated or "cooked once"), last 20 | `[]` |
 | `last_date` | history | ISO date | last cooked (also via "cooked once") | missing → never cooked |
-| `repeat_rating` | history | list int 1–5 | desire to repeat | `2` (II.1); seed for uncooked recipes: `[1]` |
+| `repeat_rating` | history | list int **0–10** | desire to repeat (5 = neutral) | `5` (II.1), UI prefill `5`; dismiss / seed for uncooked recipes: `0` |
 | `taste_rating` | history | list int **0–10** | taste (0 = bad, 10 = great) | `8` (II.2), UI prefill `5` |
 | `effort_rating` | history | list int 1–5 | effort (1 = low, **5 = high effort**) | `3` |
 | `prep_minutes` / `cook_minutes` | recipe | int | times | 45 min total (II.2) |
@@ -333,7 +322,7 @@ The sanity checks now live at the end of each notebook (cell "Sanity Checks"):
 # VIII. Open Questions
 
 1. ~~**II.1 direction of exp**~~ → replaced by tanh.
-2. ❓ **II.1 factor:** favorites (factor 4) come back faster than rarely cooked ones (factor 1). Recipes cooked only once → factor 1 → slow. Intended?
+2. ~~**II.1 factor**~~ → replaced by mean/std of the gaps + rotation point `M` + Wdh shift (2026-10-13).
 3. ~~**II.1 "without today"**~~ → without today.
 4. ~~**`repeat_rating` mean or last value**~~ → mean (II.1).
 5. ~~**II.2 effort**~~ → multiplicative formula, UI + data fixed.
@@ -360,3 +349,4 @@ The sanity checks now live at the end of each notebook (cell "Sanity Checks"):
 - 2026-10-11 – Code removed from this doc, it now lives only in the notebooks in `docs/Testing/` (linked per section). Logic kept as formulas / rule tables. All statuses reset to ⬜ not implemented · 🟠 not tested; old test values marked "old".
 - 2026-10-11 – Sanity checks (VII) moved into the notebooks in `docs/Testing/`.
 - 2026-10-11 – Concept only: ranges, result tables, tuning knobs and the logic test (IX) removed; fine tuning happens in the notebooks.
+- 2026-10-13 – II.1 new logic (user): target `T` = mean gap + Wdh-weighted shift towards / away from the rotation point `M`, tanh reaches 90 % at `T` (amp clipped to [1, 4]). Notebook rewritten, sanity checks 15/15. `repeat_rating` now 0–10 (UI, `RatingLogic`, data: old `(x − 1) · 2.5`). "Einmal gekocht" now also adds to `dates` (other arrays get `None`), so `dates` holds every cook (last 20).

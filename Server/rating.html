@@ -113,7 +113,7 @@
 
 <div class="block">
   <h3>Wiederholung</h3>
-  <p class="hint" style="color:#a7b4d6; font-size:13px; margin-top:0;">Wie gerne würdest du das bald wieder kochen? (1 = eher lange nicht, 5 = sehr gerne bald wieder)</p>
+  <p class="hint" style="color:#a7b4d6; font-size:13px; margin-top:0;">Wie gerne würdest du das bald wieder kochen? (0 = eher lange nicht, 10 = sehr gerne bald wieder)</p>
   <div class="stars" id="repeatStars"></div>
 </div>
 
@@ -217,7 +217,7 @@ async function loadRating(){
   };
 
   tasteRating = buildStars(document.getElementById("tasteStars"), 0, 10);
-  repeatRating = buildStars(document.getElementById("repeatStars"));
+  repeatRating = buildStars(document.getElementById("repeatStars"), 0, 10);
   effortRating = buildStars(document.getElementById("effortStars"));
 
   document.querySelectorAll('input[name="variantMode"]').forEach(radio => {
@@ -240,7 +240,7 @@ async function loadRating(){
 
   const defaults = data.default_ratings || {};
   tasteRating.set(defaults.taste_rating ?? 5, defaults.taste_rating_avg);
-  repeatRating.set(defaults.repeat_rating ?? 3, defaults.repeat_rating_avg);
+  repeatRating.set(defaults.repeat_rating ?? 5, defaults.repeat_rating_avg);
   effortRating.set(defaults.effort_rating ?? 3, defaults.effort_rating_avg);
 
   // recipe.prep_minutes/cook_minutes sind bereits der (auf 10 gerundete) Durchschnitt ueber

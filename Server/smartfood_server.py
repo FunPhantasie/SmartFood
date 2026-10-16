@@ -85,7 +85,7 @@ def api_get_users():
 
 @app.post("/api/dismiss")
 def ditch_prop():
-    """'Nicht interessiert'-Button beim Vorschlag: senkt den Wiederholungswunsch (repeat_rating=1)
+    """'Nicht interessiert'-Button beim Vorschlag: senkt den Wiederholungswunsch (repeat_rating=0)
     fuer dieses Rezept per neuem history-Eintrag (siehe RatingLogic.log_dismissed)."""
     try:
         payload = request.get_json(force=True) or {}

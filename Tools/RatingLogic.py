@@ -13,9 +13,12 @@ MIN_WEIGHT = 0.2      # Rezepte mit sehr schlechtem Score sollen trotzdem noch (
 # effort_rating/prep_minutes/cook_minutes/dates sind darin je ein rollierendes Array - beim
 # naechsten Eintrag faellt bei allen gemeinsam der aelteste Wert raus (siehe _push_rotating).
 # So bleiben die Arrays synchron: Index i in jedem Array gehoert zur selben Bewertung.
-# Skalen: taste_rating 0-10 (10 = super lecker), repeat_rating 1-5, effort_rating 1-5
-# (1 = sehr einfach, 5 = sehr aufwendig).
+# dates enthaelt JEDES Kochen (auch 'Einmal gekocht' ohne Bewertung, dort sind die anderen
+# Arrays an diesem Index None) - date_score braucht die letzten 20 Koch-Daten fuer mean/std.
+# Skalen: taste_rating 0-10 (10 = super lecker), repeat_rating 0-10 (5 = neutral),
+# effort_rating 1-5 (1 = sehr einfach, 5 = sehr aufwendig).
 HISTORY_ARRAY_MAX = 20
+RATING_KEYS = ("taste_rating", "repeat_rating", "effort_rating", "prep_minutes", "cook_minutes")
 
 
 def round_to_10(minutes: float) -> int:
@@ -122,8 +125,8 @@ def _ceil_avg(values: list) -> Optional[float]:
 
 def default_ratings(data: dict, recipe_id: int) -> dict:
     """Durchschnitt der letzten Bewertungen dieses Rezepts (aufgerundet auf ganze Sterne),
-    zum Vorbefuellen der Bewertungsseite. Ohne jede history: neutraler Default (Geschmack 5
-    auf 0-10, Rest 3 auf 1-5). Die *_avg Werte sind die ungerundeten Mittelwerte, fuer eine
+    zum Vorbefuellen der Bewertungsseite. Ohne jede history: neutraler Default (Geschmack und
+    Wiederholung 5 auf 0-10, Aufwand 3 auf 1-5). Die *_avg Werte sind die ungerundeten Mittelwerte, fuer eine
     optionale Halb-Stern-Anzeige."""
     entry = _find_history_entry(data, recipe_id)
     taste_avg = _ceil_avg(entry.get("taste_rating", []) if entry else [])
@@ -131,7 +134,7 @@ def default_ratings(data: dict, recipe_id: int) -> dict:
     effort_avg = _ceil_avg(entry.get("effort_rating", []) if entry else [])
     return {
         "taste_rating": math.ceil(taste_avg) if taste_avg is not None else 5,
-        "repeat_rating": math.ceil(repeat_avg) if repeat_avg is not None else 3,
+        "repeat_rating": math.ceil(repeat_avg) if repeat_avg is not None else 5,
         "effort_rating": math.ceil(effort_avg) if effort_avg is not None else 3,
         "taste_rating_avg": taste_avg,
         "repeat_rating_avg": repeat_avg,
@@ -139,7 +142,7 @@ def default_ratings(data: dict, recipe_id: int) -> dict:
     }
 
 
-def _log_low_repeat(data: dict, recipe_id: int, value: int = 1) -> dict:
+def _log_low_repeat(data: dict, recipe_id: int, value: int = 0) -> dict:
     """Haengt value ans rollierende repeat_rating-Array des Rezepts an - ohne dates/last_date
     oder die anderen Arrays anzufassen. Gemeinsame Basis fuer log_dismissed (User lehnt
     Vorschlag ab) und ensure_uncooked_seed (Rezept ganz ohne history)."""
@@ -151,32 +154,45 @@ def _log_low_repeat(data: dict, recipe_id: int, value: int = 1) -> dict:
 
 def log_dismissed(data: dict, recipe_id: int) -> dict:
     """'Nicht interessiert'-Button beim Vorschlag (/api/dismiss): senkt den Wiederholungs-
-    Wunsch fuer dieses Rezept mit einem niedrigen repeat_rating=1 - unabhaengig davon, ob
+    Wunsch fuer dieses Rezept mit dem niedrigsten repeat_rating=0 - unabhaengig davon, ob
     das Rezept schonmal gekocht wurde."""
-    return _log_low_repeat(data, recipe_id, 1)
+    return _log_low_repeat(data, recipe_id, 0)
 
 
 def ensure_uncooked_seed(data: dict, recipe_id: int) -> Optional[dict]:
     """Falls dieses Rezept noch KEINEN history-Eintrag hat (noch nie gekocht/bewertet/
-    dismissed), wird ein initialer Eintrag mit repeat_rating=1 angelegt - damit ein komplett
+    dismissed), wird ein initialer Eintrag mit repeat_rating=0 angelegt - damit ein komplett
     unerprobtes Rezept in einer history-basierten Auswertung nicht wie ein neutral bewaehrtes
     (DEFAULT_SCORE) behandelt wird. Gibt den neuen Eintrag zurueck, oder None wenn bereits
     history existiert."""
     if _find_history_entry(data, recipe_id) is not None:
         return None
-    return _log_low_repeat(data, recipe_id, 1)
+    return _log_low_repeat(data, recipe_id, 0)
+
+
+def _cooked_today_unrated(entry: dict, today: str) -> bool:
+    """Wurde heute schon per log_cooked ein dates-Eintrag ohne Bewertung angelegt?"""
+    dates = entry.get("dates") or []
+    return bool(dates) and dates[-1] == today and all(
+        (entry.get(k) or [None])[-1] is None for k in RATING_KEYS
+    )
 
 
 def log_cooked(data: dict, recipe_id: int, user_id) -> dict:
-    """'Einmal gekocht'-Button: aktualisiert NUR last_date (keine Bewertung, keine Zeiten,
-    kein neuer dates-Eintrag - der dates-Array-Eintrag ist rate_recipe vorbehalten). Ein
-    Rezept, das gerade gekocht wurde, muss nicht mehr auf der Wunschliste stehen - wird also
-    automatisch entfernt."""
+    """'Einmal gekocht'-Button: setzt last_date und haengt heute an dates an (keine
+    Bewertung - die anderen Arrays bekommen an diesem Index None, damit sie synchron bleiben).
+    Zweimal am selben Tag ergibt nur einen dates-Eintrag. Ein Rezept, das gerade gekocht
+    wurde, muss nicht mehr auf der Wunschliste stehen - wird also automatisch entfernt."""
     _find_recipe(data, recipe_id)  # 404 schon hier, bevor irgendwas geschrieben wird
     remove_wishlist(data, recipe_id, user_id)
 
+    today = date.today().isoformat()
     entry = _get_or_create_history_entry(data, recipe_id)
-    entry["last_date"] = date.today().isoformat()
+    entry["last_date"] = today
+    if not _cooked_today_unrated(entry, today):
+        _push_rotating(entry, "dates", today)
+        for key in RATING_KEYS:
+            _push_rotating(entry, key, None)
     return entry
 
 
@@ -268,13 +284,23 @@ def rate_recipe(
 
     today = date.today().isoformat()
     entry = _get_or_create_history_entry(data, target_recipe["recipe_id"])
-    _push_rotating(entry, "dates", today)
+    ratings = {
+        "taste_rating": taste_rating,
+        "repeat_rating": repeat_rating,
+        "effort_rating": effort_rating,
+        "prep_minutes": actual_prep,
+        "cook_minutes": actual_cook,
+    }
+    if _cooked_today_unrated(entry, today):
+        # heute schon per 'Einmal gekocht' erfasst -> diesen Index fuellen statt ein zweites
+        # Datum anzulegen (sonst entstuende ein 0-Tage-Abstand in dates)
+        for key, value in ratings.items():
+            entry[key][-1] = value
+    else:
+        _push_rotating(entry, "dates", today)
+        for key, value in ratings.items():
+            _push_rotating(entry, key, value)
     entry["last_date"] = today
-    _push_rotating(entry, "taste_rating", taste_rating)
-    _push_rotating(entry, "repeat_rating", repeat_rating)
-    _push_rotating(entry, "effort_rating", effort_rating)
-    _push_rotating(entry, "prep_minutes", actual_prep)
-    _push_rotating(entry, "cook_minutes", actual_cook)
 
     update_recipe_times(data, target_recipe)
 
