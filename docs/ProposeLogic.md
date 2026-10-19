@@ -15,23 +15,21 @@ Every formula is written down here as planned, so code and idea can be checked a
 > Currently Working At Implementing Logic test Cases import Recipes
 ---
 
-# I. Overview – `propose()`, `build_propose_dataset()` ⬜ 🟠
+# I. Overview Workflow
 
-Notebook: [Testing/test_with_data.ipynb](Testing/test_with_data.ipynb) (empty)
-
-1. Load all data (could be inefficient)
-   1. Recipes
-   2. History
-   3. Recipe ingredients
-   4. Wishlist
-   5. Blacklisted recipes (user doesn't like them at all)
-2. From history calculate **date_score** (II.1)
-   - mean / std of the gaps in `dates` (last 20)
-   - distance last cooked ↔ today: `last_date` (date)
-   - repeat score: `repeat_rating` (array[int], 0–10)
-   - rotation point `M` from all recipes + app usage
-   - sets `remove = True` if cooked within the last 5 days
-3. **Hard filters** (II.4) – remove before the other scores
+## 1. Load all data (could be inefficient)
+      - Recipes
+      - History
+      - Recipe ingredients
+      - Wishlist
+      - Blacklisted recipes (user doesn't like them at all)
+## 2. Calculatate Different Scores
+   - From history calculate **date_score,remove**  ✅🧪
+   - From history,recipes calculate **reward_score**  ⬜ 🟠 
+   - From ??? calculate **damping**  ⬜ 🟠 
+   - Calculate Final Score ⬜🟠 
+   
+## 3. **Hard filters**  – remove before the other scores
    - `remove == True` from date_score (this already removes the last_supper recipes themselves)
    - variants of last_supper – they have their own history, so date_score doesn't catch them
    - blacklisted recipes
@@ -39,154 +37,17 @@ Notebook: [Testing/test_with_data.ipynb](Testing/test_with_data.ipynb) (empty)
    - same-day cooking: `prep_minutes` or `cook_minutes` > 60 (II.2)
    - include / exclude ingredients (search filter)
    - lactose etc. allergies
+
+
 4. From history estimate effort vs. result: **reward_score** (II.2)
    - `taste_rating`, `effort_rating`, `prep_minutes`, `cook_minutes`
 5. Damp meals similar to recently cooked ones: **damp_score** (II.3)
 6. Generate list: total score → softmax draw of 5 → swapping (III)
 
-# II. Methods
 
-## 1. `date_score()` → date_score, remove ⬜ 🧪
-
-Notebook: [Testing/date_score.ipynb](Testing/date_score.ipynb)
-
-Idea: every recipe has its own rhythm. It should come back close to its **mean** gap, so the **std** of its gaps gets small.
-The Wdh rating decides a small shift of that target towards earlier (liked) or later (not liked).
-
-| Variable | Meaning |
-|---|---|
-| `dates` | last 20 days the recipe was cooked (rated **or** "Einmal gekocht"), same day counts once |
-| `dist_last` | days between `last_date` and today |
-| `mean`, `std` | mean / std of the gaps between `dates` |
-| `repeat` | mean of `repeat_rating` (0–10, 5 = neutral) |
-| `n_rotation` | number of recipes with ≥ 2 `dates` |
-| `usage_every` | 30 days / number of cooks (all recipes) in the last 30 days |
-| `M` | rotation point: `n_rotation · usage_every` |
-
-**Rotation point** – e.g. app used 10× a month → every 3 days; 10 recipes in rotation → `M` = 30 days
-
-$$
-M = n\_rotation \cdot usage\_every
-$$
-
-**Shift** – tanh with Wdh 5 in the center: 5 = no shift, 10 → earlier, 0 → later
-
-$$
-w = \tanh\left(\frac{5 - repeat}{k_r}\right) \in (-1, 1), \qquad T = mean + w \cdot |M - mean|
-$$
-
-**Amplification** – the curve reaches 90 % of max exactly at `T`, clipped to [1, 4]
-
-$$
-amp = \text{clip}\left(\frac{\tau \cdot \operatorname{artanh}(0.9)}{T - b},\; 1,\; 4\right), \qquad \tau = \frac{60 - b}{\operatorname{artanh}(0.8)}
-$$
-
-`amp = 1` → 80 % after 60 days (slowest), `amp = 4` → fastest. Because of the clip, 90 % is reached between `T_min` and `T_max`, never earlier / later.
-
-**Result**
-
-$$
-\text{date\_score} = \max\left(0,\; 10 \cdot \tanh\left(\frac{amp}{\tau} \cdot (dist\_last - b)\right)\right) \in [0, 10], \qquad b = \text{nulldurchgang} = 5
-$$
-
-## Flow
-
-1. Never cooked (`last_date` missing) → `date_score = 5`, not removed.
-2. `mean`, `std` from the last 20 `dates`. < 2 dates → `mean = M` (so `T = M`).
-3. `repeat` = mean of `repeat_rating`, without ratings = 5 (no shift).
-4. `T`, `amp`, `date_score` as above.
-5. raw score ≤ 0 (cooked within `b` days) → `0`, removed.
-
-Knobs (`b`, `k_r`, 90 %, [1, 4], 30-day window) are tuned in the notebook.
-
-❓ `std` is only computed and shown so far (it is the thing the logic tries to make small) – it is not used inside the formula.
-❓ The shift is `|M − mean|`, so it can be large (rarely cooked, Wdh 9 → `T` jumps from 60 to ~20 days). Cap it?
-
-## 2. `reward_score()` → reward_score ⬜ 🟠
-
-Notebook: [Testing/reward_score.ipynb](Testing/reward_score.ipynb)
-
-| Variable | Meaning |
-|---|---|
-| `time` | `cook_minutes + prep_minutes` |
-| `taste` | mean of `taste_rating` (0 = bad, 10 = great) |
-| `effort` | mean of `effort_rating` (1 = low, 5 = high) |
-
-**Time** – 50 min = midpoint (0.5), 7.5 min as unit
-
-$$
-\text{timescore} = \frac{1}{1 + e^{(time - 50)/7.5}}
-$$
-
-**Taste** – low taste is punished hard
-
-$$
-\text{taste\_part} = \left(\frac{taste}{10}\right)^{1.5}
-$$
-
-**Effort** – cost 0 = low, 1 = high; effort counts more for tasty dishes
-
-$$
-\text{cost} = \frac{effort - 1}{4}, \qquad \text{effort\_part} = 1 - 0.5 \cdot \frac{taste}{10} \cdot \text{cost}
-$$
-
-**Result**
-
-$$
-\text{reward} = 10 \cdot \text{timescore} \cdot \text{taste\_part} \cdot \text{effort\_part} \in [0, 10]
-$$
-
-The same-day filter (`cook_minutes` or `prep_minutes` > 60 → remove) is a hard filter, see II.4.
-
-Idea:
-- effort is a **penalty** (multiplied), not added.
-- bad taste can't be saved by low effort.
-- effort effect grows with taste: max. penalty = 50 % · taste / 10.
-
-**Edge cases**
-
-| Case | Handling |
-|---|---|
-| never cooked (no ratings) | `taste = 8`, `effort = 3`, `time = 45 min` |
-| missing times | treat as 45 min |
-| total time > 60 min (each part < 60) | passes the filter, but timescore makes the reward small |
 
 ⬜ 🟠 **Rating UI** ([Server/rating.html](../Server/rating.html)): taste 0–10, effort "1 = sehr einfach, 5 = sehr aufwendig". Existing data converted (taste × 2, effort 6 − x).
 
-## 3. `calc_damping()` → damp_score_mult, damp_score_offset (with `last_supper()`) ⬜ 🟠 ❓ (VIII.10, VIII.11)
-
-Notebook: [Testing/damping.ipynb](Testing/damping.ipynb)
-
-**last_supper** = the last 3 cooked meals, ignored if cooked more than 4 days ago. Their ingredients come from `recipe_ingredients`.
-
-Build **one** merged list from all last_supper meals (once, before looping the candidates):
-
-| List | Content |
-|---|---|
-| `ls_origins` | all origins |
-| `ls_methods` | all cooking methods |
-| `ls_specs` | only sweet, soup, casserole (no other specs) |
-| `ls_sides` | all side_dish ingredients |
-| `ls_mains` | all main ingredients |
-| `ls_meats` | all ingredients with `veg_type == meat` (each one counts for `len`) |
-
-**Rules per candidate** – start with `damp_score_mult = 1`, `damp_score_offset = 0`:
-
-| Condition | Effect |
-|---|---|
-| season overlap (current season, "all" also) | offset + 3 |
-| candidate origin in `ls_origins` | offset − 1 |
-| candidate cooking method in `ls_methods` | nothing |
-| candidate sweet, soup or casserole in `ls_specs` | mult · (1 − 0.8) |
-| candidate side_dish in `ls_sides` | offset − 3 |
-| candidate is meat | mult · (1 − 0.1 · len(`ls_meats`)) — note: (1−x)ⁿ ≥ 1−nx |
-| candidate meat in `ls_meats` | offset − 5 |
-| main ingredient in `ls_mains` and it is meat or side_dish | mult · (1 − 0.1) |
-| main ingredient in `ls_mains`, otherwise | offset − 3 |
-
-→ every rule only checks "in list: yes / no" → fires at most once per candidate.
-
-❓ Note: a negative offset might be too strong (VIII.10).
 
 ## 4. `hard_filter()` → allowed recipes ⬜ 🟠
 
@@ -350,3 +211,4 @@ The sanity checks now live at the end of each notebook (cell "Sanity Checks"):
 - 2026-10-11 – Sanity checks (VII) moved into the notebooks in `docs/Testing/`.
 - 2026-10-11 – Concept only: ranges, result tables, tuning knobs and the logic test (IX) removed; fine tuning happens in the notebooks.
 - 2026-10-13 – II.1 new logic (user): target `T` = mean gap + Wdh-weighted shift towards / away from the rotation point `M`, tanh reaches 90 % at `T` (amp clipped to [1, 4]). Notebook rewritten, sanity checks 15/15. `repeat_rating` now 0–10 (UI, `RatingLogic`, data: old `(x − 1) · 2.5`). "Einmal gekocht" now also adds to `dates` (other arrays get `None`), so `dates` holds every cook (last 20).
+- 2026-10-19 – Rearanged a lot Of Text out of ProposeLogic into Testing Nootbooks where the Explain should happen Al lot to clean yet.
