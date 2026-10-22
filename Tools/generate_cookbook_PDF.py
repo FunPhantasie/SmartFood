@@ -20,12 +20,23 @@ import latexDefaultGenerator as lG
 # Pfade (wie von dir gewünscht)
 # ------------------------------------------------------------
 APP_DIR = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(APP_DIR))   # Projekt-Root -> "Tools" importierbar (gleiche Score-Formeln wie die App)
+from Tools import ProposeLogic as pl  # noqa: E402
+from Tools import RatingLogic as rl  # noqa: E402
 
-DATA_DIR = APP_DIR / "data"
+DATA_DIR = APP_DIR / "Server" / "server_data"   # gleiche Daten wie die Website
 
 RECIPES_YAML = DATA_DIR / "recipes.yaml"
 RECIPE_INGREDIENTS_YAML = DATA_DIR / "recipe_ingredients.yaml"
 INGREDIENTS_YAML = DATA_DIR / "ingredients.yaml"
+HISTORY_YAML = DATA_DIR / "history.yaml"      # optional: Bewertungen -> Scores im PDF
+
+ORIGIN_DE = {"asian": "Asiatisch", "oriental": "Orientalisch", "mexican": "Mexikanisch", "indian": "Indisch",
+             "italian": "Italienisch", "home-style": "Hausmannskost", "mediterranean": "Mediterran",
+             "american": "Amerikanisch"}
+METHOD_DE = {"oven": "Ofen", "pan": "Pfanne", "pot": "Topf", "grill": "Grill", "raw": "Roh", "steam": "Dampf"}
+SPEC_DE = {"soup": "Suppe", "salad": "Salat", "casserole": "Auflauf", "bowl": "Bowl",
+           "sandwich": "Sandwich", "others": "Sonstiges"}
 
 
 # ------------------------------------------------------------
@@ -73,6 +84,49 @@ def bool_de(x: Optional[bool]) -> str:
     return "Ja" if x else "Nein"
 
 
+def fmt_score(x: float) -> str:
+    """Eine Nachkommastelle mit deutschem Komma."""
+    return f"{x:.1f}".replace(".", ",")
+
+
+def info_line(rec: Recipe) -> str:
+    """Kueche · Methode · Art (Rezeptfelder aus docs/ProposeLogic.md V), leer wenn nichts gepflegt."""
+    parts = []
+    if rec.origin:
+        parts.append("Küche: " + ", ".join(ORIGIN_DE.get(o, o) for o in rec.origin))
+    if rec.cooking_method:
+        parts.append("Methode: " + METHOD_DE.get(rec.cooking_method, rec.cooking_method))
+    if rec.recipe_spec:
+        parts.append("Art: " + SPEC_DE.get(rec.recipe_spec, rec.recipe_spec))
+    return " • ".join(parts)
+
+
+def score_line(rec: Recipe, entry: Optional[dict]) -> str:
+    """Bewertungen + reward_score (gleiche Formel wie die App, Tools/ProposeLogic.py).
+    Pro Bewertung der Schnitt aus der history, sonst der Standardwert des Rezepts
+    (RatingLogic.default_ratings, wie beim Vorbefuellen der Bewertungsseite).
+    Datum-/Daempfungs-Scores haengen vom heutigen Tag ab und gehoeren nicht ins gedruckte Buch."""
+    entry = entry or {}
+    defaults = rl.default_ratings({"history": [{**entry, "recipe_id": rec.recipe_id}] if entry else []},
+                                  rec.recipe_id)
+    parts = []
+    for key, label in (("taste_rating", "Geschmack"), ("effort_rating", "Aufwand"), ("repeat_rating", "Wiederholen")):
+        avg = defaults[f"{key}_avg"]
+        value = avg if avg is not None else defaults[key]
+        parts.append(f"{label} {fmt_score(value)}/10" + ("" if avg is not None else " (Standard)"))
+    if entry.get("last_date"):
+        cooked = len(set(entry.get("dates") or [])) or 1
+        last = date.fromisoformat(entry["last_date"]).strftime("%d.%m.%Y")
+        parts.append(f"{cooked}x gekocht (zuletzt {last})")
+    else:
+        parts.append("noch nie gekocht")
+    times = {"prep_minutes": rec.prep_minutes, "cook_minutes": rec.cook_minutes}
+    reward = pl.reward_score(times, entry)
+    if reward is not None:
+        parts.append(f"Reward {fmt_score(reward)}/10")
+    return " • ".join(parts)
+
+
 
 
 
@@ -109,6 +163,7 @@ def parse_recipes(doc: dict) -> Dict[int, Recipe]:
 
         veg = str(r.get("veg_type", "")).strip() or "unknown"
         recipe_type = (str(r.get("recipe_type")).strip() if r.get("recipe_type") is not None else None)
+        origin = r.get("origin") or []
 
         out[rid] = Recipe(
             recipe_id=rid,
@@ -120,8 +175,17 @@ def parse_recipes(doc: dict) -> Dict[int, Recipe]:
             instructions=(str(r.get("instructions")).strip() if r.get("instructions") is not None else None),
             variant_of=(int(r["variant_of"]) if r.get("variant_of") not in (None, "", "null") else None),
             recipe_type=recipe_type,
+            origin=tuple(origin if isinstance(origin, list) else [origin]),
+            cooking_method=r.get("cooking_method"),
+            recipe_spec=r.get("recipe_spec"),
+            main_ingredient=r.get("main_ingredient"),
         )
     return out
+
+
+def parse_history(doc: dict) -> Dict[int, dict]:
+    """Genau ein history-Eintrag pro Rezept (siehe RatingLogic)."""
+    return {h.get("recipe_id"): h for h in doc.get("history", []) or []}
 
 
 def parse_links(doc: dict) -> List[RecipeIngredientLink]:
@@ -190,7 +254,9 @@ def generate_content(
     recipes: Dict[int, Recipe],
     ingredients: Dict[int, Ingredient],
     links: List[RecipeIngredientLink],
+    history: Optional[Dict[int, dict]] = None,
 ) -> str:
+    history = history or {}
     groups = group_recipes_by_section(recipes)
     recipe_to_ings = build_recipe_to_ingredients(links, ingredients)
 
@@ -218,8 +284,9 @@ def generate_content(
             #    meta.append(f"Variante von ID: {rec.variant_of}")
             if meta:
                 L.append(r"\textit{" + lG.latex_escape(" • ".join(meta)) + r"}\\")
-            else:
-                pass
+            for line in (info_line(rec), score_line(rec, history.get(rec.recipe_id))):
+                if line:
+                    L.append(r"\textit{" + lG.latex_escape(line) + r"}\\")
             L.append("")
 
 
@@ -315,8 +382,11 @@ def generate_ingredient_appendix(ingredients, links, onlyUsed=True):
         ("vegan", "Vegan"),
         ("vegetarian", "Vegetarisch"),
         ("meat", "Fleisch"),
+        ("fish", "Fisch"),
         ("gewürze", "Gewürze"),
     ]
+    # unbekannte veg_types nicht verschlucken - jede benutzte Zutat soll im Anhang stehen
+    ORDER += [(k, k.capitalize()) for k in sorted(buckets) if k not in dict(ORDER)]
 
     for key, title in ORDER:
         items = buckets.get(key, [])
@@ -356,8 +426,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     recipes = parse_recipes(recipes_doc)
     ingredients = parse_ingredients(ingredients_doc)
     links = parse_links(links_doc)
+    history = parse_history(yr.load_yaml(HISTORY_YAML)) if HISTORY_YAML.exists() else {}
 
-    content = generate_content(recipes, ingredients, links)
+    content = generate_content(recipes, ingredients, links, history)
     appendix = generate_ingredient_appendix(ingredients,links)
 
     lG.GenerateBody(TITLE=TITLE, SUBTITLE=SUBTITLE, AUTHOR=AUTHOR, DATE_STR=DATE_STR,content=content,appendix=appendix)

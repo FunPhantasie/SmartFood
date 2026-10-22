@@ -27,7 +27,7 @@ VALID_VEG = {"meat","vegan","vegetarian"}
 # ------------------------------------------------------------
 APP_DIR = Path(__file__).resolve().parent.parent
 
-DATA_DIR = APP_DIR / "data"
+DATA_DIR = APP_DIR / "Server" / "server_data"   # gleiche Daten wie die Website
 
 RECIPES_YAML = DATA_DIR / "recipes.yaml"
 RECIPE_INGREDIENTS_YAML = DATA_DIR / "recipe_ingredients.yaml"

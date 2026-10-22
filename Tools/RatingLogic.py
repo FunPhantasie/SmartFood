@@ -16,9 +16,11 @@ MIN_WEIGHT = 0.2      # Rezepte mit sehr schlechtem Score sollen trotzdem noch (
 # dates enthaelt JEDES Kochen (auch 'Einmal gekocht' ohne Bewertung, dort sind die anderen
 # Arrays an diesem Index None) - date_score braucht die letzten 20 Koch-Daten fuer mean/std.
 # Skalen: taste_rating 0-10 (10 = super lecker), repeat_rating 0-10 (5 = neutral),
-# effort_rating 1-5 (1 = sehr einfach, 5 = sehr aufwendig).
+# effort_rating 0-10 (0 = sehr einfach, 10 = sehr aufwendig; alte 1-5 Werte umgerechnet mit (x - 1) * 2.5).
 HISTORY_ARRAY_MAX = 20
 RATING_KEYS = ("taste_rating", "repeat_rating", "effort_rating", "prep_minutes", "cook_minutes")
+RATING_SCALE = (0, 10)    # taste, repeat und effort
+NEUTRAL_RATING = 5        # Vorbefuellung ohne bisherige Bewertung
 
 
 def round_to_10(minutes: float) -> int:
@@ -125,17 +127,17 @@ def _ceil_avg(values: list) -> Optional[float]:
 
 def default_ratings(data: dict, recipe_id: int) -> dict:
     """Durchschnitt der letzten Bewertungen dieses Rezepts (aufgerundet auf ganze Sterne),
-    zum Vorbefuellen der Bewertungsseite. Ohne jede history: neutraler Default (Geschmack und
-    Wiederholung 5 auf 0-10, Aufwand 3 auf 1-5). Die *_avg Werte sind die ungerundeten Mittelwerte, fuer eine
+    zum Vorbefuellen der Bewertungsseite. Ohne jede history: neutraler Default (Mitte 5 auf
+    den 0-10 Skalen). Die *_avg Werte sind die ungerundeten Mittelwerte, fuer eine
     optionale Halb-Stern-Anzeige."""
     entry = _find_history_entry(data, recipe_id)
     taste_avg = _ceil_avg(entry.get("taste_rating", []) if entry else [])
     repeat_avg = _ceil_avg(entry.get("repeat_rating", []) if entry else [])
     effort_avg = _ceil_avg(entry.get("effort_rating", []) if entry else [])
     return {
-        "taste_rating": math.ceil(taste_avg) if taste_avg is not None else 5,
-        "repeat_rating": math.ceil(repeat_avg) if repeat_avg is not None else 5,
-        "effort_rating": math.ceil(effort_avg) if effort_avg is not None else 3,
+        "taste_rating": math.ceil(taste_avg) if taste_avg is not None else NEUTRAL_RATING,
+        "repeat_rating": math.ceil(repeat_avg) if repeat_avg is not None else NEUTRAL_RATING,
+        "effort_rating": math.ceil(effort_avg) if effort_avg is not None else NEUTRAL_RATING,
         "taste_rating_avg": taste_avg,
         "repeat_rating_avg": repeat_avg,
         "effort_rating_avg": effort_avg,
@@ -255,7 +257,17 @@ def rate_recipe(
 
     Rueckgabe: {"history_entry", "recipe", "new_variant"} - new_variant ist None, wenn
     keine neue Variante angelegt wurde.
+    Teilbewertungen sind nicht erlaubt: taste/repeat/effort muessen alle gesetzt sein (0-10),
+    Zeiten entweder beide oder keine (ValueError).
     """
+    lo, hi = RATING_SCALE
+    for key, value in (("taste_rating", taste_rating), ("repeat_rating", repeat_rating),
+                       ("effort_rating", effort_rating)):
+        if value is None or not lo <= value <= hi:
+            raise ValueError(f"{key} required ({lo}-{hi})")
+    if (actual_prep is None) != (actual_cook is None):
+        raise ValueError("actual_prep and actual_cook: give both or none")
+
     recipe = _find_recipe(data, recipe_id)
     recipes = data.setdefault("recipes", [])
 

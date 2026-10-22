@@ -76,6 +76,8 @@ def data_problems(data: dict) -> list[str]:
             problems.append(f"recipe {rid}: unknown cooking_method {r.get('cooking_method')!r}")
         if r.get("recipe_spec") not in (None, *RECIPE_SPECS):
             problems.append(f"recipe {rid}: unknown recipe_spec {r.get('recipe_spec')!r}")
+        if (r.get("prep_minutes") is None) != (r.get("cook_minutes") is None):
+            problems.append(f"recipe {rid}: only one of prep_minutes / cook_minutes is set")
         main = r.get("main_ingredient")
         if main not in (None, NOT_SPECIFIC):
             if main not in ingredient_ids:

@@ -1,116 +1,74 @@
-# Propose Logic – Formulas
+# Propose Logic – Overview
 
-Every formula is written down here as planned, so code and idea can be checked against each other later.
+This file is only the **overview**: what happens in which order and where it is defined.
 
-> **Code lives only in the test notebooks** ([docs/Testing/](Testing/)) – this file only describes the concept (formulas, rules), no code and no results.
-> Fine tuning (constants, ranges, example results) happens in the notebooks. Each section links its notebook.
+> **Formulas, derivations, plots, sanity checks and edge cases live in the notebooks** ([docs/Testing/](Testing/)) – one per score, linked below.
+> The app implements exactly these formulas in [Tools/ProposeLogic.py](../Tools/ProposeLogic.py). Each notebook checks itself against that code (`notebook == backend`).
+> Backend logic test: [tests/test_propose_plan.py](../tests/test_propose_plan.py) · real data step by step: [Testing/test_with_data.ipynb](Testing/test_with_data.ipynb)
 >
-> **Status** – shown next to every function heading. **Reset 2026-10-11: everything is ⬜ not implemented · 🟠 not tested** until checked again in the notebooks.
->
-> ⬜ not implemented · ✅ implemented in logic · ❌ logic error · ❓ open question (VIII) · 🟠 not tested · 🧪 tested in notebook
+> **Status** – shown next to every step:
+> ⬜ not implemented · ✅ implemented in logic · ❌ logic error · ❓ open question (VIII) · 🟠 not tested · 🧪 tested (notebook / test)
 >
 > 💡 = suggestion, not decided yet · ⚠️ = found by a notebook test
->
-> Old implementation (not trusted until re-tested): [Tools/ProposeLogic.py](../Tools/ProposeLogic.py), [tests/test_propose_plan.py](../tests/test_propose_plan.py).
-> Currently Working At Implementing Logic test Cases import Recipes
 ---
 
 # I. Overview Workflow
 
-## 1. Load all data (could be inefficient)
-      - Recipes
-      - History
-      - Recipe ingredients
-      - Wishlist
-      - Blacklisted recipes (user doesn't like them at all)
-## 2. Calculatate Different Scores
-   - From history calculate **date_score,remove**  ✅🧪
-   - From history,recipes calculate **reward_score**  ⬜ 🟠 
-   - From ??? calculate **damping**  ⬜ 🟠 
-   - Calculate Final Score ⬜🟠 
-   
-## 3. **Hard filters**  – remove before the other scores
-   - `remove == True` from date_score (this already removes the last_supper recipes themselves)
-   - variants of last_supper – they have their own history, so date_score doesn't catch them
-   - blacklisted recipes
-   - wrong `recipe_type` / `veg_type` (existing `filter_recipes`)
-   - same-day cooking: `prep_minutes` or `cook_minutes` > 60 (II.2)
-   - include / exclude ingredients (search filter)
-   - lactose etc. allergies
+## 1. Load all data
+- Recipes, history, recipe ingredients, ingredients, wishlist, blacklist (user doesn't like them at all)
 
+## 2. Scores per recipe
+| Score | From | Notebook | Status |
+|---|---|---|---|
+| **date_score**, `remove` | history (`dates`, `last_date`, `repeat_rating`) + app usage | [date_score.ipynb](Testing/date_score.ipynb) | ✅ 🧪 |
+| **reward_score** | history (`taste_rating`, `effort_rating`) + recipe times | [reward_score.ipynb](Testing/reward_score.ipynb) | ✅ 🧪 |
+| **damping** (`mult`, `offset`) | similarity to the last 3 meals (last_supper) | [damping.ipynb](Testing/damping.ipynb) | ✅ 🧪 |
+| **total score** | all of the above + wishlist | [total_score.ipynb](Testing/total_score.ipynb) | ✅ 🧪 |
 
-4. From history estimate effort vs. result: **reward_score** (II.2)
-   - `taste_rating`, `effort_rating`, `prep_minutes`, `cook_minutes`
-5. Damp meals similar to recently cooked ones: **damp_score** (II.3)
-6. Generate list: total score → softmax draw of 5 → swapping (III)
-
-
-
-⬜ 🟠 **Rating UI** ([Server/rating.html](../Server/rating.html)): taste 0–10, effort "1 = sehr einfach, 5 = sehr aufwendig". Existing data converted (taste × 2, effort 6 − x).
-
-
-## 4. `hard_filter()` → allowed recipes ⬜ 🟠
-
-Notebook: none yet
-
-A recipe is **removed** if:
+## 3. Hard filter – `hard_filter()` ✅ 🧪
+Notebook: none (rules only, checked in the backend test). A recipe is **removed** if:
 
 | Condition | Note |
 |---|---|
-| `remove == True` from date_score | already removes last_supper itself |
+| `remove == True` from date_score (cooked ≤ 5 days ago) | the **wishlist overrides** this |
 | it is a variant or the original of a last_supper recipe | via recipe field `variant_of` |
-| on the blacklist | `blacklist.yaml` of the user + optional extra set |
+| on the blacklist | `blacklist.yaml` of the user + optional extra set – wins over the wishlist |
 | wrong `recipe_type` / `veg_type` | diet: vegetarian also allows vegan, nonvegan = not vegan |
 | `cook_minutes` or `prep_minutes` > 60 | same-day cooking; exactly 60 is ok |
 | include: not ALL ingredients in it | ingredient name (case-insensitive) or `ingredient_id` |
 | exclude: ANY ingredient in it | |
 | allergies (lactose, gluten, …): an ingredient has `<allergy>_free == false` | field missing = unknown → not filtered |
 
-Server: `GET /api/propsals?user=<id>` → `propose()` with 5 results. `POST /api/propsals` takes
-`meal_type, diet, include, exclude, allergies, user_id, count` (default 10: shown + buffer for dismissing).
+Runs **after** date_score, because `remove` comes from date_score.
 
-Runs **after** date_score (I.3), because `remove` comes from date_score.
+## 4. Two pools ✅ 🧪
+| Pool | Recipes |
+|---|---|
+| **main** | cooked at least once, or on the wishlist |
+| **new** | never cooked – score with `date_score = 5` + reward from the recipe's times and midpoint ratings; no times → **median score** |
 
-# III. Generation List – `calc_total_score()` ⬜ 🟠
+## 5. Generate the list ✅ 🧪 ([total_score.ipynb](Testing/total_score.ipynb))
+1. softmax draw of 5 from the **main** pool (no recipe together with its variant), `T` = 4, user can set 1–10
+2. fewer than 5 → fill up from the **new** pool
+3. swapping: in 20 % of all lists one recipe is replaced, new recipes first (never a wishlist recipe)
+4. nothing left → message: browse recipes or reroll with more randomness (`T + 1`)
 
-Notebook: [Testing/total_score.ipynb](Testing/total_score.ipynb)
+## 6. Website ([Server/home_find.html](../Server/home_find.html)) ✅ 🟠
+- 5 proposals + buffer for dismissing; new recipes are marked **Neu**
+- button **"Neue Rezepte (nie gekocht)"** → only the new pool
+- filter **"Zufall (T)"** 1–10
+- Server: `GET /api/propsals?user=<id>&t=<1-10>&pool=all|new`, `POST /api/propsals` with
+  `meal_type, diet, include, exclude, allergies, user_id, count, t, pool`. Empty result → `message`.
 
-> Uses: date_score | reward_score | damp_score | wishlist
+## 7. Rating UI ([Server/rating.html](../Server/rating.html)) ✅ 🧪
+Taste, Wdh (repeat) and effort all **0–10**, prefilled with the mean (or 5). Partial ratings are rejected
+(all three ratings required, times both or none).
 
-`wishlist_score` = 10 if on wishlist, else 0.
-
-$$
-\text{score} = (\text{date\_score} + \text{reward\_score} + \text{wishlist\_score}) \cdot \text{damp\_score\_mult} + \text{damp\_score\_offset} + \frac{\text{wishlist\_score}}{5}
-$$
-
-Softmax over all remaining recipes:
-
-$$
-p_i = \frac{e^{score_i / T}}{\sum_j e^{score_j / T}}
-$$
-
-Small T → the best recipes almost always win, large T → more random.
-Negative scores need no clamp: `exp` is always > 0.
-
-**Drawing** – `softmax()`, `draw_proposals()` ⬜ 🟠 (notebook: [Testing/total_score.ipynb](Testing/total_score.ipynb), single draw only)
-
-Repeat 5 times:
-1. softmax over the recipes still in the container
-2. draw 1 recipe (draw without putting back)
-3. remove the drawn recipe AND its variants from the container
-
-**Swapping out recipes** – `swap_proposals()` ⬜ 🟠 (notebook: none yet)
-
-- X: meal is proposed ("proposed")
-- ¬X: meal is never cooked ("never cooked")
-- Y = number of X with n = 5 tries, Y ~ Bin(5, p)
-- **Given:** P(Y = 5) = p⁵ = 0.8 → p ≈ 0.956
-- P(¬X) = 1 − p ≈ 0.044 = w
-
-For each proposal: swap with probability 1 − p. Skip if on wishlist.
-→ in 20 % of all lists at least one recipe gets swapped.
-
-💡 Swap candidates: never cooked recipes first, then random from the rest (excluding last_supper, its variants and recipes already in the list).
+## 8. Cookbook PDF ([Tools/generate_cookbook_PDF.py](../Tools/generate_cookbook_PDF.py)) ✅ 🧪
+Reads `Server/server_data` (same data as the website). Per recipe: times, origin / cooking method / spec,
+ratings (mean from the history, otherwise the recipe's default rating 5, marked "Standard"), times cooked and
+reward_score (same formula as the app). date_score and damping depend on the day and are not printed.
+The appendix lists only ingredients used by a recipe.
 
 # IV. Measured Variables
 
@@ -120,31 +78,31 @@ Per recipe there is exactly **one** history entry. The arrays inside rotate (max
 |---|---|---|---|---|
 | `dates` | history | list ISO date | days when cooked (rated or "cooked once"), last 20 | `[]` |
 | `last_date` | history | ISO date | last cooked (also via "cooked once") | missing → never cooked |
-| `repeat_rating` | history | list int **0–10** | desire to repeat (5 = neutral) | `5` (II.1), UI prefill `5`; dismiss / seed for uncooked recipes: `0` |
-| `taste_rating` | history | list int **0–10** | taste (0 = bad, 10 = great) | `8` (II.2), UI prefill `5` |
-| `effort_rating` | history | list int 1–5 | effort (1 = low, **5 = high effort**) | `3` |
-| `prep_minutes` / `cook_minutes` | recipe | int | times | 45 min total (II.2) |
+| `repeat_rating` | history | list int **0–10** | desire to repeat (5 = neutral) | `5`; dismiss / seed for uncooked recipes: `0` |
+| `taste_rating` | history | list int **0–10** | taste (0 = bad, 10 = great) | `5` |
+| `effort_rating` | history | list int **0–10** | effort (0 = low, **10 = high effort**) | `5` |
+| `prep_minutes` / `cook_minutes` | recipe | int | times – both or none | cooked: 45 min total · never cooked: median score |
 | `season` | recipe | str | season | `all` |
 | `variant_of` | recipe | id / null | original recipe of a variant | `null` |
 | `sweet` | recipe | bool | sweet dish | `false` |
 | `veg_type` | recipe | str | vegan / vegetarian / meat | – |
-| `origin` | recipe | list str | cuisine (II.3) | `[]` |
-| `cooking_method` | recipe | str | oven, pan, … (II.3) | `null` |
-| `recipe_spec` | recipe | str | soup, casserole, … (II.3) | `null` |
-| `main_ingredient` | recipe | `ingredient_id` / "not specific" | compared with the meat / side ingredients (II.3) | `null` |
-| type of meat | ingredients with `veg_type = meat` | `ingredient_id` | chicken, beef, … (II.3 `ls_meats`) | ❓ VIII.11 |
+| `origin` | recipe | list str | cuisine | `[]` |
+| `cooking_method` | recipe | str | oven, pan, … | `null` |
+| `recipe_spec` | recipe | str | soup, casserole, … | `null` |
+| `main_ingredient` | recipe | `ingredient_id` / "not specific" | must be in the recipe's ingredients | `null` |
+| type of meat | ingredients with `veg_type = meat` | `ingredient_id` | chicken, beef, … (`ls_meats`) | ❓ VIII.11 |
 | `side_dish` | ingredient | bool | ingredient is a side (rice, noodles, …) | `false` |
 | wishlist | wishlist | recipe_id, user_id | "put on next" | – |
-| blacklist | 💡 new, like wishlist | recipe_id, user_id | user doesn't like it at all | – |
+| blacklist | blacklist | recipe_id, user_id | user doesn't like it at all | – |
 
 # V. Database Structure
 
-## Recipes – fields + `YamlEditor.data_problems()` ⬜ 🟠
+## Recipes – fields + `YamlEditor.data_problems()` ✅ 🧪
 
 - **Season:** all, spring, summer, autumn, winter
 - **Recipe type:** main dish, dessert, dip, spice mix, side dish, snack, starter
 - **Recipe specs:** soup, salad, casserole, bowl, sandwich, others
-  - 💡 keep it one value per recipe, so damping (II.3) stays simple
+  - 💡 keep it one value per recipe, so damping stays simple
 - **Cooking method:** oven, pan, pot, grill, raw, steam
 - **Origin:** asian, oriental, mexican, indian, italian, home-style, mediterranean, american (can have multiple)
 - **Main ingredient** (if not specified): only check on creation whether the title matches the ingredients
@@ -152,7 +110,7 @@ Per recipe there is exactly **one** history entry. The arrays inside rotate (max
 - **Variants:** if a recipe is saved with noodles, a variant can be the same with rice, for example.
   When creating a recipe and choosing rice as an ingredient (saved as side dish), there can be an option to automatically create variants for other choices (noodles etc.).
 
-## Ingredients – `lactose_free`, `gluten_free` ⬜ 🟠
+## Ingredients – `lactose_free`, `gluten_free` ✅ 🟠
 
 `ingredient_id, name, unit, veg_type, lactose_free, gluten_free, specs_ingredient`
 
@@ -160,7 +118,7 @@ Per recipe there is exactly **one** history entry. The arrays inside rotate (max
 
 - **specs_ingredient:** side_dish, spice, basics (e.g. water, flour, butter, oil, …)
 
-## Blacklist – filter ⬜ 🟠 · button / endpoint to add entries ⬜ 🟠
+## Blacklist – filter ✅ 🧪 · button / endpoint to add entries ⬜ 🟠
 
 `server_data/blacklist.yaml`, same structure as `wishlist.yaml`: `recipe_id, user_id, date`.
 Read by `propose()` (`user_blacklist`). There is no button / endpoint to add entries yet.
@@ -168,32 +126,32 @@ Read by `propose()` (`user_blacklist`). There is no button / endpoint to add ent
 # VI. Old Formula (removed)
 
 Until 2026-09-28 the app used `repeatScore` with `date_score = 10 · repeat/5 · exp(−8 · s / d_last)`.
-It failed the sanity checks (cooked today → 8.0, cooked every 3 days → 10.0) and was replaced by II.1 (tanh).
+It failed the sanity checks (cooked today → 8.0, cooked every 3 days → 10.0) and was replaced by the tanh logic.
 See git history for details.
 
-# VII. Sanity Checks → moved to the notebooks
+# VII. Sanity Checks → notebooks + backend test
 
-The sanity checks now live at the end of each notebook (cell "Sanity Checks"):
-
-- II.1 date_score → [Testing/date_score.ipynb](Testing/date_score.ipynb)
-- II.2 reward_score → [Testing/reward_score.ipynb](Testing/reward_score.ipynb)
-- II.3 damping → [Testing/damping.ipynb](Testing/damping.ipynb)
-- III total score, drawing, swapping → [Testing/total_score.ipynb](Testing/total_score.ipynb)
+- date_score → [Testing/date_score.ipynb](Testing/date_score.ipynb)
+- reward_score → [Testing/reward_score.ipynb](Testing/reward_score.ipynb)
+- damping → [Testing/damping.ipynb](Testing/damping.ipynb)
+- total score, drawing, swapping, pools → [Testing/total_score.ipynb](Testing/total_score.ipynb)
+- everything incl. hard filter, server, rating, PDF → [tests/test_propose_plan.py](../tests/test_propose_plan.py)
 
 # VIII. Open Questions
 
 1. ~~**II.1 direction of exp**~~ → replaced by tanh.
-2. ~~**II.1 factor**~~ → replaced by mean/std of the gaps + rotation point `M` + Wdh shift (2026-10-13).
+2. ~~**II.1 factor**~~ → mean/std of the gaps + rotation point + Wdh shift + correction + amplification (date_score.ipynb).
 3. ~~**II.1 "without today"**~~ → without today.
-4. ~~**`repeat_rating` mean or last value**~~ → mean (II.1).
-5. ~~**II.2 effort**~~ → multiplicative formula, UI + data fixed.
+4. ~~**`repeat_rating` mean or last value**~~ → mean.
+5. ~~**II.2 effort**~~ → multiplicative formula, effort 0–10.
 6. ~~**II.3 count rules once per candidate**~~ → merged last_supper list. Chicken hitting 3 rules (meat in last_supper, same meat, main = chicken) is intended.
 7. ~~**II.3 season**~~ → bonus +3, inside the candidate loop after init.
 8. ~~**III negative scores**~~ → softmax, no clamp needed.
-9. ~~**II.1 factor with ≤ 1 date**~~ → `factor = 1`.
+9. ~~**II.1 factor with ≤ 1 date**~~ → ≤ 2 dates → `amp = 1`.
 10. ❓ **II.3:** is the negative offset too strong? (tune in [Testing/damping.ipynb](Testing/damping.ipynb))
-11. ❓ **II.3 type of meat:** app currently uses the ingredients with `veg_type = meat` (`recipe_features`). Keep that, or a new recipe field?
+11. ❓ **II.3 type of meat:** app uses the ingredients with `veg_type = meat` (`recipe_features`). Keep that, or a new recipe field?
 12. ~~**III wishlist damped?**~~ → wishlist 10 is damped, but `wishlist_score/5` (+2) is added undamped after damping.
+13. ~~**Edge cases**~~ → decided in the "Edge Cases" table at the end of each notebook (2026-10-22).
 
 ## Changelog
 
@@ -212,3 +170,4 @@ The sanity checks now live at the end of each notebook (cell "Sanity Checks"):
 - 2026-10-11 – Concept only: ranges, result tables, tuning knobs and the logic test (IX) removed; fine tuning happens in the notebooks.
 - 2026-10-13 – II.1 new logic (user): target `T` = mean gap + Wdh-weighted shift towards / away from the rotation point `M`, tanh reaches 90 % at `T` (amp clipped to [1, 4]). Notebook rewritten, sanity checks 15/15. `repeat_rating` now 0–10 (UI, `RatingLogic`, data: old `(x − 1) · 2.5`). "Einmal gekocht" now also adds to `dates` (other arrays get `None`), so `dates` holds every cook (last 20).
 - 2026-10-19 – Rearanged a lot Of Text out of ProposeLogic into Testing Nootbooks where the Explain should happen Al lot to clean yet.
+- 2026-10-22 – Notebook texts rewritten, edge cases decided (user). Backend synchronised with the notebooks: date_score (rotation point from history, Wdh shift + correction with the recipe's own mean, amplification, new-user guards), reward (effort 0–10, midpoint defaults, `max(0, time)`), damping (same meat −3, meats counted per meal, main_ingredient attributes from `ingredients.yaml`, error if not in the recipe). New: pool of never cooked recipes (median score without times, fills short lists, swaps, website button "Neue Rezepte"), `T` = 4 adjustable 1–10, wishlist overrides `remove`, empty-result message + reroll. Effort UI + data 0–10, partial ratings rejected. Cookbook PDF shows ratings + reward. This doc reduced to the overview. Backend test 94/94, every notebook checks `notebook == backend`, new `test_with_data.ipynb`.

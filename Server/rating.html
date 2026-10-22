@@ -119,7 +119,7 @@
 
 <div class="block">
   <h3>Aufwand</h3>
-  <p class="hint" style="color:#a7b4d6; font-size:13px; margin-top:0;">Wie aufwendig war es (Töpfe, Handgriffe, Komplexität) - unabhängig von der reinen Zeit? (1 = sehr einfach, 5 = sehr aufwendig)</p>
+  <p class="hint" style="color:#a7b4d6; font-size:13px; margin-top:0;">Wie aufwendig war es (Töpfe, Handgriffe, Komplexität) - unabhängig von der reinen Zeit? (0 = sehr einfach, 10 = sehr aufwendig)</p>
   <div class="stars" id="effortStars"></div>
 </div>
 
@@ -154,7 +154,7 @@ function getRecipeId(){
   return p.get("id");
 }
 
-// min/max: Skala der Buttons (Geschmack 0-10, Rest 1-5). Aktiv sind alle Buttons 1..v -
+// min/max: Skala der Buttons (alle Bewertungen 0-10). Aktiv sind alle Buttons 1..v -
 // der 0-Button nur, wenn wirklich 0 gewaehlt ist.
 function buildStars(container, min = 1, max = 5){
   container.innerHTML = "";
@@ -218,7 +218,7 @@ async function loadRating(){
 
   tasteRating = buildStars(document.getElementById("tasteStars"), 0, 10);
   repeatRating = buildStars(document.getElementById("repeatStars"), 0, 10);
-  effortRating = buildStars(document.getElementById("effortStars"));
+  effortRating = buildStars(document.getElementById("effortStars"), 0, 10);
 
   document.querySelectorAll('input[name="variantMode"]').forEach(radio => {
     radio.addEventListener("change", () => {
@@ -241,7 +241,7 @@ async function loadRating(){
   const defaults = data.default_ratings || {};
   tasteRating.set(defaults.taste_rating ?? 5, defaults.taste_rating_avg);
   repeatRating.set(defaults.repeat_rating ?? 5, defaults.repeat_rating_avg);
-  effortRating.set(defaults.effort_rating ?? 3, defaults.effort_rating_avg);
+  effortRating.set(defaults.effort_rating ?? 5, defaults.effort_rating_avg);
 
   // recipe.prep_minutes/cook_minutes sind bereits der (auf 10 gerundete) Durchschnitt ueber
   // alle Zeiten-Eintraege (siehe RatingLogic.update_recipe_times) - last_actual_times (der

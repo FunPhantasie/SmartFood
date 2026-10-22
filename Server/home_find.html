@@ -242,6 +242,25 @@
       cursor:pointer;
       user-select:none;
     }
+    .badge{
+      font-size:11px;
+      font-weight:700;
+      color:var(--ok);
+      border:1px solid rgba(76,212,166,.45);
+      background: rgba(76,212,166,.12);
+      padding:1px 7px;
+      border-radius:999px;
+      margin-left:6px;
+      vertical-align:middle;
+    }
+    .empty{
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:14px;
+      padding:14px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .empty[hidden]{ display:none; }
     .panel .bd.collapsed { display: none; }
     #filterSection.collapsed { display: none; }
       background: rgba(255,255,255,.08);
@@ -321,6 +340,14 @@
             </div>
           </div>
 
+          <div class="row2">
+            <div>
+              <label for="randomness">Zufall (T)</label>
+              <select id="randomness"></select>
+              <div class="help">1 = fast immer die besten Rezepte, 10 = sehr zufällig. Standard 4.</div>
+            </div>
+          </div>
+
           <label for="includeInput">Include ingredient/tag</label>
           <div class="row2">
             <div>
@@ -368,14 +395,22 @@
         <!-- DEFAULT PANELS -->
         <div id="defaultsWrap">
           <div class="splitHd">
-            <h3>5 Main Gerichte</h3>
+            <h3 id="mainHeading">5 Main Gerichte</h3>
             <span class="muted" style="font-size:12px" id="mainCount"></span>
           </div>
           <div class="cards" id="mainCards"></div>
 
+          <div class="empty" id="emptyState" hidden>
+            <div id="emptyMessage">Keine Vorschläge mehr.</div>
+            <div class="btnrow">
+              <button class="secondary" type="button" id="browseBtn">Rezepte durchsuchen</button>
+              <button type="button" id="rerollBtn">Neu würfeln (mehr Zufall)</button>
+            </div>
+          </div>
+
           <div class="btnrow" style="margin-top:14px;">
             <button type="button" id="generateBtn">Generate New Proposal</button>
-            
+            <button class="secondary" type="button" id="newRecipesBtn">Neue Rezepte (nie gekocht)</button>
           </div>
         </div>
 
@@ -394,8 +429,12 @@ const state = {
   defaults: {
     main_dish: { shown: [], buffer: [] },
   },
-  backendOk: null
+  backendOk: null,
+  t: 4,            // Softmax-Temperatur (Zufall), 1-10 - Standard wie ProposeLogic.SOFTMAX_T
+  pool: "all",     // "all" = normale Vorschlaege, "new" = nur nie gekochte Rezepte
+  message: ""      // Hinweis vom Backend, wenn nichts gefunden wurde
 };
+const T_MIN = 1, T_MAX = 10;
 
 const RECIPE_TYPE_TO_SECTION = {
   "main_dish": "Hauptgericht",
@@ -465,35 +504,32 @@ async function fetchRecipes(filters = null){
   // Fetch recipes from backend - with or without filters
   // If filters provided: POST request
   // If no filters: GET request (defaults)
+  // t (Zufall) und pool ("all" | "new") gehen immer mit.
+  state.message = "";
   try{
     let r;
     if(filters){
       r = await fetch("/api/propsals", {
         method: "POST",
         headers: {"Content-Type":"application/json"},
-        body: JSON.stringify(filters)
+        body: JSON.stringify({...filters, t: state.t, pool: state.pool})
       });
     } else {
       const user = window.SmartFoodUser?.get() || "";
-      r = await fetch("/api/propsals?user=" + encodeURIComponent(user), {method: "GET"});
+      const qs = new URLSearchParams({user, t: state.t, pool: state.pool});
+      r = await fetch("/api/propsals?" + qs.toString(), {method: "GET"});
     }
-    
+
     if(!r.ok) throw new Error("fetch failed");
     const data = await r.json();
-    
-    if(filters){
-      // POST response expects {recipes: [...]}
-      const recipes = Array.isArray(data?.recipes) ? data.recipes : [];
-      if(recipes.length === 0) throw new Error("empty");
-      return recipes;
-    } else {
-      // GET response expects {main_dish: [...]}
-      const recipes = Array.isArray(data?.main_dish) ? data.main_dish : [];
-      if(recipes.length === 0) throw new Error("empty");
-      return recipes;
-    }
+    state.message = data?.message || "";
+
+    // POST response expects {recipes: [...]}, GET response expects {main_dish: [...]}
+    const recipes = filters ? data?.recipes : data?.main_dish;
+    return Array.isArray(recipes) ? recipes : [];
   }catch(e){
     console.warn("Backend fetch failed", e);
+    state.message = "Backend nicht erreichbar.";
     return [];
   }
 }
@@ -538,7 +574,7 @@ function cardEl(recipe, onClose){
   div.className = "card";
   div.innerHTML = `
     <div class="closebtn" title="dismiss">×</div>
-    <p class="title">${recipe.name}</p>
+    <p class="title">${recipe.name}${recipe.is_new ? '<span class="badge">Neu</span>' : ''}</p>
     <div class="meta">
       <span><b>${prettyMealType(recipe.recipe_type)}</b></span>
       <span>Typ: <b>${recipe.veg_type ?? "?"}</b></span>
@@ -575,7 +611,19 @@ function renderSection(sectionKey){
   });
 
   const countEl = document.getElementById(sectionKey==="main_dish" ? "mainCount" : "snackCount");
-  countEl.textContent = `${cfg.shown.length}/${LIMIT_DEFAULTS[sectionKey]} shown · buffer ${cfg.buffer.length}`;
+  countEl.textContent = `${cfg.shown.length}/${LIMIT_DEFAULTS[sectionKey]} shown · buffer ${cfg.buffer.length} · Zufall T=${state.t}`;
+
+  document.getElementById("mainHeading").textContent =
+    state.pool === "new" ? "Neue Rezepte (nie gekocht)" : "5 Main Gerichte";
+
+  // Nichts mehr da (alles weggeklickt oder nichts gefunden) -> Durchsuchen oder mit mehr Zufall neu wuerfeln
+  const empty = document.getElementById("emptyState");
+  empty.hidden = cfg.shown.length > 0;
+  document.getElementById("emptyMessage").textContent =
+    state.message || "Keine Vorschläge mehr – Rezepte durchsuchen oder mit mehr Zufall neu würfeln.";
+  const reroll = document.getElementById("rerollBtn");
+  reroll.textContent = `Neu würfeln (mehr Zufall, T=${Math.min(T_MAX, state.t + 1)})`;
+  reroll.disabled = state.t >= T_MAX;
 }
 
 
@@ -583,27 +631,17 @@ function renderSection(sectionKey){
 /** -------------------------
  *  Defaults generation on load
  *  ------------------------- */
-function initDefaults(){
-  // always generate 5 main on load
-  const mainAll = "none";
-  state.defaults.main_dish.shown  = mainAll.slice(0, LIMIT_DEFAULTS.main_dish);
-  state.defaults.main_dish.buffer = mainAll.slice(LIMIT_DEFAULTS.main_dish);
-
-  renderSection("main_dish");
-}
 async function loadDefaultRecipes(){
   // Load default recipes on page load
   const recipes = await fetchRecipes();
-  
-  if(recipes.length === 0){
-    console.warn("No default recipes, using mock fallback");
-    initDefaults();
-  } else {
-    state.defaults.main_dish.shown = recipes.slice(0, LIMIT_DEFAULTS.main_dish);
-    state.defaults.main_dish.buffer = recipes.slice(LIMIT_DEFAULTS.main_dish);
-  }
-  
+  state.defaults.main_dish.shown = recipes.slice(0, LIMIT_DEFAULTS.main_dish);
+  state.defaults.main_dish.buffer = recipes.slice(LIMIT_DEFAULTS.main_dish);
   renderSection("main_dish");
+}
+
+function setT(t){
+  state.t = Math.min(T_MAX, Math.max(T_MIN, t));
+  document.getElementById("randomness").value = String(state.t);
 }
 
 
@@ -670,8 +708,20 @@ document.getElementById("toggleFilter").addEventListener("click", () => {
   btn.textContent = filterSec.classList.contains("collapsed") ? "Show Filters" : "Hide Filters";
 });
 
-document.getElementById("proposeBtn").addEventListener("click", onPropose);
-document.getElementById("generateBtn").addEventListener("click", onPropose);
+const randomness = document.getElementById("randomness");
+for(let t = T_MIN; t <= T_MAX; t++){
+  randomness.add(new Option(t === 4 ? `${t} (Standard)` : String(t), String(t)));
+}
+setT(state.t);
+randomness.addEventListener("change", () => setT(parseInt(randomness.value, 10)));
+
+document.getElementById("proposeBtn").addEventListener("click", () => { state.pool = "all"; onPropose(); });
+document.getElementById("generateBtn").addEventListener("click", () => { state.pool = "all"; onPropose(); });
+document.getElementById("newRecipesBtn").addEventListener("click", () => { state.pool = "new"; onPropose(); });
+document.getElementById("rerollBtn").addEventListener("click", () => { setT(state.t + 1); onPropose(); });
+document.getElementById("browseBtn").addEventListener("click", () => {
+  location.href = window.SmartFoodUser.decorate("/create");
+});
 
 
 // "Aktuelle Auswahl" (von recipe.html gesetzt) nur anzeigen, wenn es eine gibt.

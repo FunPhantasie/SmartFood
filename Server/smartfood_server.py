@@ -120,27 +120,41 @@ def api_post_all():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+NO_PROPOSALS_MESSAGE = "Keine passenden Rezepte gefunden - Rezepte durchsuchen oder mit mehr Zufall neu wuerfeln."
+
+
+def _proposal_response(data, picks, key, t):
+    """Vorschlaege fuers Frontend: is_new = noch nie gekocht, message nur wenn die Liste leer ist."""
+    out = {key: [pl.recipe_to_frontend(r, is_new=not rl.has_cooked(data, r["recipe_id"])) for r in picks],
+           "t": t}
+    if not picks:
+        out["message"] = NO_PROPOSALS_MESSAGE
+    return out
+
+
 @app.get("/api/propsals")
 def get_default_recipes():
-    """GET: Hauptgerichte ohne Filter (Startbildschirm) - Vorschlags-Pipeline ProposeLogic.propose."""
+    """GET: Hauptgerichte ohne Filter (Startbildschirm) - Vorschlags-Pipeline ProposeLogic.propose.
+    Optional: ?t=<1-10> Zufall (Softmax-Temperatur), ?pool=new nur nie gekochte Rezepte."""
     try:
         data = load_all()
-        picks = pl.propose(data, user_id=request.args.get("user") or None)
-
-        return jsonify({
-            "main_dish": [pl.recipe_to_frontend(r) for r in picks],
-        })
+        t = pl.clamp_t(request.args.get("t", type=float))
+        picks = pl.propose(data, user_id=request.args.get("user") or None, t=t,
+                           pool=request.args.get("pool", "all"))
+        return jsonify(_proposal_response(data, picks, "main_dish", t))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @app.post("/api/propsals")
 def propose_meal():
     """POST: Gefilterte Rezeptvorschlaege basierend auf Kriterien im Request-Body.
-    count Vorschlaege (Standard 10): die ersten werden angezeigt, der Rest ist Puffer fuers Wegklicken."""
+    count Vorschlaege (Standard 10): die ersten werden angezeigt, der Rest ist Puffer fuers Wegklicken.
+    t: Zufall 1-10 (Standard ProposeLogic.SOFTMAX_T), pool: "all" | "new" (nur nie gekochte Rezepte)."""
     try:
         payload = request.get_json(force=True) or {}
 
         data = load_all()
+        t = pl.clamp_t(payload.get("t"))
         picks = pl.propose(
             data,
             user_id=payload.get("user_id") or None,
@@ -150,11 +164,10 @@ def propose_meal():
             exclude=payload.get("exclude") or [],
             allergies=payload.get("allergies") or [],
             k=int(payload.get("count") or 10),
+            t=t,
+            pool=payload.get("pool", "all"),
         )
-
-        return jsonify({
-            "recipes": [pl.recipe_to_frontend(r) for r in picks],
-        })
+        return jsonify(_proposal_response(data, picks, "recipes", t))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

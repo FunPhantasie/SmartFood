@@ -1,40 +1,67 @@
 from __future__ import annotations
 from collections import defaultdict
-from datetime import date
+from datetime import date, timedelta
 from typing import Optional
 import math
 import random
+import statistics
 
 from Tools import RatingLogic as rl
 from Tools import YamlEditor as yr
 
-# Formeln, Wertebereiche & Sanity-Checks dazu: docs/ProposeLogic.md
-# Beispiel-Szenarien / Logik-Test:             tests/test_propose_plan.py
+# Ueberblick:                    docs/ProposeLogic.md
+# Formeln + Herleitung + Plots:  docs/Testing/*.ipynb (date_score, reward_score, damping, total_score)
+# Logik-Test / Szenarien:        tests/test_propose_plan.py
+# Echte Daten Schritt fuer Schritt: docs/Testing/test_with_data.ipynb
 #
 # Aufbau: pro Score eine reine Formel (calc_*, nur Zahlen rein/raus - so testbar) und eine
 # Funktion, die die Eingaben aus den echten Daten (history-Eintrag, Rezept) holt.
+# Die Formeln hier muessen 1:1 zu den Notebooks passen - aendern immer an beiden Stellen.
 
 # ---------------- Stellschrauben ----------------
-DATE_SLOPE = 30           # II.1 tanh(factor/DATE_SLOPE · (dist_last - DATE_BLOCK))
-DATE_BLOCK = 4            # II.1 innerhalb dieser Tage nach dem Kochen -> remove
-NEVER_COOKED_DATE = 5     # II.1 date_score fuer nie gekochte Rezepte
-EMPTY_REPEAT = 2          # II.1 repeat, wenn repeat_rating leer ist
-COOK_MID = 50             # II.2 timescore = 0.5 bei so vielen Minuten
-COOK_UNIT = 7.5           # II.2 Steilheit von timescore
-TASTE_EXP = 1.5           # II.2 >1 -> schlechter Geschmack wird haerter bestraft
-EFFORT_WEIGHT = 0.5       # II.2 max. Verlust durch Aufwand (bei taste 10 und effort 5)
-NEVER_COOKED_TASTE = 8    # II.2 taste ohne Bewertung
-NEVER_COOKED_EFFORT = 3   # II.2 effort ohne Bewertung
-MISSING_TIME = 45         # II.2 Gesamtzeit, wenn keine Zeiten hinterlegt sind
-SAME_DAY_LIMIT = 60       # II.4 prep oder cook > so viele Minuten -> raus (genau 60 ist noch ok)
-LAST_SUPPER_SIZE = 3      # II.3 die letzten n gekochten Gerichte ...
-LAST_SUPPER_DAYS = 4      # II.3 ... sofern hoechstens so viele Tage her
-DAMP_SPECS = {"sweet", "soup", "casserole"}   # II.3 nur diese Specs daempfen
-WISHLIST_SCORE = 10       # III  Bonus fuer Rezepte auf der Wunschliste
-WISHLIST_UNDAMPED = 5     # III  wishlist_score / WISHLIST_UNDAMPED kommt NACH der Daempfung dazu
-SOFTMAX_T = 3             # III  Softmax-Temperatur: klein = die Besten gewinnen fast immer, gross = zufaelliger
-SWAP_P5 = 0.8             # III  P(kein Tausch bei 5 Vorschlaegen)
-PROPOSAL_COUNT = 5        # III  Anzahl Vorschlaege
+MAX_SCORE = 10
+NEUTRAL_RATING = 5        # Mittelwert der 0-10 Skalen, gilt fuer jede fehlende Bewertung
+
+# II.1 date_score (date_score.ipynb)
+ZERO_CROSSING = 5         # b: Abstand (Tage), ab dem der Score positiv wird -> darunter remove
+BASE_LEVEL = 0.8          # ohne Amplification erreicht die Kurve 80 % bei periodcycle_app
+USAGE_WINDOW = 30         # Tage, ueber die die App-Nutzung gezaehlt wird
+EMPTY_USAGE_DAYS = 3      # COUNT_USAGE_APP, wenn im USAGE_WINDOW gar nicht gekocht wurde
+MIN_ROTATION_RECIPES = 5  # max(5, COUNT_RECIPES_COOKED_ATLEAST_TWICE)
+MIN_PERIODCYCLE = 7       # max(7, periodcycle_app) - sonst kippt tau bei neuen Usern ins Negative
+MAX_VAR_DAYS = 30         # var_days_app = min(30, Rezepte in Rotation)
+REPEAT_STEEPNESS = 0.3    # k der Wdh-Verschiebung
+MAX_REWARD = 0.9          # Wdh 10 holt ein Rezept hoechstens (1 - 0.9) = 10 % frueher
+VAR_SCORE = 8             # Breite der usage_score-Glocke um Wdh 5
+MIN_AMP, MAX_AMP = 0.1, 10
+TAU_AMP = 2               # Tage, Breite des Amplification-Uebergangs um T
+MIN_DATES_FOR_TARGET = 3  # <= 2 dates -> keine Abstands-Statistik, amp = 1
+NEVER_COOKED_DATE = 5     # date_score fuer nie gekochte Rezepte
+
+# II.2 reward_score (reward_score.ipynb)
+COOK_MID = 50             # timescore = 0.5 bei so vielen Minuten
+COOK_UNIT = 7.5           # Steilheit von timescore
+TASTE_EXP = 1.8           # >1 -> schlechter Geschmack wird haerter bestraft
+EFFORT_EXP = 2.4
+EFFORT_WEIGHT = 0.5       # max. Verlust durch Aufwand (bei taste 10 und effort 10)
+EFFORT_TASTE_EXP = 0.4    # Aufwand zaehlt mehr bei leckeren Gerichten
+MISSING_TIME = 45         # Gesamtzeit eines gekochten Rezepts ohne hinterlegte Zeiten
+
+# II.3 damping (damping.ipynb)
+LAST_SUPPER_SIZE = 3      # die letzten n gekochten Gerichte ...
+LAST_SUPPER_DAYS = 4      # ... sofern hoechstens so viele Tage her
+DAMP_SPECS = {"sweet", "soup", "casserole"}   # nur diese Specs daempfen
+
+# I.4 hard filter
+SAME_DAY_LIMIT = 60       # prep oder cook > so viele Minuten -> raus (genau 60 ist noch ok)
+
+# III total score / ziehen / tauschen (total_score.ipynb)
+WISHLIST_SCORE = 10       # Bonus fuer Rezepte auf der Wunschliste
+WISHLIST_UNDAMPED = 5     # wishlist_score / WISHLIST_UNDAMPED kommt NACH der Daempfung dazu
+SOFTMAX_T = 4             # Softmax-Temperatur: klein = die Besten gewinnen fast immer, gross = zufaelliger
+SOFTMAX_T_RANGE = (1, 10) # vom User einstellbar (Reroll erhoeht T um 1)
+SWAP_P5 = 0.8             # P(kein Tausch bei 5 Vorschlaegen)
+PROPOSAL_COUNT = 5        # Anzahl Vorschlaege
 
 
 def _mean(values) -> Optional[float]:
@@ -42,70 +69,141 @@ def _mean(values) -> Optional[float]:
     return sum(values) / len(values) if values else None
 
 
+def _logistic(x: float) -> float:
+    """1 / (1 + e^x) ohne Overflow bei sehr grossen x (Rezepte, die ueber Tage gehen)."""
+    if x > 0:
+        e = math.exp(-x)
+        return e / (1 + e)
+    return 1 / (1 + math.exp(x))
+
+
 # ================= II.1 date_score =================
-def date_factor(avg_dist: Optional[float]) -> float:
-    """1 - 4: 4 = sehr oft gekocht (kommt schneller wieder), 1 = selten oder <= 1 Datum."""
-    if avg_dist is None:                       # <= 1 Datum -> noch kein Abstand
-        return 1
-    return max(1, 4 - math.floor(avg_dist) / 14)
+def app_stats(data: dict, today: Optional[date] = None) -> dict:
+    """Rotationspunkt der App aus der history: COUNT_USAGE_APP = verschiedene Koch-Tage (alle
+    Rezepte) im USAGE_WINDOW, COUNT_RECIPES_COOKED_ATLEAST_TWICE = Rezepte mit >= 2 dates.
+    Mit den Untergrenzen fuer neue User (siehe Edge Cases in date_score.ipynb)."""
+    today = today or date.today()
+    since = today - timedelta(days=USAGE_WINDOW)
+    cook_days, twice = set(), 0
+    for h in data.get("history", []):
+        dates = {date.fromisoformat(d) for d in h.get("dates") or []}
+        cook_days |= {d for d in dates if since < d <= today}
+        twice += len(dates) >= 2
+    usage = len(cook_days) or EMPTY_USAGE_DAYS
+    rotation = max(MIN_ROTATION_RECIPES, twice)
+    periodcycle = max(MIN_PERIODCYCLE, USAGE_WINDOW / usage * rotation)
+    return {
+        "count_usage_app": usage,
+        "count_recipes_twice": rotation,
+        "average_usage": USAGE_WINDOW / usage,
+        "periodcycle_app": periodcycle,
+        "var_days_app": min(MAX_VAR_DAYS, rotation),
+        "tau": (periodcycle - ZERO_CROSSING) / math.atanh(BASE_LEVEL),
+    }
 
 
-def calc_date_score(repeat: Optional[float], avg_dist: Optional[float],
-                    dist_last: Optional[int]) -> tuple[float, bool]:
-    """Reine Formel. dist_last=None -> nie gekocht. Rueckgabe (date_score, remove)."""
-    if dist_last is None:
-        return NEVER_COOKED_DATE, False
-    repeat = EMPTY_REPEAT if repeat is None else repeat
-    raw = 10 / 5 * repeat * math.tanh(date_factor(avg_dist) / DATE_SLOPE * (dist_last - DATE_BLOCK))
-    return max(0.0, raw), raw <= 0
+def gauss_cdf(x: float, mu: float, var: float) -> float:
+    return 0.5 * (1 + math.erf((x - mu) / math.sqrt(2 * var)))
 
 
-def date_score(entry: Optional[dict], today: Optional[date] = None) -> tuple[float, bool]:
-    """date_score fuer EINEN history-Eintrag (ein Rezept). today injizierbar fuer Tests."""
+def repeat_shift(repeat: float, mean: float) -> float:
+    """I) Wdh-Verschiebung in Tagen: 0 bei Wdh 5, Wdh 0 -> +34.8 % von mean, Wdh 10 -> -7.8 %."""
+    return mean * (1 - MAX_REWARD) * (math.exp(-REPEAT_STEEPNESS * (repeat - NEUTRAL_RATING)) - 1)
+
+
+def usage_score(repeat: float) -> float:
+    """Gewicht der Korrektur: 1 bei Wdh 5, ~0.21 bei Wdh 0 / 10 (nicht normierte Glocke)."""
+    return math.exp(-0.5 * (repeat - NEUTRAL_RATING) ** 2 / VAR_SCORE)
+
+
+def correction_days(mean: float, std: float, repeat: float, app: dict) -> float:
+    """II) Zug Richtung periodcycle_app + I) Wdh-Verschiebung. T = mean + correction_days(...)."""
+    m, var = app["periodcycle_app"], app["var_days_app"]
+    p_akt = gauss_cdf(mean + std, m, var) - gauss_cdf(mean - std, m, var)
+    p_best = gauss_cdf(m + std, m, var) - gauss_cdf(m - std, m, var)
+    correction = (m - mean) * (p_best - p_akt) * usage_score(repeat)
+    return correction + repeat_shift(repeat, mean)
+
+
+def amplification(dist_last: float, target: float) -> float:
+    """MIN_AMP weit vor T, (MIN_AMP + MAX_AMP) / 2 genau bei T, MAX_AMP weit nach T."""
+    t = math.tanh((dist_last - target) / TAU_AMP)
+    return MIN_AMP + (MAX_AMP - MIN_AMP) * (t + 1) / 2
+
+
+def calc_date_score(amp: float, dist_last: float, tau: float) -> float:
+    """Rohwert der Basiskurve - <= 0 heisst remove (date_score wird dann 0)."""
+    return MAX_SCORE * math.tanh(amp / tau * (dist_last - ZERO_CROSSING))
+
+
+def date_details(entry: Optional[dict], app: dict, today: Optional[date] = None) -> dict:
+    """date_score fuer EINEN history-Eintrag mit allen Zwischenwerten (fuer test_with_data)."""
     today = today or date.today()
     entry = entry or {}
+    out = {"dist_last": None, "n_dates": 0, "mean": None, "std": None, "repeat": None,
+           "target": None, "amp": None, "date_score": NEVER_COOKED_DATE, "remove": False}
+    if not entry.get("last_date"):                      # nie gekocht
+        return out
 
-    dates = sorted(date.fromisoformat(d) for d in entry.get("dates") or [])   # ohne today
-    avg_dist = None
-    if len(dates) >= 2:
+    dates = sorted({date.fromisoformat(d) for d in entry.get("dates") or []})
+    dist_last = (today - date.fromisoformat(entry["last_date"])).days
+    repeat = _mean(entry.get("repeat_rating"))
+    repeat = NEUTRAL_RATING if repeat is None else repeat
+    out.update(dist_last=dist_last, n_dates=len(dates), repeat=repeat, amp=1.0)
+
+    if len(dates) >= MIN_DATES_FOR_TARGET:
         gaps = [(b - a).days for a, b in zip(dates[:-1], dates[1:])]
-        avg_dist = sum(gaps) / len(gaps)
+        mean, std = statistics.fmean(gaps), statistics.pstdev(gaps)
+        target = mean + correction_days(mean, std, repeat, app)
+        out.update(mean=mean, std=std, target=target, amp=amplification(dist_last, target))
 
-    last_date = entry.get("last_date")
-    dist_last = (today - date.fromisoformat(last_date)).days if last_date else None
+    raw = calc_date_score(out["amp"], dist_last, app["tau"])
+    out.update(date_score=max(0.0, raw), remove=raw <= 0)
+    return out
 
-    return calc_date_score(_mean(entry.get("repeat_rating")), avg_dist, dist_last)
+
+def date_score(entry: Optional[dict], app: dict, today: Optional[date] = None) -> tuple[float, bool]:
+    d = date_details(entry, app, today)
+    return d["date_score"], d["remove"]
 
 
 # ================= II.2 reward_score =================
 def timescore(minutes: float) -> float:
-    return 1 / (1 + math.exp((minutes - COOK_MID) / COOK_UNIT))
+    return _logistic((minutes - COOK_MID) / COOK_UNIT)
 
 
 def calc_reward(taste: float, effort: float, minutes: float) -> float:
-    """Reine Formel. taste 0-10, effort 1-5 (5 = hoher Aufwand). Ergebnis 0 - 10."""
-    taste_part = (taste / 10) ** TASTE_EXP                   # schlechter Geschmack hart bestraft
-    cost = (effort - 1) / 4                                  # 0 = wenig, 1 = viel Aufwand
-    effort_part = 1 - EFFORT_WEIGHT * (taste / 10) * cost    # Aufwand zaehlt mehr bei leckeren Gerichten
-    return 10 * timescore(minutes) * taste_part * effort_part
+    """Reine Formel. taste 0-10, effort 0-10 (10 = hoher Aufwand). Ergebnis 0 - 10."""
+    taste_part = (taste / 10) ** TASTE_EXP                                   # schlechter Geschmack hart bestraft
+    cost = (effort / 10) ** EFFORT_EXP
+    effort_part = 1 - EFFORT_WEIGHT * (taste / 10) ** EFFORT_TASTE_EXP * cost  # Aufwand zaehlt mehr bei leckeren Gerichten
+    return 10 * timescore(max(0, minutes)) * taste_part * effort_part
 
 
-def total_minutes(recipe: dict) -> float:
+def recipe_minutes(recipe: dict) -> Optional[float]:
+    """prep + cook; None, wenn beide Zeiten fehlen."""
     prep, cook = recipe.get("prep_minutes"), recipe.get("cook_minutes")
     if prep is None and cook is None:
-        return MISSING_TIME
+        return None
     return (prep or 0) + (cook or 0)
 
 
-def reward_score(recipe: dict, entry: Optional[dict]) -> float:
+def reward_details(recipe: dict, entry: Optional[dict]) -> dict:
+    """reward mit Zwischenwerten. Fehlende Bewertungen -> NEUTRAL_RATING. Nie gekochtes Rezept
+    ohne Zeiten -> reward None (bekommt spaeter den Median-Score, siehe split_pools)."""
     entry = entry or {}
-    taste = _mean(entry.get("taste_rating"))
-    effort = _mean(entry.get("effort_rating"))
-    return calc_reward(
-        NEVER_COOKED_TASTE if taste is None else taste,
-        NEVER_COOKED_EFFORT if effort is None else effort,
-        total_minutes(recipe),
-    )
+    taste, effort = _mean(entry.get("taste_rating")), _mean(entry.get("effort_rating"))
+    taste = NEUTRAL_RATING if taste is None else taste
+    effort = NEUTRAL_RATING if effort is None else effort
+    minutes = recipe_minutes(recipe)
+    if minutes is None and entry.get("last_date"):
+        minutes = MISSING_TIME
+    reward = None if minutes is None else calc_reward(taste, effort, minutes)
+    return {"taste": taste, "effort": effort, "minutes": minutes, "reward_score": reward}
+
+
+def reward_score(recipe: dict, entry: Optional[dict]) -> Optional[float]:
+    return reward_details(recipe, entry)["reward_score"]
 
 
 # ================= II.3 damp_score =================
@@ -118,12 +216,20 @@ def recipe_features(recipe: dict, data: dict) -> dict:
     """Alles, was die Daempfung von einem Rezept braucht. Einzige Stelle, die die Datenfelder
     kennt - fehlende Felder (origin, cooking_method, recipe_spec, main_ingredient) ergeben
     einfach leere Werte, die Regel greift dann nicht.
-    Fleischsorten: Zutaten mit veg_type == meat (offene Frage VIII.11 im Doc)."""
+    main_ingredient ist eine Zutat aus ingredients.yaml und muss in der Zutatenliste des
+    Rezepts stehen - sonst ValueError (Datenfehler, siehe YamlEditor.data_problems)."""
     ingredients = {i.get("ingredient_id"): i for i in data.get("ingredients", [])}
+    rid = recipe.get("recipe_id")
     ids = [ri.get("ingredient_id") for ri in data.get("recipe_ingredients", [])
-           if ri.get("recipe_id") == recipe.get("recipe_id")]
+           if ri.get("recipe_id") == rid]
     origin = recipe.get("origin") or []
     main = recipe.get("main_ingredient")
+    main = None if main == yr.NOT_SPECIFIC else main
+    if main is not None and main not in ingredients:
+        raise ValueError(f"recipe {rid}: main_ingredient {main!r} is not in ingredients.yaml")
+    if main is not None and main not in ids:
+        raise ValueError(f"recipe {rid}: main_ingredient {main!r} is not in its ingredient list")
+    main_info = ingredients.get(main, {})
     specs = {recipe.get("recipe_spec")} & DAMP_SPECS
     if recipe.get("sweet"):
         specs.add("sweet")
@@ -133,20 +239,22 @@ def recipe_features(recipe: dict, data: dict) -> dict:
         "method": recipe.get("cooking_method"),
         "specs": specs,
         "sides": {i for i in ids if ingredients.get(i, {}).get("side_dish")},
-        "main": None if main == yr.NOT_SPECIFIC else main,
+        "main": main,
+        "main_meat_or_side": main_info.get("veg_type") == "meat" or bool(main_info.get("side_dish")),
         "meats": {i for i in ids if ingredients.get(i, {}).get("veg_type") == "meat"},
     }
 
 
 def merge_last_supper(features: list[dict]) -> dict:
-    """EINE zusammengefuehrte Liste aus allen last_supper-Gerichten (einmal, vor der Schleife)."""
+    """EINE zusammengefuehrte Liste aus allen last_supper-Gerichten (einmal, vor der Schleife).
+    meats ist eine Liste: dieselbe Fleischsorte in zwei Gerichten zaehlt fuer len() doppelt."""
     return {
         "origins": set().union(*(f["origins"] for f in features)),
         "methods": {f["method"] for f in features if f["method"]},
         "specs": set().union(*(f["specs"] for f in features)),
         "sides": set().union(*(f["sides"] for f in features)),
         "mains": {f["main"] for f in features if f["main"]},
-        "meats": set().union(*(f["meats"] for f in features)),
+        "meats": [m for f in features for m in sorted(f["meats"], key=str)],
     }
 
 
@@ -164,12 +272,12 @@ def calc_damping(cand: dict, ls: dict, season_now: str) -> tuple[float, float, l
     if cand["sides"] & ls["sides"]:
         off -= 3; log.append("side -3")
     if cand["meats"]:
-        f = 1 - 0.1 * len(ls["meats"])
+        f = max(0.0, 1 - 0.1 * len(ls["meats"]))
         mult *= f; log.append(f"meat x{f:.1f}")
-    if cand["meats"] & ls["meats"]:
-        off -= 5; log.append("same meat -5")
+    if cand["meats"] & set(ls["meats"]):
+        off -= 3; log.append("same meat -3")
     if cand["main"] and cand["main"] in ls["mains"]:
-        if cand["main"] in cand["meats"] or cand["main"] in cand["sides"]:
+        if cand["main_meat_or_side"]:
             mult *= 1 - 0.1; log.append("main=meat/side x0.9")
         else:
             off -= 3; log.append("main -3")
@@ -189,7 +297,7 @@ def last_supper(data: dict, today: Optional[date] = None) -> list[int]:
     return [rid for _, rid in recent[:LAST_SUPPER_SIZE]]
 
 
-# ================= II.4 hard filter =================
+# ================= I.4 hard filter =================
 def variant_root(recipe: dict) -> int:
     """Original-Rezept einer Variante (oder das Rezept selbst) - Varianten teilen den root."""
     return recipe.get("variant_of") or recipe.get("recipe_id")
@@ -230,6 +338,11 @@ def calc_total_score(date_s: float, reward_s: float, mult: float, off: float, wi
     return (date_s + reward_s + w) * mult + off + w / WISHLIST_UNDAMPED
 
 
+def clamp_t(t: Optional[float]) -> float:
+    lo, hi = SOFTMAX_T_RANGE
+    return min(hi, max(lo, float(t if t is not None else SOFTMAX_T)))
+
+
 def softmax(scores: list[float], t: Optional[float] = None) -> list[float]:
     """p_i = exp(s_i/T) / sum exp(s_j/T). max wird nur fuer numerische Sicherheit abgezogen."""
     t = t or SOFTMAX_T
@@ -240,10 +353,12 @@ def softmax(scores: list[float], t: Optional[float] = None) -> list[float]:
 
 
 def draw_proposals(scores: dict, root_of: dict, k: int = PROPOSAL_COUNT,
-                   rng=random, t: Optional[float] = None) -> list:
+                   rng=random, t: Optional[float] = None, used_roots: Optional[set] = None) -> list:
     """k Ziehungen ohne Zuruecklegen; Softmax nach jeder Ziehung ueber die VERBLEIBENDEN Rezepte.
-    Nach jeder Ziehung fliegen das Rezept und alle Varianten (gleicher root) raus."""
-    pool = dict(scores)
+    Nach jeder Ziehung fliegen das Rezept und alle Varianten (gleicher root) raus.
+    used_roots: Familien, die schon in der Liste stehen (z.B. beim Auffuellen)."""
+    used_roots = set(used_roots or ())
+    pool = {i: s for i, s in scores.items() if root_of[i] not in used_roots}
     out = []
     while pool and len(out) < k:
         ids = list(pool)
@@ -254,27 +369,44 @@ def draw_proposals(scores: dict, root_of: dict, k: int = PROPOSAL_COUNT,
     return out
 
 
-def swap_proposals(picks: list, candidates: list, root_of: dict, never_cooked: set,
-                   wishlist: set, rng=random) -> list:
+def swap_proposals(picks: list, new_pool: dict, main_pool: dict, root_of: dict,
+                   wishlist: set, rng=random, t: Optional[float] = None) -> list:
     """Jeder Vorschlag wird mit Wahrscheinlichkeit 1 - p getauscht (p^5 = SWAP_P5), ausser er
-    steht auf der Wunschliste. Ersatz: erst nie gekochte, dann zufaellig aus dem Rest - nie
-    ein Rezept oder eine Variante, die schon in der Liste steht."""
+    steht auf der Wunschliste. Ersatz per Softmax: erst aus den nie gekochten Rezepten, dann aus
+    dem Rest - nie ein Rezept oder eine Variante, die schon in der Liste steht. Nichts frei -> kein Tausch."""
     p = SWAP_P5 ** (1 / PROPOSAL_COUNT)
     out = list(picks)
     for idx, pick in enumerate(out):
         if pick in wishlist or rng.random() < p:
             continue
         used = {root_of[i] for i in out}
-        free = [c for c in candidates if root_of[c] not in used]
-        fresh = [c for c in free if c in never_cooked]
-        if fresh or free:
-            out[idx] = rng.choice(fresh or free)
+        for pool in (new_pool, main_pool):
+            repl = draw_proposals(pool, root_of, k=1, rng=rng, t=t, used_roots=used)
+            if repl:
+                out[idx] = repl[0]
+                break
     return out
+
+
+def split_pools(dataset: dict, candidates: list) -> tuple[dict, dict]:
+    """Teilt die erlaubten Rezepte in den Haupt-Pool (gekocht oder auf der Wunschliste) und den
+    Pool der neuen, nie gekochten Rezepte. Rezepte ohne berechenbaren Score (nie gekocht, keine
+    Zeiten) bekommen den Median aller berechneten Scores der Kandidaten.
+    Rueckgabe: ({recipe_id: score} Haupt-Pool, {recipe_id: score} neue Rezepte)."""
+    computed = [dataset[i]["score"] for i in candidates if dataset[i]["score"] is not None]
+    median = statistics.median(computed) if computed else calc_total_score(
+        NEVER_COOKED_DATE, calc_reward(NEUTRAL_RATING, NEUTRAL_RATING, MISSING_TIME), 1, 0, False)
+    main, new = {}, {}
+    for i in candidates:
+        d = dataset[i]
+        score = d["score"] if d["score"] is not None else median
+        (new if d["never_cooked"] and not d["wishlist"] else main)[i] = score
+    return main, new
 
 
 # ================= Pipeline =================
 def build_propose_dataset(data: dict, user_id=None, today: Optional[date] = None) -> dict:
-    """Pro Rezept: recipe, history, ingredients und alle Teil-Scores (I.2 - I.5 im Doc)."""
+    """Pro Rezept: recipe, history, ingredients und alle Teil-Scores mit Zwischenwerten (I.2 im Doc)."""
     today = today or date.today()
     recipes = data.get("recipes", [])
 
@@ -288,6 +420,7 @@ def build_propose_dataset(data: dict, user_id=None, today: Optional[date] = None
 
     ingredient_by_id = {i.get("ingredient_id"): i for i in data.get("ingredients", [])}
     by_id = {r.get("recipe_id"): r for r in recipes}
+    app = app_stats(data, today)
     ls_ids = last_supper(data, today)
     ls = merge_last_supper([recipe_features(by_id[i], data) for i in ls_ids if i in by_id])
     season_now = current_season(today)
@@ -296,10 +429,12 @@ def build_propose_dataset(data: dict, user_id=None, today: Optional[date] = None
     for r in recipes:
         rid = r.get("recipe_id")
         entry = history_by_recipe[rid][0] if history_by_recipe.get(rid) else None   # genau ein Eintrag pro Rezept
-        d_score, remove = date_score(entry, today)
+        d = date_details(entry, app, today)
+        rw = reward_details(r, entry)
         mult, off, rules = calc_damping(recipe_features(r, data), ls, season_now)
         wish = user_id is not None and rl.is_wishlisted(data, rid, user_id)
-        r_score = reward_score(r, entry)
+        score = None if rw["reward_score"] is None else calc_total_score(
+            d["date_score"], rw["reward_score"], mult, off, wish)
         dataset[rid] = {
             "recipe": r,
             "history": history_by_recipe.get(rid, []),
@@ -307,14 +442,16 @@ def build_propose_dataset(data: dict, user_id=None, today: Optional[date] = None
             "ingredient_info": [ingredient_by_id[ri.get("ingredient_id")] for ri in ingredients_by_recipe.get(rid, [])
                                 if ri.get("ingredient_id") in ingredient_by_id],
             "never_cooked": not (entry or {}).get("last_date"),
-            "date_score": d_score,
-            "remove": remove,
-            "reward_score": r_score,
+            "date": d,
+            "reward": rw,
+            "date_score": d["date_score"],
+            "remove": d["remove"],
+            "reward_score": rw["reward_score"],
             "damp_score_mult": mult,
             "damp_score_offset": off,
             "damp_rules": rules,
             "wishlist": wish,
-            "score": calc_total_score(d_score, r_score, mult, off, wish),
+            "score": score,          # None -> Median, siehe split_pools
         }
     return dataset
 
@@ -322,7 +459,8 @@ def build_propose_dataset(data: dict, user_id=None, today: Optional[date] = None
 def hard_filter(dataset: dict, last_supper_ids: list, meal_type: str = "main_dish",
                 diet: str = "any", blacklist: Optional[set] = None,
                 include=(), exclude=(), allergies=()) -> list:
-    """II.4 - recipe_ids, die nach allen harten Filtern uebrig bleiben."""
+    """I.4 - recipe_ids, die nach allen harten Filtern uebrig bleiben. Die Wunschliste
+    ueberstimmt remove aus date_score, die Blacklist gewinnt immer."""
     blacklist = blacklist or set()
     ls_roots = {variant_root(dataset[i]["recipe"]) for i in last_supper_ids if i in dataset}
     allowed = {r.get("recipe_id") for r in
@@ -330,7 +468,7 @@ def hard_filter(dataset: dict, last_supper_ids: list, meal_type: str = "main_dis
     return [
         rid for rid, d in dataset.items()
         if rid in allowed
-        and not d["remove"]
+        and (not d["remove"] or d["wishlist"])
         and variant_root(d["recipe"]) not in ls_roots
         and rid not in blacklist
         and not is_same_day(d["recipe"])
@@ -340,10 +478,13 @@ def hard_filter(dataset: dict, last_supper_ids: list, meal_type: str = "main_dis
 
 def propose(data: dict, user_id=None, today: Optional[date] = None, meal_type: str = "main_dish",
             diet: str = "any", blacklist: Optional[set] = None, rng=random, k: int = PROPOSAL_COUNT,
-            include=(), exclude=(), allergies=()) -> list[dict]:
+            include=(), exclude=(), allergies=(), t: Optional[float] = None, pool: str = "all") -> list[dict]:
     """Ganze Vorschlags-Pipeline (I.1 - I.6 im Doc). Gibt bis zu k vorgeschlagene Rezept-Dicts zurueck.
+    pool="all": aus dem Haupt-Pool ziehen, zu wenige -> mit neuen Rezepten auffuellen, dann tauschen.
+    pool="new": nur aus den nie gekochten Rezepten ziehen ('Neue Rezepte'-Button).
     blacklist kommt zusaetzlich zur blacklist.yaml des Users dazu."""
     today = today or date.today()
+    t = clamp_t(t)
     dataset = build_propose_dataset(data, user_id, today)
     blacklist = set(blacklist or ()) | user_blacklist(data, user_id)
     candidates = hard_filter(dataset, last_supper(data, today), meal_type, diet, blacklist,
@@ -351,19 +492,23 @@ def propose(data: dict, user_id=None, today: Optional[date] = None, meal_type: s
     if not candidates:
         return []
     root_of = {rid: variant_root(dataset[rid]["recipe"]) for rid in candidates}
-    picks = draw_proposals({rid: dataset[rid]["score"] for rid in candidates}, root_of, k=k, rng=rng)
-    picks = swap_proposals(
-        picks, candidates, root_of,
-        never_cooked={rid for rid in candidates if dataset[rid]["never_cooked"]},
-        wishlist={rid for rid in candidates if dataset[rid]["wishlist"]},
-        rng=rng,
-    )
+    main_pool, new_pool = split_pools(dataset, candidates)
+    if pool == "new":
+        picks = draw_proposals(new_pool, root_of, k=k, rng=rng, t=t)
+        return [dataset[rid]["recipe"] for rid in picks]
+
+    picks = draw_proposals(main_pool, root_of, k=k, rng=rng, t=t)
+    if len(picks) < k:   # zu wenige -> mit neuen Rezepten auffuellen
+        picks += draw_proposals(new_pool, root_of, k=k - len(picks), rng=rng, t=t,
+                                used_roots={root_of[i] for i in picks})
+    picks = swap_proposals(picks, new_pool, main_pool, root_of,
+                           wishlist={rid for rid in candidates if dataset[rid]["wishlist"]}, rng=rng, t=t)
     return [dataset[rid]["recipe"] for rid in picks]
 
 
 # ================= Frontend / bestehende Filter =================
-def recipe_to_frontend(r: dict) -> dict:
-    """Convert recipe dict to frontend format"""
+def recipe_to_frontend(r: dict, is_new: bool = False) -> dict:
+    """Convert recipe dict to frontend format. is_new = noch nie gekocht."""
     return {
         "id": r.get("recipe_id"),
         "name": r.get("name"),
@@ -372,6 +517,7 @@ def recipe_to_frontend(r: dict) -> dict:
         "prep_t": r.get("prep_minutes", "0"),
         "cook_t": r.get("cook_minutes", "0"),
         "season": r.get("season", "always"),
+        "is_new": is_new,
     }
 
 
