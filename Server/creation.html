@@ -369,8 +369,27 @@
           <div class="col">
             <label>Hauptzutat</label>
             <select id="rec_main">
-              <option value="">— nicht gesetzt —</option>
+              <option value="">— bitte bestätigen —</option>
             </select>
+            <div class="hint" id="rec_main_hint"></div>
+          </div>
+          <div class="col">
+            <label>Beilage</label>
+            <select id="rec_side">
+              <option value="">— bitte bestätigen —</option>
+            </select>
+            <div class="hint" id="rec_side_hint"></div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:8px;">
+          <div class="col">
+            <label>Variante mit anderer Beilage anlegen</label>
+            <div class="inline">
+              <select id="rec_other_side"></select>
+              <button id="btnSideVariant" class="btn secondary" type="button">Variante anlegen</button>
+            </div>
+            <div class="hint">Kopiert das gespeicherte Rezept, tauscht die Beilage aus und speichert die Kopie als Variante (z.B. einmal mit Nudeln, einmal mit Reis).</div>
           </div>
         </div>
 
@@ -650,6 +669,9 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
 
     currentRecipeItems = [];
     renderRecipeIngredientList();
+    $('#rec_main').value = '';      // neues Rezept: Hauptzutat / Beilage muessen neu bestaetigt werden
+    $('#rec_side').value = '';
+    lastSuggestion = null;
     setEditingRecipe(null);
     renderVariantOfOptions();
     $('#rec_variant_of').value = '';
@@ -1008,24 +1030,111 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     document.querySelectorAll('#rec_origin input').forEach(cb => { cb.checked = wanted.includes(cb.value); });
   }
 
-  // Hauptzutat = eine der Zutaten des aktuellen Rezepts (ingredient_id) oder "not specific".
-  function renderMainIngredientOptions() {
-    const sel = $('#rec_main');
+  // Hauptzutat / Beilage = eine der Zutaten des aktuellen Rezepts (ingredient_id) oder "keine" (-> null).
+  // "" = noch nicht bestaetigt -> Speichern wird blockiert. Der Server macht nur einen Vorschlag
+  // (/api/recipe/suggest), den der User per "Übernehmen" bestaetigen muss.
+  let lastSuggestion = null;
+  let suggestTimer = null;
+
+  function ingredientName(id) {
+    return ingredients.find(i => Number(i.ingredient_id) === Number(id))?.name ?? String(id);
+  }
+
+  function renderRoleSelect(selId) {
+    const sel = $(selId);
     if (!sel) return;
     const current = sel.value;
-    const opts = currentRecipeItems.map(it => {
-      const ing = ingredients.find(i => Number(i.ingredient_id) === Number(it.ingredient_id));
-      return `<option value="${Number(it.ingredient_id)}">${escapeHtml(ing?.name ?? it.ingredient_id)}</option>`;
-    });
-    sel.innerHTML = '<option value="">— nicht gesetzt —</option>' +
-      '<option value="not specific">nicht spezifisch</option>' + opts.join('');
+    const opts = currentRecipeItems.map(it =>
+      `<option value="${Number(it.ingredient_id)}">${escapeHtml(ingredientName(it.ingredient_id))}</option>`);
+    sel.innerHTML = '<option value="">— bitte bestätigen —</option><option value="none">keine</option>' + opts.join('');
     sel.value = [...sel.options].some(o => o.value === current) ? current : '';
   }
 
-  function readMainIngredient() {
-    const v = $('#rec_main').value;
-    if (v === '') return null;
-    return v === 'not specific' ? v : Number(v);
+  function renderMainIngredientOptions() {
+    renderRoleSelect('#rec_main');
+    renderRoleSelect('#rec_side');
+    renderOtherSideOptions();
+    scheduleSuggestion();
+  }
+
+  // gespeicherter Wert -> Auswahl: null / "not specific" = keine
+  function roleToSelect(v) { return (v == null || v === 'not specific') ? 'none' : String(Number(v)); }
+  function readRole(selId) {
+    const v = $(selId).value;
+    return (v === '' || v === 'none') ? null : Number(v);
+  }
+  function readMainIngredient() { return readRole('#rec_main'); }
+
+  function scheduleSuggestion() {
+    clearTimeout(suggestTimer);
+    suggestTimer = setTimeout(fetchSuggestion, 300);
+  }
+
+  async function fetchSuggestion() {
+    lastSuggestion = null;
+    renderSuggestionHints();
+    if (!currentRecipeItems.length) return;
+    try {
+      const res = await fetch('/api/recipe/suggest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipe_id: editingRecipeId, name: $('#rec_name').value.trim(), items: currentRecipeItems })
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      lastSuggestion = await res.json();
+    } catch (e) {
+      console.warn('suggestion failed', e);
+    }
+    renderSuggestionHints();
+  }
+
+  function renderSuggestionHints() {
+    for (const [key, selId, hintId] of [['main_ingredient', '#rec_main', '#rec_main_hint'], ['side_dish', '#rec_side', '#rec_side_hint']]) {
+      const hint = $(hintId);
+      if (!hint) continue;
+      if (!lastSuggestion) { hint.innerHTML = ''; continue; }
+      const s = lastSuggestion[key];
+      const value = s ? String(s.ingredient_id) : 'none';
+      const text = s ? `${escapeHtml(s.name)} (${escapeHtml(s.reason)})` : 'keine';
+      hint.innerHTML = `Vorschlag: ${text} <button type="button" class="btn" data-accept="${selId}" data-value="${value}">Übernehmen</button>`;
+      hint.querySelector('button').addEventListener('click', () => { $(selId).value = value; });
+    }
+  }
+
+  // Andere Beilagen (Zutaten mit side_dish: true, die nicht schon im Rezept stehen)
+  function renderOtherSideOptions() {
+    const sel = $('#rec_other_side');
+    if (!sel) return;
+    const inRecipe = new Set(currentRecipeItems.map(it => Number(it.ingredient_id)));
+    const opts = ingredients
+      .filter(i => i.side_dish && !inRecipe.has(Number(i.ingredient_id)))
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+      .map(i => `<option value="${Number(i.ingredient_id)}">${escapeHtml(i.name)}</option>`);
+    sel.innerHTML = opts.length ? opts.join('') : '<option value="">— keine weiteren Beilagen —</option>';
+  }
+
+  // Kopie des gespeicherten Rezepts mit anderer Beilage als Variante (variant_of = Hauptrezept der Familie)
+  function createSideDishVariant() {
+    if (editingRecipeId == null) { alert('Bitte das Rezept zuerst speichern.'); return; }
+    const base = recipes.find(r => Number(r.recipe_id) === Number(editingRecipeId));
+    const oldSide = base?.side_dish;
+    const newSide = Number($('#rec_other_side').value);
+    if (oldSide == null) { alert('Das Rezept hat keine bestätigte Beilage, die getauscht werden kann.'); return; }
+    if (!newSide) { alert('Bitte eine andere Beilage wählen.'); return; }
+
+    const root = base.variant_of ?? base.recipe_id;
+    const name = prompt('Name der Variante:', `${base.name} (${ingredientName(newSide)})`);
+    if (!name) return;
+    const recipe_id = nextId(recipes, 'recipe_id');
+    recipes.push({ ...base, recipe_id, name: name.trim(), variant_of: root, side_dish: newSide });
+    for (const ri of recipeIngredients.filter(x => Number(x.recipe_id) === Number(base.recipe_id))) {
+      const swap = Number(ri.ingredient_id) === Number(oldSide);
+      recipeIngredients.push({ ...ri, recipe_id, ingredient_id: swap ? newSide : Number(ri.ingredient_id) });
+    }
+    renderRecipes();
+    scheduleSave();
+    loadRecipeIntoForm(recipe_id);
+    showToast(`Variante „${name.trim()}“ angelegt ✓`);
   }
 
   function refreshCalculatedVeg() {
@@ -1142,7 +1251,9 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     if (comboList) comboList.style.display = 'none';
 
     renderRecipeIngredientList();
-    $('#rec_main').value = r.main_ingredient != null ? String(r.main_ingredient) : '';   // Optionen erst nach renderRecipeIngredientList da
+    // Optionen erst nach renderRecipeIngredientList da; gespeichertes Rezept = bereits bestaetigt (null = keine)
+    $('#rec_main').value = roleToSelect(r.main_ingredient);
+    $('#rec_side').value = roleToSelect(r.side_dish);
     autoResizeTextarea($('#rec_instructions'));
   }
 
@@ -1184,17 +1295,28 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     const instructions = normalizeInstructions($('#rec_instructions').value);
     const recipe_type = $('#rec_type').value;
     const variantOfRaw = $('#rec_variant_of').value;
-    const variant_of = variantOfRaw === '' ? null : Number(variantOfRaw);
+    let variant_of = variantOfRaw === '' ? null : Number(variantOfRaw);
     const season = $('#rec_season').value;
 
     if (!name) { alert('Recipe name required'); return; }
     if (!Number.isFinite(prep) || prep < 0) { alert('Zubereitungszeit muss ≥ 0 sein'); return; }
     if (!Number.isFinite(cook) || cook < 0) { alert('Kochzeit muss ≥ 0 sein'); return; }
     if (!currentRecipeItems.length) { alert('Add at least one ingredient'); return; }
+    if ($('#rec_main').value === '' || $('#rec_side').value === '') {
+      alert('Bitte Hauptzutat und Beilage bestätigen – Vorschlag übernehmen, eine Zutat wählen oder „keine“.');
+      return;
+    }
 
     const veg_type = refreshCalculatedVeg();
     const isUpdate = editingRecipeId !== null;
     const recipe_id = isUpdate ? Number(editingRecipeId) : nextId(recipes, 'recipe_id');
+
+    // Gleiches Rezept wie ein bestehendes, nur andere Beilage -> als Variante speichern? (nur nach Bestaetigung)
+    const variantHint = lastSuggestion?.variant_of;
+    if (variant_of == null && variantHint && Number(variantHint.recipe_id) !== recipe_id
+        && confirm(`Das sieht aus wie „${variantHint.name}“ mit einer anderen Beilage.\nAls Variante davon speichern?`)) {
+      variant_of = Number(variantHint.recipe_id);
+    }
 
     // Keep the hierarchy flat: exactly one main per family, everyone else points
     // directly to it. A recipe that already has variants can't become a variant itself.
@@ -1220,7 +1342,8 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
       origin: getOrigins(),
       cooking_method: $('#rec_method').value || null,
       recipe_spec: $('#rec_spec').value || null,
-      main_ingredient: readMainIngredient()
+      main_ingredient: readMainIngredient(),
+      side_dish: readRole('#rec_side')
     };
 
     // prep_minutes/cook_minutes hier sind nur die anfaengliche Schaetzung. Sobald das
@@ -1446,6 +1569,10 @@ document.addEventListener('click', (e) => {
     // Save / Clear
     $('#saveRecipe')?.addEventListener('click', saveOrUpdateRecipe);
     $('#clearRecipe')?.addEventListener('click', clearRecipeForm);
+
+    // Hauptzutat / Beilage: Vorschlag neu holen, wenn sich der Name aendert; Beilagen-Variante
+    $('#rec_name')?.addEventListener('input', scheduleSuggestion);
+    $('#btnSideVariant')?.addEventListener('click', createSideDishVariant);
 
     // Reset in-memory only
     $('#resetAll')?.addEventListener('click', () => {

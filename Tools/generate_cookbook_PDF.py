@@ -185,6 +185,7 @@ def parse_recipes(doc: dict) -> Dict[int, Recipe]:
             recipe_spec=r.get("recipe_spec"),
             main_ingredient=r.get("main_ingredient"),
             season=r.get("season"),
+            side_dish=(int(r["side_dish"]) if isinstance(r.get("side_dish"), int) else None),
         )
     return out
 
@@ -281,7 +282,7 @@ def generate_content(
             continue
 
         for rec in recs:
-            L.append(r"\subsection{" + lG.latex_escape(rec.name) + r"}")
+            L.append(r"\subsection{" + lG.latex_escape(rec.name) + r"}\label{" + recipe_label(rec) + "}")
 
             # optional: Meta anzeigen (ohne Sortierwirkung)
             meta = []
@@ -333,9 +334,36 @@ def generate_content(
                         L.append(lG.latex_escape(para) + r"\\")
                     else:
                         L.append(r"\vspace{4pt}")
+
+            # Varianten derselben Familie (gleiches Hauptrezept) verlinken, z.B. mit Reis statt Nudeln
+            family = variant_family(rec, recipes)
+            if family:
+                L.append(r"\noindent")
+                L.append(r"\textbf{Varianten:}")
+                L.append("; ".join(variant_link(v, ingredients) for v in family) + r"\\")
             L.append("")
 
     return "\n".join(L).strip() + "\n"
+
+
+def variant_family(rec: Recipe, recipes: Dict[int, Recipe]) -> List[Recipe]:
+    """Alle anderen Rezepte mit demselben Hauptrezept (variant_of), Hauptrezept zuerst."""
+    root = rec.variant_of or rec.recipe_id
+    family = [r for r in recipes.values()
+              if r.recipe_id != rec.recipe_id and (r.recipe_id == root or r.variant_of == root)]
+    return sorted(family, key=lambda r: (r.recipe_id != root, r.name.lower()))
+
+
+def variant_link(rec: Recipe, ingredients: Dict[int, Ingredient]) -> str:
+    """Klickbarer Link 'Name (mit Reis, S. 5)' auf das Rezept im PDF."""
+    side = ingredients.get(rec.side_dish) if rec.side_dish is not None else None
+    extra = ("mit " + side.name + ", ") if side else ""
+    return (r"\hyperref[" + recipe_label(rec) + "]{" + lG.latex_escape(rec.name) + "} ("
+            + lG.latex_escape(extra) + r"S.~\pageref{" + recipe_label(rec) + "})")
+
+
+def recipe_label(rec: Recipe) -> str:
+    return f"rezept:{rec.recipe_id}"
 
 
 def generate_ingredient_appendix(ingredients, links, onlyUsed=True):

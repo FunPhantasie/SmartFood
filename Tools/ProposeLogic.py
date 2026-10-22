@@ -214,21 +214,26 @@ def current_season(today: date) -> str:
 
 def recipe_features(recipe: dict, data: dict) -> dict:
     """Alles, was die Daempfung von einem Rezept braucht. Einzige Stelle, die die Datenfelder
-    kennt - fehlende Felder (origin, cooking_method, recipe_spec, main_ingredient) ergeben
+    kennt - fehlende Felder (origin, cooking_method, recipe_spec, main_ingredient, side_dish) ergeben
     einfach leere Werte, die Regel greift dann nicht.
-    main_ingredient ist eine Zutat aus ingredients.yaml und muss in der Zutatenliste des
-    Rezepts stehen - sonst ValueError (Datenfehler, siehe YamlEditor.data_problems)."""
+    main_ingredient und side_dish sind Rezeptfelder (beim Erstellen bestaetigt, None = keine): Zutaten
+    aus ingredients.yaml, die in der Zutatenliste des Rezepts stehen muessen - sonst ValueError
+    (Datenfehler, siehe YamlEditor.data_problems). Ohne Hauptzutat / Beilage wird darueber nicht gedaempft."""
     ingredients = {i.get("ingredient_id"): i for i in data.get("ingredients", [])}
     rid = recipe.get("recipe_id")
     ids = [ri.get("ingredient_id") for ri in data.get("recipe_ingredients", [])
            if ri.get("recipe_id") == rid]
     origin = recipe.get("origin") or []
-    main = recipe.get("main_ingredient")
-    main = None if main == yr.NOT_SPECIFIC else main
-    if main is not None and main not in ingredients:
-        raise ValueError(f"recipe {rid}: main_ingredient {main!r} is not in ingredients.yaml")
-    if main is not None and main not in ids:
-        raise ValueError(f"recipe {rid}: main_ingredient {main!r} is not in its ingredient list")
+    roles = {}
+    for field in ("main_ingredient", "side_dish"):
+        value = recipe.get(field)
+        value = None if value == yr.NOT_SPECIFIC else value
+        if value is not None and value not in ingredients:
+            raise ValueError(f"recipe {rid}: {field} {value!r} is not in ingredients.yaml")
+        if value is not None and value not in ids:
+            raise ValueError(f"recipe {rid}: {field} {value!r} is not in its ingredient list")
+        roles[field] = value
+    main, side = roles["main_ingredient"], roles["side_dish"]
     main_info = ingredients.get(main, {})
     specs = {recipe.get("recipe_spec")} & DAMP_SPECS
     if recipe.get("sweet"):
@@ -238,7 +243,7 @@ def recipe_features(recipe: dict, data: dict) -> dict:
         "origins": set(origin if isinstance(origin, list) else [origin]),
         "method": recipe.get("cooking_method"),
         "specs": specs,
-        "sides": {i for i in ids if ingredients.get(i, {}).get("side_dish")},
+        "sides": {side} if side is not None else set(),
         "main": main,
         "main_meat_or_side": main_info.get("veg_type") == "meat" or bool(main_info.get("side_dish")),
         "meats": {i for i in ids if ingredients.get(i, {}).get("veg_type") == "meat"},

@@ -83,8 +83,88 @@ class Recipe:
     origin: Tuple[str, ...] = ()            # ORIGINS, mehrere moeglich
     cooking_method: Optional[str] = None    # COOKING_METHODS
     recipe_spec: Optional[str] = None       # RECIPE_SPECS
-    main_ingredient: Optional[int | str] = None   # ingredient_id oder NOT_SPECIFIC
+    main_ingredient: Optional[int | str] = None   # ingredient_id oder None (= keine Hauptzutat)
     season: Optional[str] = None            # all, spring, summer, autumn, winter (fehlt = all)
+    side_dish: Optional[int] = None         # ingredient_id der Beilage oder None (= keine Beilage)
+
+
+# ------------------------------------------------------------
+# Vorschlaege beim Erstellen (nur Vorschlag - der User muss bestaetigen)
+# ------------------------------------------------------------
+# grobe Gramm pro Einheit, nur um beim Vorschlag die schwerste Zutat zu finden
+UNIT_GRAMS = {"g": 1, "kg": 1000, "ml": 1, "l": 1000, "liter": 1000, "el": 15, "tl": 5, "tasse": 150,
+              "stück": 100, "stueck": 100, "prise": 0.5, "bund": 50, "scheibe": 20, "packung": 250,
+              "dose": 400, "becher": 200, "zehe": 5, "": 100}
+
+
+def _norm(text) -> str:
+    text = str(text or "").lower()
+    for a, b in (("ä", "ae"), ("ö", "oe"), ("ü", "ue"), ("ß", "ss")):
+        text = text.replace(a, b)
+    return text
+
+
+def approx_grams(quantity, unit) -> float:
+    return float(quantity or 0) * UNIT_GRAMS.get(_norm(unit).strip(), 100)
+
+
+def _choice(ing: dict, reason: str) -> dict:
+    return {"ingredient_id": ing.get("ingredient_id"), "name": ing.get("name"), "reason": reason}
+
+
+def suggest_main_and_side(data: dict, name: str, items: list[dict]) -> dict:
+    """Vorschlag fuer Hauptzutat und Beilage eines Rezepts aus Name + Zutatenliste.
+    items: [{ingredient_id, quantity, unit}]. Rueckgabe {"main_ingredient": {...} | None, "side_dish": ...}.
+    - Beilage: Zutat mit side_dish: true (bei mehreren die schwerste)
+    - Hauptzutat: normale Zutat (keine Beilage / Grundzutat / Gewuerz), deren Name im Rezeptnamen
+      vorkommt (oder umgekehrt), sonst die mit dem groessten Gewichtsanteil."""
+    by_id = {i.get("ingredient_id"): normalize_ingredient(i) for i in data.get("ingredients", [])}
+    parts = [(by_id[it.get("ingredient_id")], approx_grams(it.get("quantity"), it.get("unit")))
+             for it in items if it.get("ingredient_id") in by_id]
+    heaviest = lambda cands: max(cands, key=lambda p: p[1]) if cands else None
+
+    sides = [p for p in parts if p[0]["side_dish"]]
+    side = heaviest(sides)
+    mains = [p for p in parts if not p[0]["side_dish"] and p[0]["category"] == "ingredient"]
+    recipe_name = _norm(name)
+    tokens = [t for t in re.split(r"[^a-z]+", recipe_name) if len(t) >= 4]
+    by_name = [p for p in mains if (len(_norm(p[0]["name"])) >= 3 and _norm(p[0]["name"]) in recipe_name)
+               or any(t in _norm(p[0]["name"]) for t in tokens)]
+    if by_name:
+        main = _choice(heaviest(by_name)[0], "steht im Rezeptnamen")
+    elif mains:
+        ing, grams = heaviest(mains)
+        main = _choice(ing, f"größter Gewichtsanteil (~{grams:.0f} g)")
+    else:
+        main = None
+    return {"main_ingredient": main,
+            "side_dish": _choice(side[0], "Beilagen-Zutat") if side else None}
+
+
+def side_dish_variant_of(data: dict, recipe_id, items: list[dict]) -> Optional[dict]:
+    """Gibt es schon ein Rezept mit denselben (normalen) Zutaten, aber einer anderen Beilage?
+    Dann ist das neue Rezept vermutlich eine Variante davon (z.B. einmal mit Nudeln, einmal mit Reis).
+    Rueckgabe {"recipe_id", "name"} des Hauptrezepts der Familie oder None."""
+    by_id = {i.get("ingredient_id"): normalize_ingredient(i) for i in data.get("ingredients", [])}
+    core = lambda ids: {i for i in ids if i in by_id and not by_id[i]["side_dish"] and by_id[i]["category"] == "ingredient"}
+    sides = lambda ids: {i for i in ids if i in by_id and by_id[i]["side_dish"]}
+    mine = {it.get("ingredient_id") for it in items}
+    if not core(mine) or not sides(mine):
+        return None
+    links = defaultdict(set)
+    for ri in data.get("recipe_ingredients", []):
+        links[ri.get("recipe_id")].add(ri.get("ingredient_id"))
+    recipes = {r.get("recipe_id"): r for r in data.get("recipes", [])}
+    root_of = lambda r: r.get("variant_of") or r.get("recipe_id")
+    own_root = root_of(recipes[recipe_id]) if recipe_id in recipes else recipe_id
+    for r in recipes.values():
+        root = root_of(r)
+        if own_root is not None and own_root in (r.get("recipe_id"), root):   # eigene Familie
+            continue
+        other = links[r.get("recipe_id")]
+        if core(other) == core(mine) and sides(other) and sides(other) != sides(mine):
+            return {"recipe_id": root, "name": recipes.get(root, r).get("name")}
+    return None
 
 
 def data_problems(data: dict) -> list[str]:
@@ -118,12 +198,14 @@ def data_problems(data: dict) -> list[str]:
             problems.append(f"recipe {rid}: unknown recipe_spec {r.get('recipe_spec')!r}")
         if (r.get("prep_minutes") is None) != (r.get("cook_minutes") is None):
             problems.append(f"recipe {rid}: only one of prep_minutes / cook_minutes is set")
-        main = r.get("main_ingredient")
-        if main not in (None, NOT_SPECIFIC):
-            if main not in ingredient_ids:
-                problems.append(f"recipe {rid}: main_ingredient {main!r} is not an ingredient_id")
-            elif (rid, main) not in links:
-                problems.append(f"recipe {rid}: main_ingredient {main} is not in its ingredient list")
+        for field in ("main_ingredient", "side_dish"):    # None = keine Hauptzutat / Beilage
+            value = r.get(field)
+            if value in (None, NOT_SPECIFIC):
+                continue
+            if value not in ingredient_ids:
+                problems.append(f"recipe {rid}: {field} {value!r} is not an ingredient_id")
+            elif (rid, value) not in links:
+                problems.append(f"recipe {rid}: {field} {value} is not in its ingredient list")
     return problems
 
 

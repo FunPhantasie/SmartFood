@@ -116,8 +116,9 @@ def example_data():
                                                  "category": c}) for i, n, s, v, c in ing],
         "recipes": [{"recipe_id": i, "name": n, "recipe_type": t, "veg_type": v, "origin": o,
                      "recipe_spec": sp, "main_ingredient": m, "prep_minutes": p, "cook_minutes": c,
-                     "variant_of": vo, "season": "all", "sweet": False}
-                    for i, n, t, v, o, sp, m, p, c, vo, _ in recipes],
+                     "variant_of": vo, "season": "all", "sweet": False,
+                     "side_dish": next((x for x in ings if x in (1, 2)), None)}     # rice / noodles
+                    for i, n, t, v, o, sp, m, p, c, vo, ings in recipes],
         "recipe_ingredients": [{"recipe_id": r[0], "ingredient_id": i} for r in recipes for i in r[10]],
         "history": [],
         "wishlist": [{"recipe_id": 10, "user_id": "u1"}],
@@ -302,6 +303,25 @@ def ingredients_cli(tmp_dir: Path) -> bool:
     return list(ing) == list(yr.INGREDIENT_FIELDS) and (ing["category"], ing["kcal"], ing["protein"]) == ("basic", 35, 1.0)
 
 
+def suggest(name, *items):
+    """Vorschlag auf den Beispieldaten -> (main id, side id); items = (ingredient_id, quantity, unit)."""
+    s = yr.suggest_main_and_side(example_data(), name,
+                                 [{"ingredient_id": i, "quantity": q, "unit": u} for i, q, u in items])
+    return tuple(x and x["ingredient_id"] for x in (s["main_ingredient"], s["side_dish"]))
+
+
+def suggest_endpoint():
+    """POST /api/recipe/suggest on the example data: noodles + chicken = chicken curry with another side."""
+    from Server import smartfood_server as srv
+    load_all, srv.load_all = srv.load_all, example_data
+    try:
+        return srv.app.test_client().post("/api/recipe/suggest", json={
+            "name": "Chicken mit Nudeln", "items": [{"ingredient_id": 2, "quantity": 200, "unit": "g"},
+                                                    {"ingredient_id": 3, "quantity": 300, "unit": "g"}]}).get_json()
+    finally:
+        srv.load_all = load_all
+
+
 def raises(fn) -> bool:
     try:
         fn()
@@ -352,6 +372,8 @@ def sanity_checks():
     empty_app = pl.app_stats({"history": []}, TODAY)
     m = APP["periodcycle_app"]
     cookbook = cookbook_content(data)
+    family = {**data, "recipes": [r for r in data["recipes"] if r["recipe_id"] in (1, 3)],   # curry rice + noodles
+              "recipe_ingredients": [ri for ri in data["recipe_ingredients"] if ri["recipe_id"] in (1, 3)]}
     return [
         ("date: never cooked -> 5, not removed", pl.date_score(None, APP, TODAY) == (pl.NEVER_COOKED_DATE, False)),
         ("date: cooked today -> 0 and removed", d(5, None, 0, 1) == (0.0, True)),
@@ -413,6 +435,11 @@ def sanity_checks():
         ("damp: meat factor clamped at 0", pl.calc_damping(F(meat="x"), {**LS, "meats": ["c"] * 12}, "autumn")[0] == 0),
         ("damp: main is a side_dish ingredient (attribute from ingredients.yaml)",
          pl.recipe_features(dict(data["recipes"][4], main_ingredient=2), data)["main_meat_or_side"]),
+        ("damp: sides come from the recipe field side_dish (none -> not damped, even with rice inside)",
+         pl.recipe_features(data["recipes"][0], data)["sides"] == {1}
+         and pl.recipe_features(dict(data["recipes"][0], side_dish=None), data)["sides"] == set()),
+        ("damp: side_dish not in own ingredients -> error",
+         raises(lambda: pl.recipe_features(dict(data["recipes"][0], side_dish=2), data))),
         ("damp: main not in own ingredients -> error",
          raises(lambda: pl.recipe_features(dict(data["recipes"][0], main_ingredient=6), data))),
         ("damp: main not in ingredients.yaml -> error",
@@ -482,6 +509,29 @@ def sanity_checks():
         ("cookbook PDF: Zutaten / Grundzutaten / Gewürze split",
          all(s in cookbook for s in (r"\textbf{Zutaten:}", r"\textbf{Grundzutaten:}", r"\textbf{Gewürze:}"))
          and cookbook.index("Water") < cookbook.index("Salt")),
+        ("cookbook PDF: variants linked after the instructions (with side dish + page)",
+         r"\label{rezept:3}" in cookbook and r"\textbf{Varianten:}" in cookbook
+         and r"\hyperref[rezept:3]{Chicken curry (noodles)} (mit Noodles, S.~\pageref{rezept:3})" in cookbook),
+        ("suggest: main by name, side = side_dish ingredient",
+         suggest("Chicken curry", (1, 200, "g"), (3, 300, "g")) == (3, 1)),
+        ("suggest: no name match -> heaviest ingredient (basics / spices / sides never main)",
+         suggest("Herbstpfanne", (4, 300, "g"), (6, 2, ""), (7, 1, "l"), (1, 900, "g")) == (4, 1)),
+        ("suggest: nothing fits -> none (main + side)", suggest("Salzwasser", (7, 1, "l"), (8, 1, "TL")) == (None, None)),
+        ("suggest: same dish with other side -> variant of the main recipe",
+         yr.side_dish_variant_of(data, None, [{"ingredient_id": 2}, {"ingredient_id": 3}]) == {
+             "recipe_id": 1, "name": "Chicken curry"}),
+        ("suggest: no variant hint inside the own family / with the same side",
+         yr.side_dish_variant_of(family, 3, [{"ingredient_id": 2}, {"ingredient_id": 3}]) is None
+         and yr.side_dish_variant_of(family, None, [{"ingredient_id": 1}, {"ingredient_id": 3}]) == {
+             "recipe_id": 1, "name": "Chicken curry"}
+         and yr.side_dish_variant_of({**family, "recipes": family["recipes"][:1]}, None,
+                                     [{"ingredient_id": 1}, {"ingredient_id": 3}]) is None),
+        ("suggest: endpoint /api/recipe/suggest", (lambda s: s["main_ingredient"]["ingredient_id"] == 3
+                                                    and s["side_dish"]["ingredient_id"] == 2
+                                                    and s["variant_of"]["recipe_id"] == 1)(suggest_endpoint())),
+        ("fields: recipe side_dish must be in its ingredient list",
+         any("side_dish" in p for p in yr.data_problems(
+             {**data, "recipes": [dict(data["recipes"][0], side_dish=2)]}))),
         ("ingredients: normalize -> same fields + order, old spice flag -> category",
          list(yr.normalize_ingredient({"name": "x", "spice": True})) == list(yr.INGREDIENT_FIELDS)
          and yr.normalize_ingredient({"name": "x", "spice": True})["category"] == "spice"),

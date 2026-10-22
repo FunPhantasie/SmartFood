@@ -89,7 +89,8 @@ Per recipe there is exactly **one** history entry. The arrays inside rotate (max
 | `origin` | recipe | list str | cuisine | `[]` |
 | `cooking_method` | recipe | str | oven, pan, … | `null` |
 | `recipe_spec` | recipe | str | soup, casserole, … | `null` |
-| `main_ingredient` | recipe | `ingredient_id` / "not specific" | must be in the recipe's ingredients | `null` |
+| `main_ingredient` | recipe | `ingredient_id` / `null` | main ingredient, must be in the recipe's ingredients – damping (`ls_mains`) | `null` = none → not damped |
+| `side_dish` | recipe | `ingredient_id` / `null` | side dish (rice, noodles, …), must be in the recipe's ingredients – damping (`ls_sides`), variants | `null` = none → not damped |
 | type of meat | ingredients with `veg_type = meat` | `ingredient_id` | chicken, beef, … (`ls_meats`) | ❓ VIII.11 |
 | `side_dish` | ingredient | bool | ingredient is a side (rice, noodles, …) | `false` |
 | wishlist | wishlist | recipe_id, user_id | "put on next" | – |
@@ -105,10 +106,14 @@ Per recipe there is exactly **one** history entry. The arrays inside rotate (max
   - 💡 keep it one value per recipe, so damping stays simple
 - **Cooking method:** oven, pan, pot, grill, raw, steam
 - **Origin:** asian, oriental, mexican, indian, italian, home-style, mediterranean, american (can have multiple)
-- **Main ingredient** (if not specified): only check on creation whether the title matches the ingredients
-  - can also be set to "not specific"
-- **Variants:** if a recipe is saved with noodles, a variant can be the same with rice, for example.
-  When creating a recipe and choosing rice as an ingredient (saved as side dish), there can be an option to automatically create variants for other choices (noodles etc.).
+- **Main ingredient + side dish** ✅ 🧪 (`creation.html`, `YamlEditor.suggest_main_and_side`, `POST /api/recipe/suggest`):
+  - the app **suggests** both – main: a normal ingredient whose name is in the recipe name, otherwise the one with the largest weight share; side: an ingredient with `side_dish: true`
+  - only a suggestion: saving is blocked until both are confirmed ("Übernehmen", own choice or "keine")
+  - "keine" → `null` (e.g. Pekingsuppe); such a recipe is not damped via main / side
+- **Variants** ✅ 🧪 (`variant_of` = main recipe of the family):
+  - button "Variante mit anderer Beilage": copies the saved recipe, swaps the side dish, saves the copy as variant
+  - saving a recipe with the same ingredients as an existing one but another side dish asks "als Variante speichern?" (`YamlEditor.side_dish_variant_of`)
+  - the cookbook PDF links all variants of a family after the instructions (name, side dish, page)
 
 ## Ingredients – one format for every ingredient ✅ 🧪
 

@@ -28,4 +28,5 @@ recipes:
   - asian
   cooking_method: pot
   recipe_spec: soup
-  main_ingredient: 732
+  main_ingredient: null
+  side_dish: null

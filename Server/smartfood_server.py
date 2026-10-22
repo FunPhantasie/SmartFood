@@ -173,6 +173,21 @@ def propose_meal():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.post("/api/recipe/suggest")
+def api_recipe_suggest():
+    """Vorschlaege fuer creation.html (der User muss sie bestaetigen): Hauptzutat, Beilage und ob das
+    Rezept eine Beilagen-Variante eines bestehenden Rezepts ist.
+    Body: {recipe_id (beim Bearbeiten), name, items: [{ingredient_id, quantity, unit}]}"""
+    try:
+        payload = request.get_json(force=True) or {}
+        data = load_all()
+        items = payload.get("items") or []
+        out = yr.suggest_main_and_side(data, payload.get("name") or "", items)
+        out["variant_of"] = yr.side_dish_variant_of(data, payload.get("recipe_id"), items)
+        return jsonify(out)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.get("/api/create/<int:recipe_id>")
 def api_get_recipe(recipe_id):
     data = load_all()
