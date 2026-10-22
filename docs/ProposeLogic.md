@@ -65,9 +65,9 @@ Taste, Wdh (repeat) and effort all **0–10**, prefilled with the mean (or 5). P
 (all three ratings required, times both or none).
 
 ## 8. Cookbook PDF ([Tools/generate_cookbook_PDF.py](../Tools/generate_cookbook_PDF.py)) ✅ 🧪
-Reads `Server/server_data` (same data as the website). Per recipe: times, origin / cooking method / spec,
-ratings (mean from the history, otherwise the recipe's default rating 5, marked "Standard"), times cooked and
-reward_score (same formula as the app). date_score and damping depend on the day and are not printed.
+Reads `Server/server_data` (same data as the website). Per recipe: times, season / type / cuisine / cooking method / spec,
+ratings (mean from the history, otherwise the recipe's default rating 5, marked "Standard"), ingredient list split into
+Zutaten / Grundzutaten / Gewürze with the main ingredient in **bold**. No scores that change over time.
 The appendix lists only ingredients used by a recipe.
 
 # IV. Measured Variables
@@ -110,13 +110,16 @@ Per recipe there is exactly **one** history entry. The arrays inside rotate (max
 - **Variants:** if a recipe is saved with noodles, a variant can be the same with rice, for example.
   When creating a recipe and choosing rice as an ingredient (saved as side dish), there can be an option to automatically create variants for other choices (noodles etc.).
 
-## Ingredients – `lactose_free`, `gluten_free` ✅ 🟠
+## Ingredients – one format for every ingredient ✅ 🧪
 
-`ingredient_id, name, unit, veg_type, lactose_free, gluten_free, specs_ingredient`
+`ingredient_id, name, unit, veg_type, category, side_dish, lactose_free, gluten_free, shelf_life_days, kcal, protein, carbs, fat`
+(order + defaults: `YamlEditor.INGREDIENT_FIELDS`; the server normalizes every save, so all forms / tools write the same format)
 
+- **category:** `ingredient` (Zutat) · `basic` (Grundzutat: water, flour, sugar, starch, …) · `spice` (Gewürz: soy sauce, pepper, salt, …). Replaces the old `spice: true` flag.
+  The cookbook PDF splits every ingredient list into Zutaten / Grundzutaten / Gewürze.
+- **unit:** reference unit of the nutrition values (and default unit when adding the ingredient to a recipe). The unit in a recipe link may differ.
+- **kcal, protein, carbs, fat:** per `unit` of the ingredient (g). No calculation uses them yet.
 - **lactose_free / gluten_free:** `true` / `false` / `null` (= unknown, doesn't filter). Set in the ingredient forms.
-
-- **specs_ingredient:** side_dish, spice, basics (e.g. water, flour, butter, oil, …)
 
 ## Blacklist – filter ✅ 🧪 · button / endpoint to add entries ⬜ 🟠
 

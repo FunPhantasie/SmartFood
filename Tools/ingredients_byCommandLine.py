@@ -3,17 +3,17 @@
 ingredients_byCommandLine.py — Add or edit ingredients in YAML storage.
 Usage examples:
 
-# Add new ingredient
-python ingredients_byCommandLine.py --ingredients ingredients.yaml add \
-  --name "Flour" --veg-type vegetarian --shelf-life-days 180 \
-  --side-dish false --cost-eur 1.2 --stock-amount 1000 --unit g
+Works on Server/server_data/ingredients.yaml (same data + format as the website).
 
-# Edit an ingredient by id
-python ingredients_byCommandLine.py --ingredients ingredients.yaml edit \
-  --id 1 --cost-eur 1.35 --stock-amount 850
+# Add new ingredient (nutrition values per --unit)
+python ingredients_byCommandLine.py add --name "Mehl" --veg-type vegan --side-dish false \
+  --category basic --unit EL --kcal 35 --protein 1.0 --carbs 7.2 --fat 0.1
 
-# List ingredients (optional helper)
-python ingredients_byCommandLine.py --ingredients ingredients.yaml list
+# Edit an ingredient by id (only the given fields change)
+python ingredients_byCommandLine.py edit --id 1 --category spice
+
+# List ingredients
+python ingredients_byCommandLine.py list
 """
 import argparse, sys, yaml
 import YamlEditor as yr
@@ -57,24 +57,33 @@ def parse_bool(s: str) -> bool:
         return False
     raise argparse.ArgumentTypeError("Expected boolean (true/false)")
 
+EDITABLE = ("name", "unit", "veg_type", "category", "side_dish", "lactose_free", "gluten_free",
+            "shelf_life_days", "kcal", "protein", "carbs", "fat")
+
+
+def _save(doc):
+    """Gleiches Format wie die Website (YamlEditor.INGREDIENT_FIELDS)."""
+    yr.update_yaml(INGREDIENTS_YAML, "ingredients", [yr.normalize_ingredient(i) for i in doc.get("ingredients", [])])
+
+
+def _apply(target: dict, args) -> None:
+    if args.veg_type is not None and args.veg_type not in VALID_VEG:
+        raise SystemExit(f"veg_type must be one of {sorted(VALID_VEG)}")
+    if args.category is not None and args.category not in yr.INGREDIENT_CATEGORIES:
+        raise SystemExit(f"category must be one of {list(yr.INGREDIENT_CATEGORIES)}")
+    for key in EDITABLE:
+        value = getattr(args, key, None)
+        if value is not None:
+            target[key] = value
+
+
 def add_cmd(args,doc):
 
     new_id = next_ing_id(doc)
-    if args.veg_type and args.veg_type not in VALID_VEG:
-        raise SystemExit(f"veg_type must be one of {sorted(VALID_VEG)}")
-
-    rec = {
-        "ingredient_id": new_id,
-        "name": args.name,
-        "shelf_life_days": args.shelf_life_days,
-        "veg_type": args.veg_type,
-        "side_dish": args.side_dish,
-        "cost_eur": args.cost_eur,
-        "stock_amount": args.stock_amount,
-        "unit": args.unit,
-    }
+    rec = {"ingredient_id": new_id}
+    _apply(rec, args)
     doc.setdefault("ingredients", []).append(rec)
-    yr.save_yaml(args.ingredients, doc)
+    _save(doc)
     print(f"OK: added ingredient_id={new_id} ({args.name})")
 
 def edit_cmd(args,doc):
@@ -87,27 +96,16 @@ def edit_cmd(args,doc):
     if not target:
         raise SystemExit(f"ingredient_id={args.id} not found")
 
-    # Apply updates if provided
-    if args.name is not None: target["name"] = args.name
-    if args.shelf_life_days is not None: target["shelf_life_days"] = args.shelf_life_days
-    if args.veg_type is not None:
-        if args.veg_type not in VALID_VEG:
-            raise SystemExit(f"veg_type must be one of {sorted(VALID_VEG)}")
-        target["veg_type"] = args.veg_type
-    if args.side_dish is not None: target["side_dish"] = args.side_dish
-    if args.cost_eur is not None: target["cost_eur"] = args.cost_eur
-    if args.stock_amount is not None: target["stock_amount"] = args.stock_amount
-    if args.unit is not None: target["unit"] = args.unit
-
-    yr.save_yaml(args.ingredients, doc)
+    _apply(target, args)   # nur angegebene Felder aendern
+    _save(doc)
     print(f"OK: updated ingredient_id={args.id}")
 
 def list_cmd(args,doc):
 
     for r in doc.get("ingredients", []):
-        print(f"{r.get('ingredient_id'):>4}  {r.get('name','(no name)')}  "
-              f"{r.get('veg_type','-')}  {r.get('stock_amount','-')}{r.get('unit','')}  "
-              f"€{r.get('cost_eur','-')}")
+        r = yr.normalize_ingredient(r)
+        print(f"{r['ingredient_id']:>4}  {r['name'] or '(no name)'}  {r['veg_type'] or '-'}  {r['category']}  "
+              f"unit={r['unit'] or '-'}  kcal={r['kcal']}  protein={r['protein']}")
 
 def main(argv=None):
     #   python    script.py - -ingredients    ingredients.yaml     add - -name    "Tomate" - -veg - type    vegan - -side - dish    true
@@ -118,19 +116,25 @@ def main(argv=None):
 
     sub = p.add_subparsers(dest="cmd", required=True)
 
+    def fields(parser, required):
+        parser.add_argument("--name", required=required)
+        parser.add_argument("--veg-type", required=required)
+        parser.add_argument("--category", help="ingredient | basic (Grundzutat) | spice (Gewuerz)")
+        parser.add_argument("--side-dish", type=parse_bool, required=required)
+        parser.add_argument("--unit", help="Bezugseinheit der Naehrwerte, z.B. g, EL, Stück")
+        parser.add_argument("--lactose-free", type=parse_bool)
+        parser.add_argument("--gluten-free", type=parse_bool)
+        parser.add_argument("--shelf-life-days", type=int)
+        for key in ("kcal", "protein", "carbs", "fat"):
+            parser.add_argument(f"--{key}", type=float, help="pro --unit")
+
     pa = sub.add_parser("add", help="Add a new ingredient")
-    pa.add_argument("--name", required=True)
-    pa.add_argument("--veg-type", required=True)
-    pa.add_argument("--side-dish", type=parse_bool, required=True)
-    pa.add_argument("--unit", default=None)
+    fields(pa, required=True)
     pa.set_defaults(func=add_cmd)
 
     pe = sub.add_parser("edit", help="Edit an existing ingredient by id")
     pe.add_argument("--id", type=int, required=True)
-    pe.add_argument("--name")
-    pe.add_argument("--veg-type")
-    pe.add_argument("--side-dish", type=parse_bool)
-    pe.add_argument("--unit")
+    fields(pe, required=False)
     pe.set_defaults(func=edit_cmd)
 
     pl = sub.add_parser("list", help="List ingredients")

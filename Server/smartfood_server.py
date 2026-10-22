@@ -44,6 +44,8 @@ def save_all(data):
     """Schreibt nur die Collections, die in data enthalten sind - creation.html / ingredients.html
     schicken z.B. kein wishlist/blacklist mit, die sollen dabei nicht geleert werden."""
     _ensure_files()
+    if isinstance(data.get("ingredients"), list):   # jede Zutat im gleichen Format speichern
+        data["ingredients"] = [yr.normalize_ingredient(i) for i in data["ingredients"]]
     for key, p in FILES.items():
         if key in data:
             yr.update_yaml(p, key, data[key])

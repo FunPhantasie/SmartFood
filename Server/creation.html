@@ -216,6 +216,14 @@
               <input id="ing_unit" type="text" placeholder="g | ml | pcs | ..." />
             </div>
             <div class="col">
+              <label>Kategorie</label>
+              <select id="ing_category">
+                <option value="ingredient">Zutat</option>
+                <option value="basic">Grundzutat</option>
+                <option value="spice">Gewürz</option>
+              </select>
+            </div>
+            <div class="col">
               <label class="checkbox"><input id="ing_side" type="checkbox" /><span>Side dish</span></label>
             </div>
           </div>
@@ -250,7 +258,7 @@
           <div style="max-height: 360px; overflow:auto;">
             <table id="ingredientsTable">
               <thead><tr>
-                <th>ID</th><th>Name</th><th>Veg</th><th>Unit</th><th>Side</th><th></th>
+                <th>ID</th><th>Name</th><th>Veg</th><th>Kategorie</th><th>Unit</th><th>Side</th><th></th>
               </tr></thead>
               <tbody></tbody>
             </table>
@@ -673,12 +681,17 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     $('#ing_name').value = '';
     $('#ing_veg').value = 'vegan';
     $('#ing_unit').value = '';
+    $('#ing_category').value = 'ingredient';
     $('#ing_side').checked = false;
     $('#ing_lactose').value = '';
     $('#ing_gluten').value = '';
     selectedIngredientId = null;
     $('#updateIngredient').disabled = true;
   }
+
+  // Zutat | Grundzutat (Wasser, Mehl, Zucker ...) | Gewuerz (Sojasauce, Pfeffer, Salz ...)
+  const CATEGORY_LABEL = { ingredient: 'Zutat', basic: 'Grundzutat', spice: 'Gewürz' };
+  const categoryOf = (ing) => ing.category || (ing.spice ? 'spice' : 'ingredient');
 
   // lactose_free / gluten_free: true / false / null (= unbekannt, filtert nicht)
   function triToSelect(v) { return v === true ? 'true' : v === false ? 'false' : ''; }
@@ -694,6 +707,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
         <td>${ing.ingredient_id}</td>
         <td>${escapeHtml(ing.name)}</td>
         <td><span class="pill ${ing.veg_type}">${ing.veg_type}</span></td>
+        <td>${CATEGORY_LABEL[categoryOf(ing)]}</td>
         <td>${escapeHtml(ing.unit ?? '')}</td>
         <td>${ing.side_dish ? '✓' : ''}</td>
         <td><button class="btn danger" data-del="${ing.ingredient_id}" type="button">Delete</button></td>
@@ -705,6 +719,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
         $('#ing_name').value = ing.name;
         $('#ing_veg').value = ing.veg_type || 'vegan';
         $('#ing_unit').value = ing.unit ?? '';
+        $('#ing_category').value = categoryOf(ing);
         $('#ing_side').checked = !!ing.side_dish;
         $('#ing_lactose').value = triToSelect(ing.lactose_free);
         $('#ing_gluten').value = triToSelect(ing.gluten_free);
@@ -739,6 +754,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     const veg_type = $('#ing_veg').value;
     const unitRaw = $('#ing_unit').value.trim();
     const unit = unitRaw === '' ? null : unitRaw;
+    const category = $('#ing_category').value || 'ingredient';
     const side_dish = $('#ing_side').checked;
     const lactose_free = selectToTri($('#ing_lactose').value);
     const gluten_free = selectToTri($('#ing_gluten').value);
@@ -752,6 +768,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
       $('#ing_name').value = existing.name;
       $('#ing_veg').value = existing.veg_type || veg_type;
       $('#ing_unit').value = existing.unit ?? (unit ?? '');
+      $('#ing_category').value = categoryOf(existing);
       $('#ing_side').checked = !!existing.side_dish;
       $('#ing_lactose').value = triToSelect(existing.lactose_free);
       $('#ing_gluten').value = triToSelect(existing.gluten_free);
@@ -761,7 +778,9 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     }
 
     const ingredient_id = nextId(ingredients, 'ingredient_id');
-    ingredients.push({ ingredient_id, name, veg_type, unit, side_dish, lactose_free, gluten_free });
+    // gleiches Format wie ingredients.yaml (YamlEditor.INGREDIENT_FIELDS), Naehrwerte pflegt ingredients.html
+    ingredients.push({ ingredient_id, name, unit, veg_type, category, side_dish, lactose_free, gluten_free,
+                       shelf_life_days: null, kcal: null, protein: null, carbs: null, fat: null });
 
     renderIngredients();
     renderRecipes();
@@ -792,6 +811,8 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     ing.veg_type = $('#ing_veg').value;
     const unitRaw = $('#ing_unit').value.trim();
     ing.unit = unitRaw === '' ? null : unitRaw;
+    ing.category = $('#ing_category').value || 'ingredient';
+    delete ing.spice;   // altes Feld, ersetzt durch category
     ing.side_dish = $('#ing_side').checked;
     ing.lactose_free = selectToTri($('#ing_lactose').value);
     ing.gluten_free = selectToTri($('#ing_gluten').value);

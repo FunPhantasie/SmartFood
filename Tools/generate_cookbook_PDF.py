@@ -20,8 +20,7 @@ import latexDefaultGenerator as lG
 # Pfade (wie von dir gewünscht)
 # ------------------------------------------------------------
 APP_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(APP_DIR))   # Projekt-Root -> "Tools" importierbar (gleiche Score-Formeln wie die App)
-from Tools import ProposeLogic as pl  # noqa: E402
+sys.path.insert(0, str(APP_DIR))   # Projekt-Root -> "Tools" importierbar (gleiche Standard-Bewertungen wie die App)
 from Tools import RatingLogic as rl  # noqa: E402
 
 DATA_DIR = APP_DIR / "Server" / "server_data"   # gleiche Daten wie die Website
@@ -37,6 +36,11 @@ ORIGIN_DE = {"asian": "Asiatisch", "oriental": "Orientalisch", "mexican": "Mexik
 METHOD_DE = {"oven": "Ofen", "pan": "Pfanne", "pot": "Topf", "grill": "Grill", "raw": "Roh", "steam": "Dampf"}
 SPEC_DE = {"soup": "Suppe", "salad": "Salat", "casserole": "Auflauf", "bowl": "Bowl",
            "sandwich": "Sandwich", "others": "Sonstiges"}
+SEASON_DE = {"all": "Ganzjährig", "always": "Ganzjährig", "spring": "Frühling", "summer": "Sommer",
+             "autumn": "Herbst", "winter": "Winter"}
+VEG_DE = {"vegan": "Vegan", "vegetarian": "Vegetarisch", "meat": "Fleisch", "fish": "Fisch"}
+# Zutatenliste pro Rezept: (category, Ueberschrift, als Aufzaehlung? sonst kompakt in einer Zeile)
+INGREDIENT_BLOCKS = [("ingredient", "Zutaten", True), ("basic", "Grundzutaten", False), ("spice", "Gewürze", False)]
 
 
 # ------------------------------------------------------------
@@ -90,8 +94,11 @@ def fmt_score(x: float) -> str:
 
 
 def info_line(rec: Recipe) -> str:
-    """Kueche · Methode · Art (Rezeptfelder aus docs/ProposeLogic.md V), leer wenn nichts gepflegt."""
-    parts = []
+    """Saison · Typ · Kueche · Methode · Art (Rezeptfelder aus docs/ProposeLogic.md V). Fehlende
+    Saison = ganzjaehrig (wie in der App), die uebrigen Felder nur, wenn gepflegt."""
+    parts = ["Saison: " + SEASON_DE.get(rec.season or "all", rec.season)]
+    if rec.veg_type in VEG_DE:
+        parts.append("Typ: " + VEG_DE[rec.veg_type])
     if rec.origin:
         parts.append("Küche: " + ", ".join(ORIGIN_DE.get(o, o) for o in rec.origin))
     if rec.cooking_method:
@@ -102,10 +109,8 @@ def info_line(rec: Recipe) -> str:
 
 
 def score_line(rec: Recipe, entry: Optional[dict]) -> str:
-    """Bewertungen + reward_score (gleiche Formel wie die App, Tools/ProposeLogic.py).
-    Pro Bewertung der Schnitt aus der history, sonst der Standardwert des Rezepts
-    (RatingLogic.default_ratings, wie beim Vorbefuellen der Bewertungsseite).
-    Datum-/Daempfungs-Scores haengen vom heutigen Tag ab und gehoeren nicht ins gedruckte Buch."""
+    """Bewertungen: pro Bewertung der Schnitt aus der history, sonst der Standardwert des Rezepts
+    (RatingLogic.default_ratings, wie beim Vorbefuellen der Bewertungsseite)."""
     entry = entry or {}
     defaults = rl.default_ratings({"history": [{**entry, "recipe_id": rec.recipe_id}] if entry else []},
                                   rec.recipe_id)
@@ -114,17 +119,18 @@ def score_line(rec: Recipe, entry: Optional[dict]) -> str:
         avg = defaults[f"{key}_avg"]
         value = avg if avg is not None else defaults[key]
         parts.append(f"{label} {fmt_score(value)}/10" + ("" if avg is not None else " (Standard)"))
-    if entry.get("last_date"):
-        cooked = len(set(entry.get("dates") or [])) or 1
-        last = date.fromisoformat(entry["last_date"]).strftime("%d.%m.%Y")
-        parts.append(f"{cooked}x gekocht (zuletzt {last})")
-    else:
-        parts.append("noch nie gekocht")
-    times = {"prep_minutes": rec.prep_minutes, "cook_minutes": rec.cook_minutes}
-    reward = pl.reward_score(times, entry)
-    if reward is not None:
-        parts.append(f"Reward {fmt_score(reward)}/10")
     return " • ".join(parts)
+
+
+def ingredient_text(lk: RecipeIngredientLink, ing: Optional[Ingredient], is_main: bool) -> str:
+    """'3 EL Sojasauce (Notiz)' als LaTeX, die Hauptzutat fett."""
+    name = ing.name if ing else f"Unbekannte Zutat (ID {lk.ingredient_id})"
+    note = " (" + lk.note + ")" if lk.note else ""
+    left = " ".join(p for p in [fmt_qty(lk.quantity), lk.unit or ""] if p).strip()
+    text = lG.latex_escape(name + note)
+    if is_main:
+        text = r"\textbf{" + text + "}"
+    return (lG.latex_escape(left) + " " + text) if left else text
 
 
 
@@ -145,8 +151,7 @@ def parse_ingredients(doc: dict) -> Dict[int, Ingredient]:
             ingredient_id=iid,
             name=str(inc.get("name", "")).strip(),
             veg_type=(str(inc.get("veg_type")).strip() if inc.get("veg_type") is not None else None),
-            spice =(bool(inc.get("spice")) if inc.get("spice") is not None else None),
-
+            category=yr.normalize_ingredient(inc)["category"],
         )
 
     return out
@@ -179,6 +184,7 @@ def parse_recipes(doc: dict) -> Dict[int, Recipe]:
             cooking_method=r.get("cooking_method"),
             recipe_spec=r.get("recipe_spec"),
             main_ingredient=r.get("main_ingredient"),
+            season=r.get("season"),
         )
     return out
 
@@ -238,12 +244,15 @@ def group_recipes_by_section(recipes: Dict[int, Recipe]) -> Dict[str, List[Recip
         groups[k].sort(key=lambda r: (r.name.lower(), r.recipe_id))
     return groups
 def group_ingredients_by_veg_type(ingredients):
+    """Zutaten nach veg_type, Grundzutaten und Gewuerze je in einer eigenen Gruppe."""
     buckets = defaultdict(list)
     for ing in ingredients.values():
-        if not ing.spice:
-           key = ing.veg_type or "unknown"
-        else:
+        if ing.category == "basic":
+            key = "grundzutaten"
+        elif ing.category == "spice":
             key = "gewürze"
+        else:
+            key = ing.veg_type or "unknown"
         buckets[key].append(ing)
     return buckets
 
@@ -291,57 +300,25 @@ def generate_content(
 
 
 
-            normal_ings = []
-            spices = []
-
-            ings = recipe_to_ings.get(rec.recipe_id, [])
-            if ings:
-                for lk, ing in ings:
-                    if ing and ing.spice:
-                        spices.append((lk, ing))
-                    else:
-                        normal_ings.append((lk, ing))
-            # Zutaten
-            L.append(r"\noindent")
-            L.append(r"\textbf{Zutaten:}")
-            L.append(r"\begin{multicols}{2}")
-            L.append(r"\begin{itemize}")
-            if normal_ings:
-                ##sortbySpices
-                for lk, ing in normal_ings:
-
-                    ing_name = ing.name if ing else f"Unbekannte Zutat (ID {lk.ingredient_id})"
-
-                    note= " ("+lk.note+")" if lk.note else ""
-                    qty = fmt_qty(lk.quantity)
-                    unit = lk.unit or ""
-                    left = " ".join([p for p in [qty, unit] if p]).strip()
-                    if left:
-                        L.append(r"  \item " + lG.latex_escape(left) + " " + lG.latex_escape(ing_name+note))
-                    else:
-                        L.append(r"  \item " + lG.latex_escape(ing_name+note))
-            else:
-                L.append(r"  \item \emph{Keine Zutaten verlinkt.}")
-            L.append(r"\end{itemize}")
-            L.append(r"\end{multicols}")
-            if spices:
+            # Zutatenliste in Zutaten / Grundzutaten / Gewuerze aufgeteilt, Hauptzutat fett
+            by_category = defaultdict(list)
+            for lk, ing in recipe_to_ings.get(rec.recipe_id, []):
+                by_category[ing.category if ing else "ingredient"].append(
+                    ingredient_text(lk, ing, lk.ingredient_id == rec.main_ingredient))
+            for category, title, as_list in INGREDIENT_BLOCKS:
+                items = by_category.get(category, [])
+                if not items and not (category == "ingredient" and not by_category):
+                    continue
                 L.append(r"\noindent")
-                L.append(r"\textbf{Gewürze:}")
-
-
-                for lk, ing in spices:
-
-                    ing_name = ing.name if ing else f"Unbekanntes Gewürz (ID {lk.ingredient_id})"
-
-                    note= " ("+lk.note+")" if lk.note else ""
-                    qty = fmt_qty(lk.quantity)
-                    unit = lk.unit or ""
-                    left = " ".join([p for p in [qty, unit] if p]).strip()
-                    if left:
-                        L.append(r"" + lG.latex_escape(left) + " " + lG.latex_escape(ing_name+note)+";  ")
-                    else:
-                        L.append(r"" + lG.latex_escape(ing_name+note)+";  ")
-                L.append((r"\\"))
+                L.append(r"\textbf{" + lG.latex_escape(title) + r":}")
+                if as_list:
+                    L.append(r"\begin{multicols}{2}")
+                    L.append(r"\begin{itemize}")
+                    L.extend(r"  \item " + item for item in items or [r"\emph{Keine Zutaten verlinkt.}"])
+                    L.append(r"\end{itemize}")
+                    L.append(r"\end{multicols}")
+                else:
+                    L.append("; ".join(items) + r"\\")
 
 
 
@@ -383,6 +360,7 @@ def generate_ingredient_appendix(ingredients, links, onlyUsed=True):
         ("vegetarian", "Vegetarisch"),
         ("meat", "Fleisch"),
         ("fish", "Fisch"),
+        ("grundzutaten", "Grundzutaten"),
         ("gewürze", "Gewürze"),
     ]
     # unbekannte veg_types nicht verschlucken - jede benutzte Zutat soll im Anhang stehen

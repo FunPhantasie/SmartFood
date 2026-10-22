@@ -12,6 +12,7 @@ from __future__ import annotations
 import math
 import random
 import sys
+import tempfile
 from collections import Counter
 from datetime import date, timedelta
 from pathlib import Path
@@ -88,8 +89,10 @@ DRAW_ROOTS = {n: n for n in DRAW_SCORES} | {"A-rice variant (20)": "A (20)"}
 
 def example_data():
     """Small fake database in the shape of server_data/*.yaml (+ planned fields from doc V)."""
-    ing = [(1, "Rice", True, "vegan"), (2, "Noodles", True, "vegan"), (3, "Chicken", False, "meat"),
-           (4, "Beef", False, "meat"), (5, "Pumpkin", False, "vegan"), (6, "Tomato", False, "vegan")]
+    ing = [(1, "Rice", True, "vegan", "ingredient"), (2, "Noodles", True, "vegan", "ingredient"),
+           (3, "Chicken", False, "meat", "ingredient"), (4, "Beef", False, "meat", "ingredient"),
+           (5, "Pumpkin", False, "vegan", "ingredient"), (6, "Tomato", False, "vegan", "ingredient"),
+           (7, "Water", False, "vegan", "basic"), (8, "Salt", False, "vegan", "spice")]
     recipes = [   # id, name, type, veg, origin, spec, main, prep, cook, variant_of, ingredients
         (1, "Chicken curry", "main_dish", "meat", ["indian"], None, 3, 15, 25, None, [1, 3]),
         (2, "Pumpkin soup", "main_dish", "vegan", [], "soup", 5, 15, 20, None, [5]),
@@ -97,7 +100,7 @@ def example_data():
         (4, "Butter chicken", "main_dish", "meat", ["indian"], None, 3, 15, 30, None, [1, 3]),
         (5, "Veggie pasta", "main_dish", "vegan", ["italian"], None, 2, 10, 15, None, [2, 6]),
         (6, "Beef burger", "main_dish", "meat", ["american"], None, 4, 15, 15, None, [4]),
-        (7, "Tomato soup", "main_dish", "vegan", [], "soup", 6, 10, 20, None, [6]),
+        (7, "Tomato soup", "main_dish", "vegan", [], "soup", 6, 10, 20, None, [6, 7, 8]),
         (8, "Lasagne", "main_dish", "meat", ["italian"], "casserole", 4, 70, 45, None, [2, 4]),
         (9, "Pad thai", "main_dish", "meat", ["asian"], None, 2, 20, 10, None, [2, 3]),
         (10, "Pumpkin risotto", "main_dish", "vegan", ["italian"], None, 5, 10, 30, None, [1, 5]),
@@ -109,7 +112,8 @@ def example_data():
         7: (5, 2, 3, 25, 20), 11: (2, 2, 0, 60, 90),
     }
     data = {
-        "ingredients": [{"ingredient_id": i, "name": n, "side_dish": s, "veg_type": v} for i, n, s, v in ing],
+        "ingredients": [yr.normalize_ingredient({"ingredient_id": i, "name": n, "side_dish": s, "veg_type": v,
+                                                 "category": c}) for i, n, s, v, c in ing],
         "recipes": [{"recipe_id": i, "name": n, "recipe_type": t, "veg_type": v, "origin": o,
                      "recipe_spec": sp, "main_ingredient": m, "prep_minutes": p, "cook_minutes": c,
                      "variant_of": vo, "season": "all", "sweet": False}
@@ -252,13 +256,50 @@ def real_propose_ok(data, runs=50):
 
 
 def bad_field_data():
-    """Example data with one wrong value per checked field -> data_problems must find all 6."""
+    """Example data with one wrong value per checked field -> data_problems must find all 8."""
     data = example_data()
     r = data["recipes"][0]   # chicken curry, ingredients rice + chicken
     r.update(origin=["mars"], cooking_method="boil", recipe_spec="pizza", main_ingredient=6)   # 6 = tomato, not in it
     data["recipes"][1]["cook_minutes"] = None                                                  # only prep left
-    data["ingredients"][0]["lactose_free"] = "yes"
+    data["ingredients"][0].update(lactose_free="yes", category="herb", kcal=-5)
     return data
+
+
+def saved_ingredients_format():
+    """Saving through the server (like ingredients.html / creation.html) -> every ingredient in the same
+    format, old `spice: true` becomes category spice. Runs on temp copies."""
+    import tempfile
+    from Server import smartfood_server as srv
+    files = srv.FILES
+    with tempfile.TemporaryDirectory() as tmp:
+        srv.FILES = {k: Path(tmp) / p.name for k, p in files.items()}
+        try:
+            srv.app.test_client().post("/api/all", json={"ingredients": [
+                {"name": "Pepper", "spice": True, "ingredient_id": 1},
+                {"ingredient_id": 2, "name": "Flour", "category": "basic", "kcal": 35, "extra": "kept"}]})
+            saved = srv.load_all()["ingredients"]
+        finally:
+            srv.FILES = files
+    fields = list(yr.INGREDIENT_FIELDS)
+    return (list(saved[0]) == fields and saved[0]["category"] == "spice"
+            and list(saved[1])[:len(fields)] == fields and saved[1]["extra"] == "kept")
+
+
+def ingredients_cli(tmp_dir: Path) -> bool:
+    """ingredients_byCommandLine add/edit on a temp copy -> same format, category + nutrition set."""
+    sys.path.insert(0, str(ROOT / "Tools"))
+    import ingredients_byCommandLine as cli
+    path = tmp_dir / "ingredients.yaml"
+    yr.update_yaml(path, "ingredients", [])
+    real, cli.INGREDIENTS_YAML = cli.INGREDIENTS_YAML, path
+    try:
+        cli.main(["add", "--name", "Mehl", "--veg-type", "vegan", "--side-dish", "false",
+                  "--category", "basic", "--unit", "EL", "--kcal", "35"])
+        cli.main(["edit", "--id", "1", "--protein", "1.0"])
+        ing = yr.load_yaml(path)["ingredients"][0]
+    finally:
+        cli.INGREDIENTS_YAML = real
+    return list(ing) == list(yr.INGREDIENT_FIELDS) and (ing["category"], ing["kcal"], ing["protein"]) == ("basic", 35, 1.0)
 
 
 def raises(fn) -> bool:
@@ -432,11 +473,24 @@ def sanity_checks():
         ("rating: complete rating accepted", not rating_rejected()),
         ("rating: no history -> prefill 5 / 5 / 5", [rl.default_ratings(data, 9)[k] for k in
                                                      ("taste_rating", "repeat_rating", "effort_rating")] == [5, 5, 5]),
-        ("cookbook PDF: ratings from history, else recipe defaults (Standard) + reward",
-         "Reward" in cookbook and "Geschmack 8,0/10 •" in cookbook
-         and "Geschmack 5,0/10 (Standard)" in cookbook and "noch nie gekocht" in cookbook),
+        ("cookbook PDF: ratings from history, else recipe defaults (Standard)",
+         "Geschmack 8,0/10 •" in cookbook and "Geschmack 5,0/10 (Standard)" in cookbook),
+        ("cookbook PDF: no reward / times cooked / last date", not any(
+            s in cookbook for s in ("Reward", "gekocht", "zuletzt"))),
+        ("cookbook PDF: season, type, cuisine", r"Saison: Ganzjährig • Typ: Fleisch • Küche: Indisch" in cookbook),
+        ("cookbook PDF: main ingredient bold", r"\textbf{Chicken}" in cookbook and r"\textbf{Tomato}" in cookbook),
+        ("cookbook PDF: Zutaten / Grundzutaten / Gewürze split",
+         all(s in cookbook for s in (r"\textbf{Zutaten:}", r"\textbf{Grundzutaten:}", r"\textbf{Gewürze:}"))
+         and cookbook.index("Water") < cookbook.index("Salt")),
+        ("ingredients: normalize -> same fields + order, old spice flag -> category",
+         list(yr.normalize_ingredient({"name": "x", "spice": True})) == list(yr.INGREDIENT_FIELDS)
+         and yr.normalize_ingredient({"name": "x", "spice": True})["category"] == "spice"),
+        ("ingredients: server save keeps one format", saved_ingredients_format()),
+        ("ingredients: command line tool writes the same format", ingredients_cli(Path(tempfile.mkdtemp()))),
+        ("real data: every ingredient in the same format",
+         all(list(i)[:len(yr.INGREDIENT_FIELDS)] == list(yr.INGREDIENT_FIELDS) for i in rd["ingredients"])),
         ("fields: example data valid", yr.data_problems(data) == []),
-        ("fields: every wrong value found", len(yr.data_problems(bad_field_data())) == 6),
+        ("fields: every wrong value found", len(yr.data_problems(bad_field_data())) == 8),
         ("fields: main_ingredient 'not specific' -> no main rule",
          pl.recipe_features(not_specific, data)["main"] is None),
         ("real data: field values valid (YamlEditor.data_problems)", yr.data_problems(rd) == []),

@@ -24,6 +24,38 @@ COOKING_METHODS = ("oven", "pan", "pot", "grill", "raw", "steam")
 RECIPE_SPECS = ("soup", "salad", "casserole", "bowl", "sandwich", "others")
 NOT_SPECIFIC = "not specific"     # main_ingredient ohne bestimmte Hauptzutat
 ALLERGENS = ("lactose", "gluten")  # Zutat hat <allergen>_free: true / false / null (= unbekannt)
+# Zutat (normal) | Grundzutat (Wasser, Mehl, Zucker, Staerke ...) | Gewuerz (Sojasauce, Pfeffer, Salz ...)
+INGREDIENT_CATEGORIES = ("ingredient", "basic", "spice")
+NUTRITION_KEYS = ("kcal", "protein", "carbs", "fat")   # jeweils pro `unit` DER ZUTAT (nicht pro Rezept-Einheit)
+
+# Einheitliches Format jeder Zutat in ingredients.yaml: Reihenfolge der Felder + Standardwert.
+INGREDIENT_FIELDS = {
+    "ingredient_id": None,
+    "name": None,
+    "unit": None,             # Bezugseinheit der Naehrwerte, zugleich Standard-Einheit im Rezept
+    "veg_type": None,         # vegan | vegetarian | meat
+    "category": "ingredient", # INGREDIENT_CATEGORIES
+    "side_dish": False,
+    "lactose_free": None,     # true / false / null (= unbekannt)
+    "gluten_free": None,
+    "shelf_life_days": None,
+    "kcal": None,
+    "protein": None,          # g
+    "carbs": None,            # g
+    "fat": None,              # g
+}
+
+
+def normalize_ingredient(ing: dict) -> dict:
+    """Bringt eine Zutat ins einheitliche Format (INGREDIENT_FIELDS): fehlende Felder mit Standardwert,
+    feste Reihenfolge, unbekannte Felder bleiben hinten erhalten. Altes `spice: true` -> category spice."""
+    ing = dict(ing)
+    if ing.pop("spice", None) and not ing.get("category"):
+        ing["category"] = "spice"
+    out = {key: ing.pop(key, default) for key, default in INGREDIENT_FIELDS.items()}
+    out["category"] = out["category"] or "ingredient"
+    out.update(ing)
+    return out
 
 
 @dataclass(frozen=True)
@@ -31,7 +63,7 @@ class Ingredient:
     ingredient_id: int
     name: str
     veg_type: Optional[str]
-    spice: Optional[bool]
+    category: str = "ingredient"          # INGREDIENT_CATEGORIES
     lactose_free: Optional[bool] = None   # None = unbekannt
     gluten_free: Optional[bool] = None
 
@@ -52,6 +84,7 @@ class Recipe:
     cooking_method: Optional[str] = None    # COOKING_METHODS
     recipe_spec: Optional[str] = None       # RECIPE_SPECS
     main_ingredient: Optional[int | str] = None   # ingredient_id oder NOT_SPECIFIC
+    season: Optional[str] = None            # all, spring, summer, autumn, winter (fehlt = all)
 
 
 def data_problems(data: dict) -> list[str]:
@@ -62,9 +95,16 @@ def data_problems(data: dict) -> list[str]:
     links = {(ri.get("recipe_id"), ri.get("ingredient_id")) for ri in data.get("recipe_ingredients", [])}
 
     for i in data.get("ingredients", []):
+        iid = i.get("ingredient_id")
         for a in ALLERGENS:
             if i.get(f"{a}_free") not in (None, True, False):
-                problems.append(f"ingredient {i.get('ingredient_id')}: {a}_free must be true/false/null")
+                problems.append(f"ingredient {iid}: {a}_free must be true/false/null")
+        if i.get("category") not in (None, *INGREDIENT_CATEGORIES):
+            problems.append(f"ingredient {iid}: unknown category {i.get('category')!r}")
+        for key in NUTRITION_KEYS:
+            value = i.get(key)
+            if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float)) or value < 0):
+                problems.append(f"ingredient {iid}: {key} must be a number >= 0 or null")
 
     for r in data.get("recipes", []):
         rid = r.get("recipe_id")

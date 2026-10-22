@@ -135,6 +135,14 @@
               <option value="Zehe">Zehe</option>
             </select>
           </div>
+          <div class="col">
+            <label>Kategorie</label>
+            <select id="ing_category">
+              <option value="ingredient">Zutat</option>
+              <option value="basic">Grundzutat (Wasser, Mehl, Zucker …)</option>
+              <option value="spice">Gewürz (Sojasauce, Pfeffer, Salz …)</option>
+            </select>
+          </div>
           <div class="col" style="flex:0 0 120px;">
             <label class="checkbox" style="margin-top:22px;"><input id="ing_side" type="checkbox" /> <span>Side dish</span></label>
           </div>
@@ -146,20 +154,25 @@
             <input id="ing_shelf_life" type="number" min="0" placeholder="z.B. 14" />
           </div>
           <div class="col">
-            <label>Kalorien (kcal / 100g)</label>
+            <label>Kalorien (kcal / Einheit)</label>
             <input id="ing_kcal" type="number" min="0" step="any" />
           </div>
           <div class="col">
-            <label>Protein (g / 100g)</label>
+            <label>Protein (g / Einheit)</label>
             <input id="ing_protein" type="number" min="0" step="any" />
           </div>
           <div class="col">
-            <label>Kohlenhydrate (g / 100g)</label>
+            <label>Kohlenhydrate (g / Einheit)</label>
             <input id="ing_carbs" type="number" min="0" step="any" />
           </div>
           <div class="col">
-            <label>Fett (g / 100g)</label>
+            <label>Fett (g / Einheit)</label>
             <input id="ing_fat" type="number" min="0" step="any" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <span class="hint" style="font-size:12px; opacity:.75;">Nährwerte gelten pro Standard-Einheit der Zutat (z.B. pro Stück, pro EL, pro g) – die Einheit im Rezept darf eine andere sein.</span>
           </div>
         </div>
 
@@ -207,7 +220,7 @@
         <div class="tablewrap">
           <table id="ingredientsTable">
             <thead><tr>
-              <th>ID</th><th>Name</th><th>Veg</th><th>Einheit</th><th>Haltbarkeit</th>
+              <th>ID</th><th>Name</th><th>Veg</th><th>Kategorie</th><th>Einheit</th><th>Haltbarkeit</th>
               <th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th><th>Side</th><th>Laktosefrei</th><th>Glutenfrei</th><th></th>
             </tr></thead>
             <tbody></tbody>
@@ -248,6 +261,7 @@
   function clearForm() {
     $('#ing_name').value = '';
     $('#ing_veg').value = 'vegan';
+    $('#ing_category').value = 'ingredient';
     $('#ing_unit').value = '';
     $('#ing_side').checked = false;
     $('#ing_shelf_life').value = '';
@@ -266,6 +280,7 @@
     selectedIngredientId = Number(ing.ingredient_id);
     $('#ing_name').value = ing.name || '';
     $('#ing_veg').value = ing.veg_type || 'vegan';
+    $('#ing_category').value = ing.category || (ing.spice ? 'spice' : 'ingredient');
     $('#ing_unit').value = ing.unit ?? '';
     $('#ing_side').checked = !!ing.side_dish;
     $('#ing_shelf_life').value = ing.shelf_life_days ?? '';
@@ -281,20 +296,24 @@
 
   function readFormValues() {
     const numOrNull = (v) => (v === '' || v === null || v === undefined) ? null : Number(v);
+    // Reihenfolge = Format in ingredients.yaml (YamlEditor.INGREDIENT_FIELDS)
     return {
       name: $('#ing_name').value.trim(),
-      veg_type: $('#ing_veg').value,
       unit: $('#ing_unit').value || null,
+      veg_type: $('#ing_veg').value,
+      category: $('#ing_category').value || 'ingredient',
       side_dish: $('#ing_side').checked,
+      lactose_free: selectToTri($('#ing_lactose').value),
+      gluten_free: selectToTri($('#ing_gluten').value),
       shelf_life_days: numOrNull($('#ing_shelf_life').value),
       kcal: numOrNull($('#ing_kcal').value),
       protein: numOrNull($('#ing_protein').value),
       carbs: numOrNull($('#ing_carbs').value),
       fat: numOrNull($('#ing_fat').value),
-      lactose_free: selectToTri($('#ing_lactose').value),
-      gluten_free: selectToTri($('#ing_gluten').value),
     };
   }
+
+  const CATEGORY_LABEL = { ingredient: 'Zutat', basic: 'Grundzutat', spice: 'Gewürz' };
 
   // lactose_free / gluten_free: true / false / null (= unbekannt, filtert nicht)
   function triToSelect(v) { return v === true ? 'true' : v === false ? 'false' : ''; }
@@ -362,6 +381,7 @@
         <td>${ing.ingredient_id}</td>
         <td>${escapeHtml(ing.name)}</td>
         <td><span class="pill ${ing.veg_type}">${ing.veg_type}</span></td>
+        <td>${CATEGORY_LABEL[ing.category] ?? 'Zutat'}</td>
         <td>${escapeHtml(ing.unit ?? '')}</td>
         <td>${ing.shelf_life_days ?? ''}</td>
         <td>${ing.kcal ?? ''}</td>
