@@ -1,23 +1,22 @@
 recipes:
 - cook_minutes: 10
   cooking_method: pot
-  instructions: Die getrockneten Pilze in eine Schuessel geben und mit kochendem Wasser
-    uebergiessen. Mindestens 1 Stunde einweichen lassen. Glasnudeln ebenfalls in eine
-    Schuessel geben, mit heissem Wasser begiessen und 5 Min. einweichen. Das Fleisch
-    in eine Schuessel geben und 2 TL Salz, 1 TL Zucker, 1 EL Maisstaerke und 2 TL
-    Wasser zugeben. Gut verruehren und mindestens 20 Min. marinieren lassen. Das Fleisch
-    portionsweise anbraten und beiseite stellen. Die Pilze abschuetten, ausdruecken
-    und in schmale Streifen schneiden. Glasnudeln ebenfalls abschuetten, ausdruecken
-    und beiseite stellen. Nun Wasser in einem Topf erhitzen und die Bruehwuerfel hineingeben.
-    Bambussprossen, Reisessig, Tomatenmark, Zucker, Pilze, Ingwer, Schalotten, Chilioel
-    und Pfeffer zugeben. Gut umruehren. Das Fleisch, Glasnudeln, Austernsauce, Chilisauce,
-    Ketchup und Erbsen beimischen und alles kurz aufkochen lassen. Zwischenzeitlich
-    das Ei schlagen und 2 EL Maisstaerke mit 2 EL Wasser anruehren (am besten mit
-    dem Schneebesen, damit sich keine Kluempchen bilden). Beides getrennt bis zur
-    weiteren Verwertung beiseite stellen. Zum Schluss Reiswein und Sojasauce zugeben,
-    nochmals kraeftig abschmecken. Das geschlagene Ei langsam einfliessen lassen und
-    die angeruehrte Maisstaerke zugeben. Kurz aufkochen lassen und sofort servieren.
-    Ei Verschlagen. Frühlingzwiebel Geschnitten. Ingwer in Scheiben.
+  instructions: Die getrockneten Pilze in eine Schuessel geben und mit kochendem Wasser uebergiessen.
+    Mindestens 1 Stunde einweichen lassen. Glasnudeln ebenfalls in eine Schuessel geben, mit
+    heissem Wasser begiessen und 5 Min. einweichen. Das Fleisch in eine Schuessel geben und
+    2 TL Salz, 1 TL Zucker, 1 EL Maisstaerke und 2 TL Wasser zugeben. Gut verruehren und mindestens
+    20 Min. marinieren lassen. Das Fleisch portionsweise anbraten und beiseite stellen. Die
+    Pilze abschuetten, ausdruecken und in schmale Streifen schneiden. Glasnudeln ebenfalls
+    abschuetten, ausdruecken und beiseite stellen. Nun Wasser in einem Topf erhitzen und die
+    Bruehwuerfel hineingeben. Bambussprossen, Reisessig, Tomatenmark, Zucker, Pilze, Ingwer,
+    Schalotten, Chilioel und Pfeffer zugeben. Gut umruehren. Das Fleisch, Glasnudeln, Austernsauce,
+    Chilisauce, Ketchup und Erbsen beimischen und alles kurz aufkochen lassen. Zwischenzeitlich
+    das Ei schlagen und 2 EL Maisstaerke mit 2 EL Wasser anruehren (am besten mit dem Schneebesen,
+    damit sich keine Kluempchen bilden). Beides getrennt bis zur weiteren Verwertung beiseite
+    stellen. Zum Schluss Reiswein und Sojasauce zugeben, nochmals kraeftig abschmecken. Das
+    geschlagene Ei langsam einfliessen lassen und die angeruehrte Maisstaerke zugeben. Kurz
+    aufkochen lassen und sofort servieren. Ei Verschlagen. Frühlingzwiebel Geschnitten. Ingwer
+    in Scheiben.
   main_ingredient: null
   name: Pekingsuppe
   origin:
@@ -30,4 +29,390 @@ recipes:
   sweet: false
   variant_of: null
   veg_type: meat
-
+- cook_minutes: 100
+  cooking_method: pot
+  instructions: Fuer 6 Portionen. Fleisch wuerfeln. Zwiebeln in feine Ringe schneiden. Oel
+    in einem grossen Suppentopf erhitzen. Zwiebelringe darin goldgelb anbraten und mit Paprikapulver
+    vermischen. Einen Schuss Fleischbruehe zufuegen. Fleisch hineingeben und rundherum anbraten.
+    Leicht salzen und pfeffern. Mit Fleischbruehe abloeschen. Tomaten samt Saft hinzufuegen.
+    Zwiebel mit Nelken spicken. Majoran, Lorbeerblaetter und die gespickte Zwiebel in die
+    Suppe geben. 1 1/2 Stunden koecheln lassen. Die Kartoffeln wuerfeln und etwa 15 Min. vor
+    Ende der Garzeit zur Suppe geben. Die Paprika in Streifen schneiden. Die gespickte Zwiebel
+    und die Lorbeerblaetter aus dem Topf fischen. Die Suppe mit Salz, Pfeffer und Rosenpaprika
+    abschmecken.
+  main_ingredient: null
+  name: Gulaschsuppe
+  origin:
+  - hungarian
+  prep_minutes: 20
+  recipe_id: 54
+  recipe_spec: soup
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 0
+  cooking_method: none
+  instructions: Die geputzten und gewaschenen Moehren fein raspeln. Die geschaelten Aepfel
+    fein raspeln und mit dem Zitronensaft begiessen. Die Moehren und die Aepfel in einer aus
+    dem Oel, Honig, Meerrettich, Salz und Haselnuessen hergestellten Marinade ziehen lassen.
+    Auf den Salatblaettern anrichten und mit frisch gehackter Petersilie bestreuen.
+  main_ingredient: null
+  name: Karottensalat
+  origin:
+  - german
+  prep_minutes: 15
+  recipe_id: 55
+  recipe_spec: salad
+  recipe_type: side_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 0
+  cooking_method: none
+  instructions: Karotten putzen, fein raspeln. Thunfisch abtropfen, zerkleinern und zusammen
+    mit den Karotten in eine Schuessel geben. Den Mais dazugeben und gut vermischen. Aus Oel,
+    Essig, Senf, Honig, Salz und Pfeffer ein Dressing anruehren und unter den Salat mischen.
+  main_ingredient: null
+  name: Karotten-Thunfisch-Salat
+  origin:
+  - german
+  prep_minutes: 15
+  recipe_id: 56
+  recipe_spec: salad
+  recipe_type: side_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: fish
+- cook_minutes: 40
+  cooking_method: oven
+  instructions: 'Hackfleischsauce: 3 Packungen Tomato al Gusto (2x Kraeuter, 1x Pilze), Hackfleisch
+    und gehackten Knoblauch im Topf 10 Minuten kochen/koecheln. Mit Salz, Pfeffer und Tabasco
+    abschmecken. Kaesesauce: Butter und Mehl 1 Minute anschwitzen. Milch dazu, aufkochen,
+    2 Minuten kochen, vom Herd nehmen. 2 Paeckchen (a 40 g) Parmesan dazu, mit Salz und Pfeffer
+    abschmecken. Auflaufform mit Butter ausreiben. Hackfleischsauce, Nudeln, Hackfleischsauce,
+    Nudeln ..., Nudeln, Kaesesauce schichten, 1 Paeckchen Parmesan drueberstreuen. Bei 200
+    Grad 40 Minuten im Ofen (Ober-/Unterhitze) backen.'
+  main_ingredient: null
+  name: Lasagne
+  origin:
+  - italian
+  prep_minutes: 25
+  recipe_id: 57
+  recipe_spec: casserole
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 25
+  cooking_method: pan
+  instructions: Fuer 4 Personen. Kartoffeln unter Wasser kraeftig abbuersten und abtropfen
+    lassen. Kartoffeln in Spalten schneiden. Die Margarine in einer beschichteten Pfanne erhitzen
+    und die Kartoffeln unter Wenden ca. 20 Minuten goldbraun braten. Paprika putzen, waschen
+    und in feine Streifen schneiden. Knoblauch schaelen, hacken. Zwiebel schaelen und 2/3
+    davon in Streifen schneiden. Zwiebelstreifen, Paprika und Knoblauch ca. 10 Minuten vor
+    Ende der Garzeit zu den Kartoffeln geben und mitbraten. Mit Gyrosgewuerz, wenig Salz und
+    Pfeffer wuerzen. Thymian mit den Oliven kurz vor Ende der Bratzeit zu den Kartoffeln geben.
+    Kaese zerbroeckeln. Restliche Zwiebeln grob wuerfeln. Mit dem Schafskaese ueber die Gyros-Kartoffeln
+    streuen und servieren.
+  main_ingredient: null
+  name: Kartoffel-Gyros mit Schafskaese
+  origin:
+  - greek
+  prep_minutes: 20
+  recipe_id: 58
+  recipe_spec: pan_dish
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 25
+  cooking_method: oven
+  instructions: Chicoree waschen, putzen. Den bitteren Kern am Wurzelende aus der Mitte keilfoermig
+    herausschneiden. In kochendes, leicht gesalzenes Wasser geben. Butter und Zitronensaft
+    sofort hinzugeben. 10 Minuten kochen, dann herausnehmen, abtropfen lassen. Jede Stange
+    in Schinken, dann in Kaese einwickeln und in eine gefettete feuerfeste Form legen. Dosentomaten
+    mit Saft um den Chicoree legen, salzen und pfeffern. Die Butter in Floeckchen darueber
+    verteilen. Im vorgeheizten Backofen 15 Minuten bei 220 Grad backen. Dazu Weissbrot oder
+    Schwarzbrot servieren.
+  main_ingredient: null
+  name: Chicoree belgische Art
+  origin:
+  - belgian
+  prep_minutes: 15
+  recipe_id: 59
+  recipe_spec: casserole
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 10
+  cooking_method: oven
+  instructions: Mehl, geriebenen Kaese, Butterfloeckchen, Ei und Gewuerze zu einem Muerbeteig
+    verkneten. Den Teig 1 Stunde im Kuehlschrank ruhen lassen. Danach den Teig auf leicht
+    bemehlter Arbeitsflaeche etwa 1/2 cm dick auswellen. Beliebige Plaetzchen ausstechen.
+    Die Plaetzchen mit dem Eigelb (mit der Sahne verquirlt) bestreichen und nach Wunsch mit
+    gehackten Erdnuessen, Pistazien, Kuemmel, Mohn oder Sesam verzieren. Im vorgeheizten Backofen
+    auf der oberen Schiene bei 200 Grad ca. 10 Minuten goldgelb backen.
+  main_ingredient: null
+  name: Kaeseplaetzchen
+  origin:
+  - german
+  prep_minutes: 90
+  recipe_id: 60
+  recipe_spec: cookies
+  recipe_type: snack
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 10
+  cooking_method: grill
+  instructions: Die Blaettchen von der Haelfte des Thymians abzupfen. Die restlichen Zweige
+    umgekehrt in eine Schale mit 6 EL Olivenoel und 2 TL Salz legen. Ab und zu umruehren (ergibt
+    den Thymianpinsel). Mehl, Hefe, Thymianblaetter und 1 TL Salz in einer Schuessel mischen.
+    Wasser und 2 EL Olivenoel dazugeben, zu einem glatten Teig verkneten und 1 Stunde an einem
+    warmen Ort zugedeckt gehen lassen. Den Teig in 6 Portionen teilen und auf einer bemehlten
+    Oberflaeche zu flachen Fladen ausrollen. Auf einer Seite mit dem Thymianpinsel bestreichen
+    und dann mit dieser Seite nach unten auf den heissen Grill legen. 4-5 Minuten grillen,
+    die zweite Seite auch bepinseln, wenden und weitere 4-5 Minuten grillen. Dazu passen selbst
+    gemachte Dips.
+  main_ingredient: null
+  name: Thymian-Fladenbrot
+  origin:
+  - mediterranean
+  prep_minutes: 75
+  recipe_id: 61
+  recipe_spec: bread
+  recipe_type: side_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegan
+- cook_minutes: 30
+  cooking_method: oven
+  instructions: Hefeteig aus Hefe, Milch, Wasser, Zucker, 300 g Mehl, 1 Ei, etwas Salz und
+    Margarine zubereiten. Zwiebeln in Ringe schneiden, Speck in einer Pfanne zerlassen. Zwiebeln
+    darin anduensten, mit Salz, Pfeffer, Kuemmel und Muskatnuss abschmecken. Teig ausrollen
+    und ca. 30 Min. gehen lassen. Danach mit der Speck-Zwiebel-Mischung belegen. Restliches
+    Ei mit saurer Sahne verquirlen, mit Salz, Pfeffer und Muskatnuss abschmecken und auf dem
+    Zwiebelkuchen verteilen. Im vorgeheizten Ofen bei 200 Grad ca. 30 Minuten backen.
+  main_ingredient: null
+  name: Zwiebelkuchen
+  origin:
+  - german
+  prep_minutes: 60
+  recipe_id: 62
+  recipe_spec: tart
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 25
+  cooking_method: oven
+  instructions: Fuer 4 Personen. Backofen auf 200 Grad vorheizen. Fisch in mundgerechte Stuecke
+    schneiden, leicht salzen und mit Zitronensaft betraeufeln. Olivenoel erwaermen und die
+    gepresste Knoblauchzehe kurz darin anbraten. Tomatenfruchtfleisch zugeben, erwaermen.
+    Den Sugo mit Basilikum, Honig, Pfeffer und Salz abschmecken und in die Auflaufform geben.
+    Fischstuecke (alternativ Kabeljau) und die Gnocchi in die Auflaufform geben. Fuer die
+    Kaesesauce Sahne mit den Kraeutern und 1 Tasse Wasser erwaermen. Parmesan zugeben und
+    langsam aufloesen lassen. Speisestaerke mit 2 EL Wasser und dem Wermut verruehren und
+    zur Sahne geben. Mit Paprika, Pfeffer und Salz abschmecken. Die Sauce ueber Fisch und
+    Gnocchi verteilen und alles auf der mittleren Schiene 25 Minuten ueberbacken. Mit Basilikum
+    bestreuen und servieren.
+  main_ingredient: null
+  name: Gnocchi-Gratin mit Rotbarsch
+  origin:
+  - italian
+  prep_minutes: 20
+  recipe_id: 63
+  recipe_spec: casserole
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: fish
+- cook_minutes: 15
+  cooking_method: pan
+  instructions: Fuer 1 Portion. Das Putenschnitzel waschen, mit dem Cayennepfeffer und dem
+    Mehl bestaeuben, danach in mundgerechte Stuecke schneiden. In einer beschichteten Pfanne
+    im heissen Oel von allen Seiten goldbraun braten. Herausnehmen und warm stellen. In der
+    gleichen Pfanne die gehackten Zwiebeln anbraten. Den Bratsatz mit dem Wasser und dem Sherry
+    vom Pfannenboden loesen. Das Mango-Chutney und das Currypulver einruehren. Die Banane
+    in Scheiben schneiden, mit dem Zitronensaft betraeufeln und dazugeben. Das Fleisch salzen
+    und in der Sauce kurz erwaermen.
+  main_ingredient: null
+  name: Putenragout mit Bananen
+  origin:
+  - international
+  prep_minutes: 10
+  recipe_id: 64
+  recipe_spec: ragout
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 50
+  cooking_method: oven
+  instructions: Putenschnitzel mit Salz, Pfeffer, Knorr-Aromat und Maggi Wuerzmittel Nr. 3
+    wuerzen. Bresso-Kraeuterkaese auf die Schnitzel streichen, je 1 Scheibe rohen Schinken
+    darauf legen und aufrollen. Roellchen in Ei und Paniermehl waelzen und in der Pfanne anbraten.
+    Auflaufform ausbuttern und die Roellchen nebeneinander legen. Kraeutersauce mit Wasser
+    aufkochen. Sahne und Adler-Schmelzkaese dazugeben. Die Sauce um die Roellchen giessen.
+    Das Fleisch darf nicht bedeckt sein, hoechstens bis zur Haelfte. Im Backofen bei 200 Grad
+    40-50 Minuten garen.
+  main_ingredient: null
+  name: Putenroellchen
+  origin:
+  - german
+  prep_minutes: 25
+  recipe_id: 65
+  recipe_spec: roulade
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 15
+  cooking_method: pan
+  instructions: 'Partyrezept. Dip: Gurke schaelen, fein raspeln, abtropfen lassen. Knoblauch
+    fein hacken und mit Quark, Joghurt und Schmand verruehren. Gurkenraspel gut ausdruecken
+    und unter den Quark heben. Dill klein schneiden und in den Quark geben. Mit Salz und Pfeffer
+    abschmecken. Pfanne: Zwiebeln in feine Scheiben hobeln, mit Salz, Essig und Oregano wuerzen
+    und durchziehen lassen. Oel erhitzen, Gyros darin portionsweise anbraten und bei starker
+    Hitze knusprig braun braten. Gyros mit Zwiebeln und Knoblauch-Dill-Quark anrichten. Beilage:
+    Fladenbrot.'
+  main_ingredient: null
+  name: Gyrospfanne mit Knoblauch-Dill-Quark
+  origin:
+  - greek
+  prep_minutes: 25
+  recipe_id: 66
+  recipe_spec: pan_dish
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 40
+  cooking_method: oven
+  instructions: Zwiebel, enthaeutete Tomaten und Schinken klein schneiden und mit Frischrahmkaese,
+    geriebenem Kaese und italienischer Wuerzmischung mischen. Zucchini aushoehlen und fuellen.
+    Im Ofen bei 180 Grad 40 Minuten backen.
+  main_ingredient: null
+  name: Gefuellte Zucchini mit Kaese-Schinken-Fuellung
+  origin:
+  - mediterranean
+  prep_minutes: 20
+  recipe_id: 67
+  recipe_spec: stuffed_vegetables
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 40
+  cooking_method: oven
+  instructions: Zucchini aushoehlen. Zwiebel, Olivenoel, Hackfleisch, Ei, Tomatenmark, Semmelbroesel,
+    Salz, Pfeffer, Paprikapulver und Petersilie mischen und anbraten, Zucchini damit fuellen.
+    Fleischbruehe und Tomatensaft in die Auflaufform geben, Kaese darueber streuen. Die fertige
+    Sauce mit Basilikum abschmecken. Im Ofen bei 200 Grad 40 Minuten backen.
+  main_ingredient: null
+  name: Gefuellte Zucchini mit Hackfleischfuellung
+  origin:
+  - mediterranean
+  prep_minutes: 25
+  recipe_id: 68
+  recipe_spec: stuffed_vegetables
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: 67
+  veg_type: meat
+- cook_minutes: 40
+  cooking_method: oven
+  instructions: Zucchini aushoehlen. Weissbrot in Milch einweichen und ausdruecken. Mit Thunfisch,
+    gehacktem Knoblauch, Petersilie, Olivenoel, Salz und Pfeffer mischen und die Zucchini
+    damit fuellen. Fleischbruehe und Tomatensaft in die Auflaufform geben, Kaese darueber
+    streuen und die Sauce mit Basilikum abschmecken. Im Ofen bei 200 Grad 40 Minuten backen.
+  main_ingredient: null
+  name: Gefuellte Zucchini mit Thunfischfuellung
+  origin:
+  - mediterranean
+  prep_minutes: 20
+  recipe_id: 69
+  recipe_spec: stuffed_vegetables
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: 67
+  veg_type: meat
+- cook_minutes: 25
+  cooking_method: pot
+  instructions: Zwiebel fein wuerfeln und Knoblauch hacken. Paprika in Wuerfel, Sellerie in
+    Scheiben schneiden und aus dem Kuerbis mit einem Melonenausstecher kleine Kugeln ausstechen.
+    Tatar im erhitzten Kuerbiskernoel anbraten, Gemuese zugeben und anduensten. Tomaten, Tomatenmark
+    und Bruehe angiessen und alles ca. 15-20 Minuten garen. Mit den Gewuerzen und Zucker abschmecken
+    und mit Tortillachips servieren.
+  main_ingredient: null
+  name: Chili con Kuerbis
+  origin:
+  - mexican
+  prep_minutes: 20
+  recipe_id: 70
+  recipe_spec: stew
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 30
+  cooking_method: pot
+  instructions: Fuer 4 Personen. Vom Kuerbis die harte Schale abschneiden und die Kerne entfernen,
+    das Fruchtfleisch grob wuerfeln. Zwiebel und Knoblauch fein hacken. Zuerst die Zwiebeln
+    in Butter anschwitzen, dann Knoblauch zugeben. Er darf keine Farbe annehmen, sonst wird
+    er bitter. Die Kuerbiswuerfel zugeben und 5 bis 10 Minuten duensten. Mit der Fleischbruehe
+    auffuellen und 15 Minuten koecheln lassen. Den Weisswein zugeben. Dann passieren oder
+    mit dem Mixstab puerieren. Den Schmelzkaese zugeben und unterruehren, bis er sich aufgeloest
+    hat. Mit wenig Salz wuerzen, viel frisch gemahlenen Pfeffer, Piment, Ingwer und eine Prise
+    Cayennepfeffer zugeben. Mit Toastbrotwuerfeln servieren.
+  main_ingredient: null
+  name: Cremige Kuerbissuppe
+  origin:
+  - german
+  prep_minutes: 20
+  recipe_id: 71
+  recipe_spec: soup
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 45
+  cooking_method: oven
+  instructions: Kuerbisfleisch in Wuerfel schneiden und in kochendem Salzwasser ca. 5 Minuten
+    garen. Abgiessen und mit einem Puerierstab puerieren. Milch und Margarine unterruehren.
+    Mehl, Zucker, Hefe und 2 EL Kuerbiskerne unterkneten. Teig ca. 30 Min. gehen lassen. Teig
+    in eine mit Backpapier ausgelegte Kastenkuchenform geben und im vorgeheizten Backofen
+    bei 200 Grad ca. 40-50 Min. backen. Kurz abkuehlen lassen, mit Ahornsirup bestreichen
+    und mit den restlichen Kuerbiskernen bestreuen.
+  main_ingredient: null
+  name: Kuerbisbrot
+  origin:
+  - german
+  prep_minutes: 50
+  recipe_id: 72
+  recipe_spec: bread
+  recipe_type: baked_goods
+  side_dish: null
+  sweet: true
+  variant_of: null
+  veg_type: vegetarian
