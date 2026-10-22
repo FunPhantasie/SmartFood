@@ -1,5 +1,6 @@
 recipes:
-- name: Pekingsuppe
+- cook_minutes: 10
+  cooking_method: pot
   instructions: Die getrockneten Pilze in eine Schuessel geben und mit kochendem Wasser
     uebergiessen. Mindestens 1 Stunde einweichen lassen. Glasnudeln ebenfalls in eine
     Schuessel geben, mit heissem Wasser begiessen und 5 Min. einweichen. Das Fleisch
@@ -17,16 +18,16 @@ recipes:
     nochmals kraeftig abschmecken. Das geschlagene Ei langsam einfliessen lassen und
     die angeruehrte Maisstaerke zugeben. Kurz aufkochen lassen und sofort servieren.
     Ei Verschlagen. Frühlingzwiebel Geschnitten. Ingwer in Scheiben.
-  cook_minutes: 10
+  main_ingredient: null
+  name: Pekingsuppe
+  origin:
+  - asian
   prep_minutes: 60
   recipe_id: 52
+  recipe_spec: soup
   recipe_type: main_dish
+  side_dish: null
   sweet: false
   variant_of: null
   veg_type: meat
-  origin:
-  - asian
-  cooking_method: pot
-  recipe_spec: soup
-  main_ingredient: null
-  side_dish: null
+

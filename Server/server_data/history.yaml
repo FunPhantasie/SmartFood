@@ -1,15 +1,15 @@
 history:
-- recipe_id: 52
-  last_date: '2026-09-16'
+- cook_minutes:
+  - 10
   dates:
   - '2026-09-16'
-  taste_rating:
-  - 6
-  repeat_rating:
-  - 5
   effort_rating:
   - 5
+  last_date: '2026-09-16'
   prep_minutes:
   - 60
-  cook_minutes:
-  - 10
+  recipe_id: 52
+  repeat_rating:
+  - 5
+  taste_rating:
+  - 6

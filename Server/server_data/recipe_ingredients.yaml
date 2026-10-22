@@ -83,3 +83,7 @@ recipe_ingredients:
   ingredient_id: 1350
   quantity: 1
   unit: Dose
+- recipe_id: 53
+  ingredient_id: 78
+  quantity: 2
+  unit: g

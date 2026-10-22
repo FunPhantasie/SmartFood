@@ -93,19 +93,7 @@ def fmt_score(x: float) -> str:
     return f"{x:.1f}".replace(".", ",")
 
 
-def info_line(rec: Recipe) -> str:
-    """Saison · Typ · Kueche · Methode · Art (Rezeptfelder aus docs/ProposeLogic.md V). Fehlende
-    Saison = ganzjaehrig (wie in der App), die uebrigen Felder nur, wenn gepflegt."""
-    parts = ["Saison: " + SEASON_DE.get(rec.season or "all", rec.season)]
-    if rec.veg_type in VEG_DE:
-        parts.append("Typ: " + VEG_DE[rec.veg_type])
-    if rec.origin:
-        parts.append("Küche: " + ", ".join(ORIGIN_DE.get(o, o) for o in rec.origin))
-    if rec.cooking_method:
-        parts.append("Methode: " + METHOD_DE.get(rec.cooking_method, rec.cooking_method))
-    if rec.recipe_spec:
-        parts.append("Art: " + SPEC_DE.get(rec.recipe_spec, rec.recipe_spec))
-    return " • ".join(parts)
+
 
 
 def score_line(rec: Recipe, entry: Optional[dict]) -> str:
@@ -118,7 +106,7 @@ def score_line(rec: Recipe, entry: Optional[dict]) -> str:
     for key, label in (("taste_rating", "Geschmack"), ("effort_rating", "Aufwand"), ("repeat_rating", "Wiederholen")):
         avg = defaults[f"{key}_avg"]
         value = avg if avg is not None else defaults[key]
-        parts.append(f"{label} {fmt_score(value)}/10" + ("" if avg is not None else " (Standard)"))
+        parts.append(f"{label} {fmt_score(value)}/10" + ("" if avg is not None else " (N.R.)"))
     return " • ".join(parts)
 
 
@@ -282,21 +270,40 @@ def generate_content(
             continue
 
         for rec in recs:
+            L.append(r"\noindent\begin{minipage}{\linewidth}")
+
             L.append(r"\subsection{" + lG.latex_escape(rec.name) + r"}\label{" + recipe_label(rec) + "}")
+
+
 
             # optional: Meta anzeigen (ohne Sortierwirkung)
             meta = []
+
             if rec.prep_minutes is not None:
                 meta.append(f"Vorbereitungszeit: {rec.prep_minutes} min")
             if rec.cook_minutes is not None:
                 meta.append(f"Kochzeit: {rec.cook_minutes} min")
-            #if rec.variant_of is not None:
+            # if rec.variant_of is not None:
             #    meta.append(f"Variante von ID: {rec.variant_of}")
-            if meta:
-                L.append(r"\textit{" + lG.latex_escape(" • ".join(meta)) + r"}\\")
-            for line in (info_line(rec), score_line(rec, history.get(rec.recipe_id))):
-                if line:
-                    L.append(r"\textit{" + lG.latex_escape(line) + r"}\\")
+            meta.append("Saison: " + SEASON_DE.get(rec.season or "all", rec.season))
+            if rec.veg_type in VEG_DE:
+                meta.append("Typ: " + VEG_DE[rec.veg_type])
+            if rec.origin:
+                meta.append("Küche: " + ", ".join(ORIGIN_DE.get(o, o) for o in rec.origin))
+            if rec.cooking_method:
+                meta.append("Methode: " + METHOD_DE.get(rec.cooking_method, rec.cooking_method))
+            if rec.recipe_spec:
+                meta.append("Art: " + SPEC_DE.get(rec.recipe_spec, rec.recipe_spec))
+
+            PER_ROW = 3
+            for i in range(0, len(meta), PER_ROW):
+                row = meta[i:i + PER_ROW]
+                L.append(r"\textit{" + lG.latex_escape(" • ".join(row)) + r"}\\")
+
+
+            line = score_line(rec, history.get(rec.recipe_id))
+            if line:
+                L.append(r"\textit{" + lG.latex_escape(line) + r"}\\")
             L.append("")
 
 
@@ -341,6 +348,9 @@ def generate_content(
                 L.append(r"\noindent")
                 L.append(r"\textbf{Varianten:}")
                 L.append("; ".join(variant_link(v, ingredients) for v in family) + r"\\")
+
+            L.append(r"\end{minipage}")
+            L.append(r"\par\bigskip")
             L.append("")
 
     return "\n".join(L).strip() + "\n"
