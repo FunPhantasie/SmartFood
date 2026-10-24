@@ -18,7 +18,7 @@ recipes:
     aufkochen lassen und sofort servieren. Ei Verschlagen. Frühlingzwiebel Geschnitten. Ingwer
     in Scheiben.
   main_ingredient: null
-  name: Pekingsuppe
+  name: Pekingsuppe mit Haehnchen und Glasnudeln
   origin:
   - asian
   prep_minutes: 60
@@ -40,10 +40,11 @@ recipes:
     Ende der Garzeit zur Suppe geben. Die Paprika in Streifen schneiden. Die gespickte Zwiebel
     und die Lorbeerblaetter aus dem Topf fischen. Die Suppe mit Salz, Pfeffer und Rosenpaprika
     abschmecken.
-  main_ingredient: null
-  name: Gulaschsuppe
+  main_ingredient:
+  - 1355
+  name: Gulaschsuppe mit Rindfleisch und Paprika
   origin:
-  - hungarian
+  - home-style
   prep_minutes: 20
   recipe_id: 54
   recipe_spec: soup
@@ -53,15 +54,17 @@ recipes:
   variant_of: null
   veg_type: meat
 - cook_minutes: 0
-  cooking_method: none
+  cooking_method: raw
   instructions: Die geputzten und gewaschenen Moehren fein raspeln. Die geschaelten Aepfel
     fein raspeln und mit dem Zitronensaft begiessen. Die Moehren und die Aepfel in einer aus
     dem Oel, Honig, Meerrettich, Salz und Haselnuessen hergestellten Marinade ziehen lassen.
     Auf den Salatblaettern anrichten und mit frisch gehackter Petersilie bestreuen.
-  main_ingredient: null
-  name: Karottensalat
+  main_ingredient:
+  - 1366
+  - 1371
+  name: Karotten-Apfel-Salat mit Meerrettich
   origin:
-  - german
+  - home-style
   prep_minutes: 15
   recipe_id: 55
   recipe_spec: salad
@@ -71,14 +74,16 @@ recipes:
   variant_of: null
   veg_type: vegetarian
 - cook_minutes: 0
-  cooking_method: none
+  cooking_method: raw
   instructions: Karotten putzen, fein raspeln. Thunfisch abtropfen, zerkleinern und zusammen
     mit den Karotten in eine Schuessel geben. Den Mais dazugeben und gut vermischen. Aus Oel,
     Essig, Senf, Honig, Salz und Pfeffer ein Dressing anruehren und unter den Salat mischen.
-  main_ingredient: null
-  name: Karotten-Thunfisch-Salat
+  main_ingredient:
+  - 1366
+  - 1373
+  name: Karotten-Thunfisch-Salat mit Mais
   origin:
-  - german
+  - home-style
   prep_minutes: 15
   recipe_id: 56
   recipe_spec: salad
@@ -96,15 +101,16 @@ recipes:
     abschmecken. Auflaufform mit Butter ausreiben. Hackfleischsauce, Nudeln, Hackfleischsauce,
     Nudeln ..., Nudeln, Kaesesauce schichten, 1 Paeckchen Parmesan drueberstreuen. Bei 200
     Grad 40 Minuten im Ofen (Ober-/Unterhitze) backen.'
-  main_ingredient: null
-  name: Lasagne
+  main_ingredient:
+  - 1377
+  name: Lasagne mit Hackfleisch-Tomatensauce und Parmesan
   origin:
   - italian
   prep_minutes: 25
   recipe_id: 57
   recipe_spec: casserole
   recipe_type: main_dish
-  side_dish: null
+  side_dish: 1384
   sweet: false
   variant_of: null
   veg_type: meat
@@ -119,10 +125,12 @@ recipes:
     Pfeffer wuerzen. Thymian mit den Oliven kurz vor Ende der Bratzeit zu den Kartoffeln geben.
     Kaese zerbroeckeln. Restliche Zwiebeln grob wuerfeln. Mit dem Schafskaese ueber die Gyros-Kartoffeln
     streuen und servieren.
-  main_ingredient: null
+  main_ingredient:
+  - 1363
+  - 1389
   name: Kartoffel-Gyros mit Schafskaese
   origin:
-  - greek
+  - mediterranean
   prep_minutes: 20
   recipe_id: 58
   recipe_spec: pan_dish
@@ -140,10 +148,11 @@ recipes:
     mit Saft um den Chicoree legen, salzen und pfeffern. Die Butter in Floeckchen darueber
     verteilen. Im vorgeheizten Backofen 15 Minuten bei 220 Grad backen. Dazu Weissbrot oder
     Schwarzbrot servieren.
-  main_ingredient: null
-  name: Chicoree belgische Art
+  main_ingredient:
+  - 1391
+  name: Ueberbackener Chicoree mit Schinken und Gouda (belgische Art)
   origin:
-  - belgian
+  - home-style
   prep_minutes: 15
   recipe_id: 59
   recipe_spec: casserole
@@ -160,13 +169,14 @@ recipes:
     Die Plaetzchen mit dem Eigelb (mit der Sahne verquirlt) bestreichen und nach Wunsch mit
     gehackten Erdnuessen, Pistazien, Kuemmel, Mohn oder Sesam verzieren. Im vorgeheizten Backofen
     auf der oberen Schiene bei 200 Grad ca. 10 Minuten goldgelb backen.
-  main_ingredient: null
-  name: Kaeseplaetzchen
+  main_ingredient:
+  - 1396
+  name: Herzhafte Kaeseplaetzchen mit Vollkornmehl
   origin:
-  - german
+  - home-style
   prep_minutes: 90
   recipe_id: 60
-  recipe_spec: cookies
+  recipe_spec: baked
   recipe_type: snack
   side_dish: null
   sweet: false
@@ -184,12 +194,12 @@ recipes:
     die zweite Seite auch bepinseln, wenden und weitere 4-5 Minuten grillen. Dazu passen selbst
     gemachte Dips.
   main_ingredient: null
-  name: Thymian-Fladenbrot
+  name: Thymian-Fladenbrot vom Grill
   origin:
   - mediterranean
   prep_minutes: 75
   recipe_id: 61
-  recipe_spec: bread
+  recipe_spec: baked
   recipe_type: side_dish
   side_dish: null
   sweet: false
@@ -203,13 +213,14 @@ recipes:
     und ca. 30 Min. gehen lassen. Danach mit der Speck-Zwiebel-Mischung belegen. Restliches
     Ei mit saurer Sahne verquirlen, mit Salz, Pfeffer und Muskatnuss abschmecken und auf dem
     Zwiebelkuchen verteilen. Im vorgeheizten Ofen bei 200 Grad ca. 30 Minuten backen.
-  main_ingredient: null
-  name: Zwiebelkuchen
+  main_ingredient:
+  - 1356
+  name: Zwiebelkuchen mit Speck und saurer Sahne
   origin:
-  - german
+  - home-style
   prep_minutes: 60
   recipe_id: 62
-  recipe_spec: tart
+  recipe_spec: casserole
   recipe_type: main_dish
   side_dish: null
   sweet: false
@@ -227,7 +238,8 @@ recipes:
     zur Sahne geben. Mit Paprika, Pfeffer und Salz abschmecken. Die Sauce ueber Fisch und
     Gnocchi verteilen und alles auf der mittleren Schiene 25 Minuten ueberbacken. Mit Basilikum
     bestreuen und servieren.
-  main_ingredient: null
+  main_ingredient:
+  - 1414
   name: Gnocchi-Gratin mit Rotbarsch
   origin:
   - italian
@@ -235,7 +247,7 @@ recipes:
   recipe_id: 63
   recipe_spec: casserole
   recipe_type: main_dish
-  side_dish: null
+  side_dish: 1413
   sweet: false
   variant_of: null
   veg_type: fish
@@ -248,13 +260,14 @@ recipes:
     vom Pfannenboden loesen. Das Mango-Chutney und das Currypulver einruehren. Die Banane
     in Scheiben schneiden, mit dem Zitronensaft betraeufeln und dazugeben. Das Fleisch salzen
     und in der Sauce kurz erwaermen.
-  main_ingredient: null
-  name: Putenragout mit Bananen
-  origin:
-  - international
+  main_ingredient:
+  - 1419
+  - 1418
+  name: Putenragout mit Banane, Curry und Sherry
+  origin: []
   prep_minutes: 10
   recipe_id: 64
-  recipe_spec: ragout
+  recipe_spec: pan_dish
   recipe_type: main_dish
   side_dish: null
   sweet: false
@@ -269,13 +282,14 @@ recipes:
     aufkochen. Sahne und Adler-Schmelzkaese dazugeben. Die Sauce um die Roellchen giessen.
     Das Fleisch darf nicht bedeckt sein, hoechstens bis zur Haelfte. Im Backofen bei 200 Grad
     40-50 Minuten garen.
-  main_ingredient: null
-  name: Putenroellchen
+  main_ingredient:
+  - 1419
+  name: Ueberbackene Putenroellchen mit Schinken und Kraeuterkaese
   origin:
-  - german
+  - home-style
   prep_minutes: 25
   recipe_id: 65
-  recipe_spec: roulade
+  recipe_spec: casserole
   recipe_type: main_dish
   side_dish: null
   sweet: false
@@ -290,10 +304,11 @@ recipes:
     und durchziehen lassen. Oel erhitzen, Gyros darin portionsweise anbraten und bei starker
     Hitze knusprig braun braten. Gyros mit Zwiebeln und Knoblauch-Dill-Quark anrichten. Beilage:
     Fladenbrot.'
-  main_ingredient: null
+  main_ingredient:
+  - 1437
   name: Gyrospfanne mit Knoblauch-Dill-Quark
   origin:
-  - greek
+  - mediterranean
   prep_minutes: 25
   recipe_id: 66
   recipe_spec: pan_dish
@@ -307,13 +322,15 @@ recipes:
   instructions: Zwiebel, enthaeutete Tomaten und Schinken klein schneiden und mit Frischrahmkaese,
     geriebenem Kaese und italienischer Wuerzmischung mischen. Zucchini aushoehlen und fuellen.
     Im Ofen bei 180 Grad 40 Minuten backen.
-  main_ingredient: null
+  main_ingredient:
+  - 1438
+  - 1392
   name: Gefuellte Zucchini mit Kaese-Schinken-Fuellung
   origin:
   - mediterranean
   prep_minutes: 20
   recipe_id: 67
-  recipe_spec: stuffed_vegetables
+  recipe_spec: casserole
   recipe_type: main_dish
   side_dish: null
   sweet: false
@@ -325,13 +342,15 @@ recipes:
     Salz, Pfeffer, Paprikapulver und Petersilie mischen und anbraten, Zucchini damit fuellen.
     Fleischbruehe und Tomatensaft in die Auflaufform geben, Kaese darueber streuen. Die fertige
     Sauce mit Basilikum abschmecken. Im Ofen bei 200 Grad 40 Minuten backen.
-  main_ingredient: null
+  main_ingredient:
+  - 1438
+  - 1377
   name: Gefuellte Zucchini mit Hackfleischfuellung
   origin:
   - mediterranean
   prep_minutes: 25
   recipe_id: 68
-  recipe_spec: stuffed_vegetables
+  recipe_spec: casserole
   recipe_type: main_dish
   side_dish: null
   sweet: false
@@ -343,13 +362,15 @@ recipes:
     gehacktem Knoblauch, Petersilie, Olivenoel, Salz und Pfeffer mischen und die Zucchini
     damit fuellen. Fleischbruehe und Tomatensaft in die Auflaufform geben, Kaese darueber
     streuen und die Sauce mit Basilikum abschmecken. Im Ofen bei 200 Grad 40 Minuten backen.
-  main_ingredient: null
+  main_ingredient:
+  - 1438
+  - 1373
   name: Gefuellte Zucchini mit Thunfischfuellung
   origin:
   - mediterranean
   prep_minutes: 20
   recipe_id: 69
-  recipe_spec: stuffed_vegetables
+  recipe_spec: casserole
   recipe_type: main_dish
   side_dish: null
   sweet: false
@@ -362,8 +383,10 @@ recipes:
     Tatar im erhitzten Kuerbiskernoel anbraten, Gemuese zugeben und anduensten. Tomaten, Tomatenmark
     und Bruehe angiessen und alles ca. 15-20 Minuten garen. Mit den Gewuerzen und Zucker abschmecken
     und mit Tortillachips servieren.
-  main_ingredient: null
-  name: Chili con Kuerbis
+  main_ingredient:
+  - 1446
+  - 1447
+  name: Chili con Kuerbis mit Rindertatar
   origin:
   - mexican
   prep_minutes: 20
@@ -384,10 +407,11 @@ recipes:
     mit dem Mixstab puerieren. Den Schmelzkaese zugeben und unterruehren, bis er sich aufgeloest
     hat. Mit wenig Salz wuerzen, viel frisch gemahlenen Pfeffer, Piment, Ingwer und eine Prise
     Cayennepfeffer zugeben. Mit Toastbrotwuerfeln servieren.
-  main_ingredient: null
-  name: Cremige Kuerbissuppe
+  main_ingredient:
+  - 1446
+  name: Cremige Kuerbissuppe mit Schmelzkaese und Weisswein
   origin:
-  - german
+  - home-style
   prep_minutes: 20
   recipe_id: 71
   recipe_spec: soup
@@ -404,15 +428,1227 @@ recipes:
     in eine mit Backpapier ausgelegte Kastenkuchenform geben und im vorgeheizten Backofen
     bei 200 Grad ca. 40-50 Min. backen. Kurz abkuehlen lassen, mit Ahornsirup bestreichen
     und mit den restlichen Kuerbiskernen bestreuen.
-  main_ingredient: null
-  name: Kuerbisbrot
+  main_ingredient:
+  - 1446
+  name: Suesses Kuerbisbrot mit Kuerbiskernen und Ahornsirup
   origin:
-  - german
+  - home-style
   prep_minutes: 50
   recipe_id: 72
-  recipe_spec: bread
-  recipe_type: baked_goods
+  recipe_spec: baked
+  recipe_type: main_dish
   side_dish: null
   sweet: true
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 0
+  cooking_method: raw
+  instructions: Paprikaschote und Feta fein wuerfeln. Zusammen mit dem Frischkaese und dem
+    Olivenoel mit dem Puerierstab zu einer cremigen Masse verruehren. Gepresste Knoblauchzehen
+    (Menge nach Geschmack) und Kraeuter hinzugeben und mit Salz und Pfeffer abschmecken. Kalt
+    stellen. Besonders cremig wird der Dip mit Feta aus Kuhmilch.
+  main_ingredient:
+  - 1389
+  - 1440
+  name: Feta-Frischkaese-Dip mit Paprika und Kraeutern
+  origin:
+  - mediterranean
+  prep_minutes: 15
+  recipe_id: 73
+  recipe_spec: sauce
+  recipe_type: dip
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 45
+  cooking_method: pot
+  instructions: 'Fuer 4 Portionen. Zwiebel, Knoblauch und Moehre schaelen und in feine Wuerfel
+    schneiden. Hackfleisch (alternativ Tatar) in die Pfanne geben, langsam erhitzen und im
+    eigenen Fett unter Ruehren bei mittlerer Hitze anbraten. So bleibt das Fleisch schoen
+    saftig. Salzen und pfeffern. Zwiebeln, Knoblauch und Moehren dazugeben und kurz mitbraten.
+    Fuer mehr klassisches Bolognese-Aroma optional 1 Stange Sellerie fein wuerfeln und mitbraten.
+    Mit der Bruehe abloeschen. Dann Tomatenmark, Oregano, die stueckigen Tomaten (z. B. mit
+    Kraeutern aus dem Tetrapack) und Ketchup unterruehren. Etwa 40 Minuten bei milder Hitze
+    einkochen lassen. Optional 100-200 ml Vollmilch nach Bedarf zugeben: Sie macht die Sauce
+    saemiger, haelt das Hackfleisch zart und hilft, wenn die Bolognese zu stark einkocht.
+    Spaghetti in Salzwasser bissfest kochen, abgiessen und mit der Sauce servieren.'
+  main_ingredient:
+  - 1461
+  name: Spaghetti Bolognese mit Rinderhack und Gemuese
+  origin:
+  - italian
+  prep_minutes: 15
+  recipe_id: 74
+  recipe_spec: pasta
+  recipe_type: main_dish
+  side_dish: 1459
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 50
+  cooking_method: pot
+  instructions: Fuer 4 Portionen. Bauchspeck (idealerweise Pancetta) in sehr kleine Wuerfel
+    schneiden. Moehre schaelen, Sellerie von Gruen und Faeden befreien, waschen; beides sowie
+    die Zwiebeln in sehr feine Wuerfel schneiden. Oel in einem Topf erhitzen und zuerst die
+    Speckwuerfel allein 1-2 Minuten anduensten. Butter, Zwiebel-, Sellerie- und Moehrenwuerfel
+    zugeben und bei mittlerer Hitze ca. 3 Minuten duensten, dabei gut umruehren. Hackfleisch
+    (halb Rind, halb Schwein) zugeben, mit 1 TL Salz und 1/4 TL Pfeffer wuerzen, mit einem
+    Holzloeffel zerkruemeln und garen, bis es nicht mehr roh aussieht. Tomatenmark unterruehren.
+    Mit der Milch abloeschen und koecheln lassen, bis sie fast verdampft ist; dabei eine Messerspitze
+    Muskatnuss zugeben. Optional danach 125 ml Rotwein zugiessen und einkoecheln lassen. Passierte
+    Tomaten und Lorbeerblatt zugeben, gut verruehren und bei mittlerer bis kleiner Hitze mit
+    halb geoeffnetem Deckel ca. 40 Minuten koecheln lassen. Wird es zu trocken, essloeffelweise
+    Milch oder Wasser zugeben (ein echtes Ragu ist keine fluessige Sosse). Mit Salz und Pfeffer
+    abschmecken. Dazu Nudeln nach Wahl, z. B. Spaghetti oder Tagliatelle.
+  main_ingredient:
+  - 1377
+  name: Ragu alla Bolognese mit Pancetta und Milch
+  origin:
+  - italian
+  prep_minutes: 20
+  recipe_id: 75
+  recipe_spec: pasta
+  recipe_type: main_dish
+  side_dish: 1459
+  sweet: false
+  variant_of: 74
+  veg_type: meat
+- cook_minutes: 45
+  cooking_method: pot
+  instructions: In einem grossen Topf oder Braeter Oel auf hoher Stufe erhitzen. Hackfleisch
+    (alternativ halb Rinder-, halb Schweinehack) zufuegen, kurz liegen lassen, dann zerkleinern
+    und rundherum anbraten. Sobald Roestaromen entstehen, die Hitze etwas reduzieren. Zwiebeln
+    schaelen, wuerfeln und zum Hackfleisch geben. Paprika waschen, putzen, in 1 cm grosse
+    Wuerfel schneiden und untermengen. In der Mitte des Topfbodens eine freie Flaeche schaffen,
+    Tomatenmark darin etwas anroesten, vermengen und kurz koecheln lassen. Knoblauch schaelen,
+    fein wuerfeln und zusammen mit den Dosentomaten, Salz, Pfeffer, Zucker und den Gewuerzen
+    unterruehren (Chilipulver kann durch Cayennepfeffer, Tabasco durch eine andere Wuerzsauce
+    ersetzt werden; vorsichtig dosieren und am Ende nachwuerzen). Mit etwas Bruehe (Rinder-
+    oder Gemuesebruehe) auffuellen und bei mittlerer Hitze 30-45 Minuten kochen lassen; ist
+    die Fluessigkeit verkocht, immer wieder Bruehe angiessen. Kurz vor Ende der Garzeit Bohnen
+    und Mais gruendlich abspuelen, zufuegen und nur wenige Minuten mitgaren. Mit Salz und
+    Gewuerzen abschmecken. Wer moechte, toppt das Chili mit Schmand und Petersilie. Dazu passen
+    Baguette, Tortillas oder Nachos.
+  main_ingredient:
+  - 1461
+  - 1468
+  name: Chili con Carne mit Kidneybohnen und Mais
+  origin:
+  - mexican
+  prep_minutes: 20
+  recipe_id: 76
+  recipe_spec: stew
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 10
+  cooking_method: pan
+  instructions: Haehnchen (alternativ Haehnchenschenkel ohne Haut und Knochen) in mundgerechte
+    Stuecke schneiden. Fruehlingszwiebeln in Ringe schneiden, Knoblauch klein hacken. Fuer
+    die Teriyaki-Sauce Sojasauce, Zucker, Reisessig, Mirin und Sesamoel verruehren. Mirin
+    kann durch trockenen Weisswein oder, alkoholfrei, durch Apfelsaft ersetzt werden. Speisestaerke
+    mit 2 TL Wasser glattruehren und unter die Sauce ruehren. Oel in einer Pfanne erhitzen
+    und das Haehnchen rundherum anbraten. Knoblauch zugeben und kurz mitbraten. Die Sauce
+    zugeben und alles unter Ruehren bei mittlerer Hitze ca. 2 Minuten koecheln lassen, bis
+    die Sauce eindickt und glaenzt. Mit Fruehlingszwiebeln toppen und mit Beilagen servieren.
+  main_ingredient:
+  - 732
+  name: Teriyaki-Haehnchen mit Fruehlingszwiebeln
+  origin:
+  - asian
+  prep_minutes: 15
+  recipe_id: 77
+  recipe_spec: pan_dish
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 30
+  cooking_method: pot
+  instructions: Ingwer und Knoblauch klein hacken. Champignons (alternativ Shiitake) vierteln,
+    Fruehlingszwiebeln in Ringe schneiden. Eier in kochendem Wasser 6 Minuten wachsweich kochen,
+    dann bis zur Verwendung in Eiswasser legen. Die Ramen-Nudeln (alternativ Mie-Nudeln) im
+    heissen Wasser nach Packungsangabe gar ziehen lassen und abgiessen. Haehnchenbrustfilet
+    mit 1 TL Sesamoel bestreichen, salzen und pfeffern, in eine Auflaufform geben, 2 EL Sojasauce
+    und 50 ml Huehnerbruehe zugeben und 20 Minuten bei 160 Grad Umluft garen, dann in Scheiben
+    schneiden. Restliches Sesamoel in einem grossen Topf erhitzen, Ingwer und Knoblauch anbraten,
+    Champignons kurz mitbraten. Mit der restlichen Huehnerbruehe abloeschen, aufkochen und
+    5 Minuten koecheln lassen, dann Miso-Paste und restliche Sojasauce unterheben. Nudeln
+    in Schalen verteilen, mit der Bruehe uebergiessen und mit halbierten Eiern, Haehnchen
+    und Fruehlingszwiebeln garnieren.
+  main_ingredient: null
+  name: Ramen mit Miso-Huehnerbruehe, Haehnchen und Ei
+  origin:
+  - asian
+  prep_minutes: 20
+  recipe_id: 78
+  recipe_spec: soup
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 15
+  cooking_method: pan
+  instructions: Champignons (braune) in Scheiben schneiden. Zwiebel und Knoblauch klein hacken.
+    Oel in einer grossen Pfanne erhitzen und die Zwiebeln 2 Minuten anbraten. Champignons
+    und Knoblauch zugeben und 5 Minuten braten, bis die Pilze leicht gebraeunt sind. Sahne,
+    Gemuesebruehe und Petersilie unterheben, einmal aufkochen und bei mittlerer Hitze 5 Minuten
+    koecheln lassen. Frischkaese unterheben und die Sauce mit Salz, Pfeffer und Balsamico
+    abschmecken.
+  main_ingredient:
+  - 1471
+  name: Champignon-Rahmsauce mit Frischkaese und Balsamico
+  origin:
+  - home-style
+  prep_minutes: 10
+  recipe_id: 79
+  recipe_spec: sauce
+  recipe_type: dip
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 20
+  cooking_method: oven
+  instructions: Backofen auf 200 Grad Ober- und Unterhitze vorheizen. Broetchen aufschneiden
+    und auf ein mit Backpapier belegtes Blech legen. Fruehlingszwiebeln in Ringe schneiden.
+    Schmand, geriebenen Gouda, Schinkenwuerfel und Fruehlingszwiebeln verruehren und mit Salz
+    und Pfeffer wuerzen. Broetchenhaelften mit der Schmand-Creme bestreichen und im Ofen 20
+    Minuten backen.
+  main_ingredient: null
+  name: Flammkuchen-Broetchen mit Schmand, Gouda und Schinken
+  origin:
+  - home-style
+  prep_minutes: 10
+  recipe_id: 80
+  recipe_spec: sandwich
+  recipe_type: snack
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 30
+  cooking_method: pot
+  instructions: Kartoffeln (mehligkochend) schaelen und in kleine Stuecke schneiden, Schalotten
+    fein wuerfeln. Lauch waschen und in Ringe schneiden. Butter in einem Topf erhitzen und
+    den Lauch bei mittlerer Hitze 5 Minuten duensten. 4 EL Lauch fuer die Deko herausnehmen.
+    Kartoffeln und Schalotten in den Topf geben und 3 Minuten braten. Gemuesebruehe zugeben,
+    aufkochen und zugedeckt bei mittlerer Hitze 20 Minuten koecheln lassen, dann puerieren.
+    Sahne und Petersilie unterruehren und mit Salz, Pfeffer und Muskat abschmecken. Mit je
+    1 EL geduenstetem Lauch pro Portion servieren.
+  main_ingredient:
+  - 1363
+  - 1462
+  name: Cremige Kartoffel-Lauch-Suppe
+  origin:
+  - home-style
+  prep_minutes: 15
+  recipe_id: 81
+  recipe_spec: soup
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 20
+  cooking_method: pot
+  instructions: Lauch in Ringe schneiden, Knoblauch klein hacken. Oel in einem beschichteten
+    Topf erhitzen und das Hackfleisch kraeftig anbraten. Lauch und Knoblauch zugeben und 5
+    Minuten duensten. Gemuesebruehe zugeben, aufkochen und 5 Minuten koecheln lassen. Frischkaese
+    (Doppelrahm) und geriebenen Kaese (z. B. Cheddar oder Bergkaese) unterheben und in der
+    Suppe schmelzen lassen. Mit Salz, Pfeffer und Muskat abschmecken.
+  main_ingredient:
+  - 1462
+  - 1461
+  name: Kaese-Lauch-Suppe mit Rinderhack
+  origin:
+  - home-style
+  prep_minutes: 10
+  recipe_id: 82
+  recipe_spec: soup
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 40
+  cooking_method: oven
+  instructions: Fuer den Muerbeteig Mehl und 1 TL Salz verruehren. Kalte, gewuerfelte Butter
+    und 1 Ei zugeben und einen Teig kneten. Zur Kugel formen, in Frischhaltefolie wickeln
+    und 30 Minuten kuehlen. Zwiebel und Knoblauch klein hacken, Hokkaido-Kuerbis (ca. 900
+    g, mit Schale) in mundgerechte Stuecke schneiden. Olivenoel in einer Pfanne erhitzen,
+    Kuerbis 5 Minuten bei mittlerer Hitze braten, Zwiebeln und Knoblauch zugeben und anduensten.
+    Sahne, 4 Eier und geriebenen Kaese (z. B. Gouda) verquirlen, Gemuese unterruehren und
+    mit Salz, Pfeffer und Muskat wuerzen. Backofen auf 180 Grad Ober- und Unterhitze vorheizen
+    und eine Quicheform (28 cm) einfetten. Teig auf leicht bemehlter Flaeche rund ausrollen,
+    in die Form legen, andruecken und mit einer Gabel einstechen. Optional mit Backpapier
+    und getrockneten Huelsenfruechten beschweren. 10 Minuten vorbacken. Fuellung auf den Boden
+    geben, mit zerbroeseltem Feta belegen und 30 Minuten backen.
+  main_ingredient:
+  - 1446
+  - 1389
+  name: Kuerbis-Quiche mit Feta
+  origin:
+  - mediterranean
+  prep_minutes: 50
+  recipe_id: 83
+  recipe_spec: casserole
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 40
+  cooking_method: oven
+  instructions: Backofen auf 180 Grad Ober- und Unterhitze vorheizen. Quicheform (28 cm) mit
+    Butter einfetten und den Teig hineingeben (Fertigteig aus dem Kuehlregal oder selbst gemacht
+    wie bei der Kuerbis-Quiche mit Feta). Zwiebel klein wuerfeln, Lauch in Ringe schneiden.
+    Butter in einer Pfanne erhitzen, den Speck anbraten, dann Zwiebeln und Lauch zugeben und
+    5 Minuten anduensten. Sahne und Eier verquirlen, Zwiebel-Speck-Mischung und geriebenen
+    Kaese (z. B. Bergkaese oder Emmentaler) unterheben und mit Salz, Pfeffer und Muskat wuerzen.
+    Fuellung auf dem Teig verteilen und 35-40 Minuten backen.
+  main_ingredient:
+  - 1410
+  - 1462
+  name: Quiche Lorraine mit Lauch und Speck
+  origin:
+  - mediterranean
+  prep_minutes: 15
+  recipe_id: 84
+  recipe_spec: casserole
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 20
+  cooking_method: oven
+  instructions: Ergibt 6 Stueck. Backofen auf 180 Grad Ober- und Unterhitze vorheizen. Aepfel
+    (z. B. Boskop oder Jonagold) schaelen, entkernen und klein wuerfeln. Mit Zucker und Zimt
+    in einem Topf unter Ruehren ca. 5 Minuten koecheln, bis die Aepfel weich sind und die
+    Fluessigkeit weitgehend verdampft ist. Abkuehlen lassen. Blaetterteig in 6 gleich grosse
+    Quadrate schneiden, mittig je 2 EL Apfelmasse daraufgeben. Jeweils eine Ecke diagonal
+    auf die gegenueberliegende klappen, sodass ein Dreieck entsteht, und die Raender mit einer
+    Gabel fest andruecken. Eigelb mit Milch verquirlen und die Taschen damit bestreichen.
+    Auf einem mit Backpapier belegten Blech ca. 20 Minuten goldbraun backen. Mit Puderzucker
+    bestreuen.
+  main_ingredient:
+  - 1371
+  name: Apfeltaschen mit Blaetterteig und Zimt
+  origin:
+  - home-style
+  prep_minutes: 20
+  recipe_id: 85
+  recipe_spec: baked
+  recipe_type: sweet
+  side_dish: null
+  sweet: true
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 20
+  cooking_method: oven
+  instructions: Spinat (TK) auftauen lassen und etwas ausdruecken. Lachs mit Salz und Pfeffer
+    wuerzen. Zwiebel und Knoblauch klein hacken. Oel in einer Pfanne erhitzen, Zwiebeln und
+    Knoblauch anschwitzen, Spinat zugeben und 5 Minuten bei geringer Hitze duensten. Abkuehlen
+    lassen. Backofen auf 200 Grad Ober- und Unterhitze vorheizen. Blaetterteig ausrollen und
+    quer halbieren. Die Haelfte des Spinats mittig auf die Teigstuecke verteilen, Lachsfilets
+    daraufgeben, mit Kraeuter-Frischkaese bestreichen und mit restlichem Spinat bedecken.
+    Teig zur Mitte hin zusammenfalten, erst die kurzen, dann die langen Seiten, und an der
+    Naht zusammendruecken. Oberseiten mehrmals diagonal einschneiden, mit verquirltem Ei bepinseln
+    und mit Sesam bestreuen. Auf einem mit Backpapier belegten Blech ca. 20 Minuten goldbraun
+    backen.
+  main_ingredient:
+  - 1485
+  - 1483
+  name: Lachs im Blaetterteig mit Spinat und Frischkaese
+  origin: []
+  prep_minutes: 25
+  recipe_id: 86
+  recipe_spec: casserole
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: fish
+- cook_minutes: 25
+  cooking_method: pan
+  instructions: Reis nach Packungsangabe kochen. Bohnen halbieren, in kochendem Wasser 10-12
+    Minuten garen und kalt abschrecken. Rindfleisch (z. B. Huefte) in duenne Streifen, Paprika
+    in Streifen und Fruehlingszwiebeln in Ringe schneiden. Chilischote fein hacken. Oel in
+    einer grossen Pfanne oder einem Wok erhitzen und das Fleisch portionsweise kurz und scharf
+    anbraten, mit Salz und Pfeffer wuerzen und herausnehmen. Currypaste und Chili in die Pfanne
+    geben und kurz anschwitzen. Kokosmilch einruehren und aufkochen. Paprika zugeben und 5
+    Minuten bei mittlerer Hitze koecheln lassen. Fleisch, Fruehlingszwiebeln und Bohnen unterheben
+    und kurz erwaermen. Mit Limettensaft und Salz abschmecken und mit Basmatireis servieren.
+  main_ingredient:
+  - 1355
+  name: Rindfleisch-Curry mit gruenen Bohnen und Kokosmilch
+  origin:
+  - asian
+  prep_minutes: 20
+  recipe_id: 87
+  recipe_spec: pan_dish
+  recipe_type: main_dish
+  side_dish: 1487
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 15
+  cooking_method: pot
+  instructions: Moehren schaelen und in duenne Scheiben schneiden. Pak Choi in Streifen schneiden
+    und in einem Sieb waschen. Kokosoel in einem Topf erhitzen und die Moehren bei mittlerer
+    Hitze 5 Minuten duensten. Currypaste unterruehren und kurz roesten. Kokosmilch (vollfett)
+    und Gemuesebruehe zugeben, aufkochen und 5 Minuten koecheln lassen. Mie-Nudeln und Pak
+    Choi zugeben und weitere 5 Minuten koecheln lassen. Mit Salz und Pfeffer abschmecken.
+  main_ingredient:
+  - 1497
+  name: Pak-Choi-Kokos-Suppe mit roter Currypaste und Mie-Nudeln
+  origin:
+  - asian
+  prep_minutes: 10
+  recipe_id: 88
+  recipe_spec: soup
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 20
+  cooking_method: oven
+  instructions: Zwiebel in Halbringe schneiden. Ofenkaese rautenfoermig einritzen. Spaetzle
+    (Kuehlregal), Sahne und Zwiebeln im Garkorb bzw. in einer Auflaufform verruehren und den
+    Ofenkaese mittig daraufsetzen. Mit Umluft garen, bis der Kaese geschmolzen ist (ca. 20
+    Minuten bei 180 Grad). Den Kaese mit zwei Gabeln auseinanderziehen, mit den Spaetzle vermengen
+    und mit Petersilie garnieren.
+  main_ingredient:
+  - 1500
+  name: Ofenkaese-Spaetzle mit Sahne und roten Zwiebeln
+  origin:
+  - home-style
+  prep_minutes: 5
+  recipe_id: 89
+  recipe_spec: casserole
+  recipe_type: main_dish
+  side_dish: 1499
+  sweet: false
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 25
+  cooking_method: oven
+  instructions: Backofen auf 200 Grad Ober- und Unterhitze vorheizen. Brokkoli in Roeschen
+    teilen, Schinken wuerfeln. Brokkoli und Gnocchi (Kuehlregal) in kochendem Salzwasser 3
+    Minuten vorkochen, abgiessen und mit dem Schinken in eine Auflaufform geben. Sahne (Schlagsahne
+    oder Kochsahne), Kraeuter-Frischkaese und Senf verruehren und mit Salz, Pfeffer und Muskat
+    wuerzen. Die Sosse in die Form geben und untermischen. Mit geriebenem Kaese (z. B. Gouda)
+    bestreuen und 20 Minuten backen.
+  main_ingredient:
+  - 1501
+  name: Gnocchi-Brokkoli-Auflauf mit Schinken
+  origin:
+  - italian
+  prep_minutes: 15
+  recipe_id: 90
+  recipe_spec: casserole
+  recipe_type: main_dish
+  side_dish: 1413
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 10
+  cooking_method: pan
+  instructions: Ergibt 4 Burger. Rinderhack mit Worcestersauce, Salz und Pfeffer kraeftig
+    wuerzen und 4 flache Patties formen. Oel in einer Pfanne erhitzen, die Patties kraeftig
+    anbraten und auf kleiner Flamme 6 Minuten durchbraten, dabei einmal wenden. Kurz bevor
+    sie gar sind, auf jedes Patty 1 Scheibe Schmelzkaese legen und schmelzen lassen. Tomaten
+    in Scheiben, Zwiebel in Ringe schneiden, Salat (Kopfsalat oder anderer Blattsalat) waschen.
+    Broetchen aufschneiden, mit Ketchup bestreichen und mit Salat, Patty, Tomate und Zwiebel
+    belegen.
+  main_ingredient:
+  - 1461
+  name: Cheeseburger mit Rinderpatty, Tomate und Salat
+  origin:
+  - american
+  prep_minutes: 15
+  recipe_id: 91
+  recipe_spec: sandwich
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 30
+  cooking_method: pan
+  instructions: Haehnchenbrustfilets waschen, trocken tupfen, in duenne Streifen schneiden,
+    salzen und pfeffern. In einer Pfanne in etwas Oel scharf goldbraun anbraten. Inzwischen
+    die Zwiebeln fein hacken, Lauch in feine Ringe schneiden, Paprika entkernen und wuerfeln,
+    Moehren schaelen, laengs halbieren und in duenne Scheiben schneiden. Knoblauch schaelen.
+    Fleisch aus der Pfanne nehmen. Zwiebeln in etwas Oel im Wok oder einer grossen Pfanne
+    glasig duensten, uebriges Gemuese kurz mitbraten, Knoblauch dazupressen. Mit Currypulver
+    bestaeuben und mit Joghurt und Kokosmilch (ungesuesst) abloeschen. Tomatenmark einruehren.
+    Zugedeckt ca. 20 Minuten leise koecheln lassen, bis das Gemuese gar ist, dabei ab und
+    zu ruehren. 5 Minuten vor Ende das Fleisch zugeben. Mit Salz, Pfeffer, Currypulver und
+    Paprikapulver abschmecken.
+  main_ingredient:
+  - 732
+  name: Haehnchen-Gemuese-Curry mit Kokosmilch und Joghurt
+  origin:
+  - indian
+  prep_minutes: 20
+  recipe_id: 92
+  recipe_spec: pan_dish
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 20
+  cooking_method: oven
+  instructions: Aus Oel, Wasser, 1 Prise Salz und Mehl einen Knetteig bereiten und ganz duenn
+    ausrollen. Schmand (24 % Fett) und Creme double mischen, mit Salz (oder Fondor) und Pfeffer
+    wuerzen und auf dem Teig verstreichen. Zwiebeln in duenne halbe Ringe schneiden und mit
+    ganz wenig Wasser 1 Minute bei 600 Watt in der Mikrowelle duensten, damit sie beim Backen
+    nicht verbrennen. Mit dem Speck auf dem Teig verteilen. Im heissen Ofen bei 250 Grad Ober-/Unterhitze
+    auf der unteren Schiene 20 Minuten backen. Mit Schnittlauchroellchen bestreut servieren.
+  main_ingredient:
+  - 1410
+  - 1356
+  name: Flammkuchen Elsaesser Art mit Speck und Zwiebeln
+  origin:
+  - mediterranean
+  prep_minutes: 15
+  recipe_id: 93
+  recipe_spec: casserole
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 25
+  cooking_method: pan
+  instructions: Fuer 2 Portionen. Kartoffeln (vorwiegend festkochend) nach Belieben schaelen
+    oder nur putzen, in ca. 1 cm grosse Wuerfel schneiden und mit 1 TL Meersalz bestreuen.
+    Zwiebeln grob schneiden. Oel (Olivenoel oder Sonnenblumenoel) in einer Pfanne (24 cm)
+    gut erhitzen. Kartoffeln und Zwiebeln darin bei mittlerer Hitze ca. 15 Minuten braten,
+    ohne dass sie Farbe annehmen; sie sollen fast mit Oel bedeckt sein. Zwischendurch umruehren.
+    Nach 10 Minuten die Schinkenwuerfel (oder gezupften Serranoschinken) zugeben und 5 Minuten
+    mitbraten. Inzwischen die Eier mit einem Schuss Milch aufschlagen, Petersilie, Schnittlauch
+    und zerdrueckten Knoblauch zufuegen und mit Meersalz, Pfeffer und Paprikapulver wuerzen.
+    Kartoffeln und Schinken in einem Sieb abtropfen lassen, das Oel auffangen. Kartoffeln
+    unter die Eimasse ruehren und einige Minuten ziehen lassen. Pfanne stark erhitzen, ca.
+    3 EL des aufgefangenen Oels hineingeben und die Masse einfuellen. Bei mittlerer bis niedriger
+    Hitze 2-3 Minuten braten und dabei die Pfanne ruetteln. Mit Hilfe eines grossen Tellers
+    wenden, zurueck in die Pfanne gleiten lassen und ca. 1 Minute weiterbraten. Der Kern soll
+    noch glaenzend sein; wer es durchgegart mag, gart auf niedriger Stufe laenger. Dazu passt
+    Tomatensalat.
+  main_ingredient:
+  - 1363
+  - 205
+  name: Spanische Kartoffel-Tortilla mit Schinkenwuerfeln
+  origin:
+  - mediterranean
+  prep_minutes: 15
+  recipe_id: 94
+  recipe_spec: pan_dish
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 40
+  cooking_method: pot
+  instructions: Kartoffeln schaelen und wuerfeln. Zwiebeln fein hacken und in Oel (oder Schweineschmalz)
+    glasig anschwitzen, dann mit der Bruehe auffuellen. Sellerie, Lauch, Moehren und Tomaten
+    putzen, klein schneiden und mit den Kartoffeln in die Bruehe geben. Ca. 30-45 Minuten
+    garen. Inzwischen den durchwachsenen Speck klein schneiden, in einer Pfanne kross braten
+    und mit der gehackten Petersilie ueber die Suppe streuen.
+  main_ingredient:
+  - 1363
+  name: Klare Kartoffel-Gemuese-Suppe mit Speck
+  origin:
+  - home-style
+  prep_minutes: 20
+  recipe_id: 95
+  recipe_spec: soup
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 30
+  cooking_method: pan
+  instructions: Zwiebeln schaelen und wuerfeln. Kartoffeln schaelen, auf der groben Seite
+    der Reibe in eine Schuessel reiben und mit viel Salz und wenig Pfeffer wuerzen. Eier und
+    Zwiebeln dazugeben. So viel Mehl darueberstaeuben, dass die Kartoffelmasse bedeckt ist
+    (kann mehr oder weniger als 8 EL sein), und alles gut verruehren. Die Reibekuchen portionsweise
+    in reichlich Oel ausbacken (sie muessen im Oel schwimmen) und auf Kuechenkrepp abtropfen
+    lassen.
+  main_ingredient:
+  - 1363
+  name: Kartoffelpuffer (Reibekuchen) mit Zwiebeln
+  origin:
+  - home-style
+  prep_minutes: 20
+  recipe_id: 96
+  recipe_spec: pan_dish
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 20
+  cooking_method: pan
+  instructions: Chilischote in duenne Ringe schneiden. Rote Zwiebeln halbieren und in breite
+    Spalten schneiden. Gemischte Pilze (z. B. Kraeuterseitlinge, Shiitake, Austernpilze, Portobello)
+    putzen und in mundgerechte Stuecke schneiden oder zupfen. Pilze, Zwiebeln und Chili mit
+    Zitronenabrieb, Kreuzkuemmel, Piment, geraeuchertem Paprikapulver, Zimt und Meersalzflocken
+    in eine Schuessel geben, die Knoblauchzehe dazupressen, Olivenoel zugeben und gut vermischen.
+    Abgedeckt ca. 1 Stunde marinieren. Inzwischen die Ananas schaelen und in Spalten schneiden.
+    Eine Grillpfanne stark erhitzen und die Pilze portionsweise scharf an- und durchbraten,
+    bis sie Roeststreifen und knusprige Raender haben. Zum Schluss die Ananasspalten von beiden
+    Seiten kurz anroesten, bis sie leicht karamellisieren. In Tortillas mit Pico de Gallo
+    als Tacos al Pastor oder mit Baguette servieren.
+  main_ingredient:
+  - 1515
+  - 775
+  name: Pilz-Schawarma al Pastor mit gegrillter Ananas
+  origin:
+  - mexican
+  - oriental
+  prep_minutes: 80
+  recipe_id: 97
+  recipe_spec: pan_dish
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegan
+- cook_minutes: 30
+  cooking_method: pan
+  instructions: Gewuerze (1 EL Kreuzkuemmel, Paprikapulver, Kardamom, Koriander, Salz, Pfeffer,
+    Zimt, Chilipulver), Olivenoel und gepressten Knoblauch mit 250 g griechischem Joghurt
+    verruehren. Haehnchenbrueste waschen, trocken tupfen und in mundgerechte Stuecke oder
+    duenne Streifen schneiden. Mit der Marinade mischen und mindestens 4 Stunden, besser ueber
+    Nacht, im Kuehlschrank ziehen lassen. Fuer den Dip Feta, restlichen Joghurt, 1 TL Kreuzkuemmel,
+    Salz, Pfeffer und einen Schuss Zitronensaft puerieren und kaltstellen. Gemuesezwiebel
+    in Streifen schneiden. Eine (Grill-)Pfanne mit etwas Oel stark erhitzen und das Haehnchen
+    portionsweise mit wenig Marinade ca. 6-8 Minuten scharf anbraten, bis es durchgegart ist
+    und Roeststellen hat. Die Zwiebelstreifen mit der letzten Portion mitbraten. Feldsalat
+    waschen und auf Teller verteilen, Haehnchen und Zwiebeln darauf anrichten und mit dem
+    Feta-Dip servieren.
+  main_ingredient:
+  - 732
+  name: Chicken Schawarma mit Feta-Joghurt-Dip und Feldsalat
+  origin:
+  - oriental
+  prep_minutes: 270
+  recipe_id: 98
+  recipe_spec: pan_dish
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 0
+  cooking_method: raw
+  instructions: Fuer 2 Portionen. Fuer das Dressing Minze waschen, trocken schuetteln und
+    hacken. Von der Limette 1/2 TL Schale abreiben und die Limette auspressen. Apfelsaft,
+    Limettensaft, hellen Balsamicoessig, Limettenschale und Minze verruehren und mit Salz
+    und Pfeffer wuerzen. Melonenfruchtfleisch wuerfeln, Rucola waschen und trocken schleudern,
+    Feta zerbroeseln. Melone mit Rucola, Dressing, Feta und Huettenkaese vermischen, mit Salz
+    und Pfeffer abschmecken und sofort servieren.
+  main_ingredient:
+  - 1520
+  - 1389
+  name: Wassermelonen-Rucola-Salat mit Feta und Minze
+  origin:
+  - mediterranean
+  prep_minutes: 15
+  recipe_id: 99
+  recipe_spec: salad
+  recipe_type: side_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 10
+  cooking_method: pan
+  instructions: Eier mit Mehl und Milch verruehren. Tomate in kleine Stuecke schneiden und
+    dazugeben. Mit Paprikapulver, Salz und Pfeffer wuerzen und gut verruehren. Etwas Olivenoel
+    in einer Pfanne erhitzen, die Eimasse hineingiessen und wie einen Pfannkuchen von beiden
+    Seiten braten. Auf einem Teller anrichten und mit Petersilie (oder Schnittlauch) bestreuen.
+  main_ingredient:
+  - 205
+  name: Tomaten-Omelett mit Kraeutern
+  origin: []
+  prep_minutes: 5
+  recipe_id: 100
+  recipe_spec: pan_dish
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 30
+  cooking_method: pot
+  instructions: Ergibt 6 Rollen (48 Stueck). Reis in einem Sieb waschen, bis das Wasser klar
+    ablaeuft. Mit dem Wasser schnell zum Kochen bringen, Hitze stark reduzieren und 10-12
+    Minuten garen. Reisessig mit Mirin, Zucker und Salz verruehren, bis alles geloest ist.
+    Reis in eine flache Schuessel (kein Metall) geben, 10 Minuten abkuehlen lassen, die Essigmischung
+    vorsichtig unterheben, vollstaendig abkuehlen lassen und in 6 Portionen teilen. Lachs
+    in der Pfanne von beiden Seiten je 8 Minuten braten und in Streifen schneiden. Gurke (ca.
+    6 cm, mit Schale) und Paprika in duenne Streifen schneiden. Ein Noriblatt mit der glaenzenden
+    Seite nach unten auf eine Bambusmatte legen, eine Reisportion duenn darauf verteilen und
+    an einem Ende 1,5 cm frei lassen. Im vorderen Drittel eine Furche ziehen, Wasabi hineinstreichen
+    (Vorsicht, scharf), Lachsstreifen hineinlegen und nach Belieben Gurken- und/oder Paprikastreifen
+    dahinterlegen. Freies Ende befeuchten und mit Hilfe der Matte unter sanftem Druck aufrollen.
+    Mit den uebrigen Blaettern wiederholen. Mit einem sehr scharfen, immer wieder in kaltes
+    Wasser getauchten Messer die Enden gerade abschneiden, jede Rolle halbieren und jede Haelfte
+    in 4 Stuecke schneiden. Mit Sojasauce, Wasabi und eingelegtem Ingwer servieren.
+  main_ingredient:
+  - 1485
+  name: Maki-Sushi mit gebratenem Lachs, Gurke und Paprika
+  origin:
+  - asian
+  prep_minutes: 60
+  recipe_id: 101
+  recipe_spec: others
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: fish
+- cook_minutes: 15
+  cooking_method: pan
+  instructions: Altbackene Broetchen in duenne Scheiben schneiden. Zwiebeln schaelen, fein
+    wuerfeln und ein Drittel davon in 2 EL zerlassener Butter glasig duensten. Milch zugeben,
+    einmal aufkochen, ueber die Broetchen giessen und ca. 15 Minuten ziehen lassen. Eier,
+    Salz und geriebene Muskatnuss zugeben, zu einer homogenen Masse verkneten und 24 Knoedel
+    a 25 g formen. Pilze putzen und zerkleinern, Knoblauch fein wuerfeln. Restliche Zwiebeln
+    in 1 EL Butter in einer Pfanne anschwitzen. Knoblauch, Schinkenwuerfel und Pilze zugeben
+    und schwenken. Mit Weisswein abloeschen, Gemuesefond und Creme fraiche zugeben, mit Salz
+    und Pfeffer abschmecken. Knoedel zugeben und abgedeckt 10-12 Minuten in der Sosse garen.
+    Mit Schnittlauch bestreuen und servieren.
+  main_ingredient:
+  - 1478
+  - 1515
+  name: Semmelknoedel-Pfanne mit Waldpilzen und Rahmsauce
+  origin:
+  - home-style
+  prep_minutes: 30
+  recipe_id: 102
+  recipe_spec: pan_dish
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 20
+  cooking_method: oven
+  instructions: Fuer die Nachos ca. 120 ml Wasser mit 1 Prise Salz, Paprikapulver, Koriander
+    und 2 EL Oel erhitzen, vom Herd nehmen, Mais- und Dinkelvollkornmehl einruehren. Teig
+    etwas abkuehlen lassen, durchkneten, sehr duenn ausrollen und in Dreiecke schneiden. Auf
+    einem mit Backpapier belegten Blech im vorgeheizten Ofen bei 200 Grad 15-20 Minuten goldbraun
+    backen. Hirse nach Packungsanweisung zubereiten und abkuehlen lassen. Zucchini waschen
+    und putzen, Zwiebel und Knoblauch abziehen, alles fein wuerfeln und in 2 EL Oel anbraten.
+    Tomatenmark, Pizzatomaten und Tomatensaft zufuegen und aufkochen. Kidneybohnen und Mais
+    abtropfen lassen, mit der Hirse dazugeben, kurz miterhitzen und mit Salz, Cayennepfeffer
+    und Kreuzkuemmel wuerzen. Eisbergsalat waschen, putzen und in mundgerechte Stuecke zupfen.
+    Restliches Oel, Petersilie und Zitronensaft verruehren, salzen, pfeffern und mit dem Salat
+    mischen. Nachos und Chili auf dem Salat anrichten.
+  main_ingredient: null
+  name: Nachosalat mit Hirse-Chili und selbstgemachten Nachos
+  origin:
+  - mexican
+  prep_minutes: 30
+  recipe_id: 103
+  recipe_spec: salad
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegan
+- cook_minutes: 15
+  cooking_method: microwave
+  instructions: Zwiebel in feine Ringe oder Wuerfel schneiden und in Oel anbraten. Hackfleisch
+    dazugeben, kruemelig anbraten und mit Salz, Pfeffer, Paprikapulver und Kreuzkuemmel wuerzen.
+    Wenn das Fleisch knusprig ist, Tomatenmark unterruehren und nur so viel Wasser zugeben,
+    dass es sich loest (es soll keine Sosse werden). Tortilla-Chips auf einem ofenfesten Teller
+    verteilen, Hackfleisch in Klecksen daruebergeben und die Taco-Sauce (scharfe Fertigsauce,
+    Salsa oder selbst gemacht, siehe Taco-Sauce aus Dosentomaten mit Koriander) darueber verteilen.
+    Nach Belieben eingelegte Peperoni klein schneiden und darueberstreuen. Mit geriebenem
+    Kaese (z. B. Gouda) bestreuen, sodass noch Chip-Ecken herausschauen. In der Mikrowelle
+    ca. 4-5 Minuten ueberbacken.
+  main_ingredient:
+  - 1452
+  - 1377
+  name: Ueberbackene Tortilla-Chips mit Hackfleisch und Kaese
+  origin:
+  - mexican
+  prep_minutes: 10
+  recipe_id: 104
+  recipe_spec: others
+  recipe_type: snack
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 0
+  cooking_method: raw
+  instructions: Zwiebel und Knoblauch puerieren. Nach und nach die abgetropften Tomaten dazugeben
+    und puerieren, bis alles fein zerkleinert ist. Mit Koriander, Salz und Pfeffer abschmecken.
+    Zum Schluss gehackte Petersilie unterheben. Wer es schaerfer mag, gibt eine Chilischote
+    dazu und laesst die Sauce abgedeckt ueber Nacht ziehen.
+  main_ingredient:
+  - 1359
+  name: Taco-Sauce aus Dosentomaten mit Koriander
+  origin:
+  - mexican
+  prep_minutes: 10
+  recipe_id: 105
+  recipe_spec: sauce
+  recipe_type: dip
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegan
+- cook_minutes: 15
+  cooking_method: pot
+  instructions: Haut von Paprika und Chilischote entfernen, z. B. mit einem Creme-brulee-Brenner
+    schwarz abflaemmen und unter laufendem Wasser abschrubben; so bleibt die Paprika knackig.
+    Paprika, Chili und Zwiebel klein schneiden. Oel in einem Topf erhitzen, Zwiebeln glasig
+    braten, braunen Zucker zugeben und leicht karamellisieren. Paprika und Chili zugeben,
+    Knoblauch dazupressen, kurz anbraten und mit einem Schuss Balsamico abloeschen (nicht
+    zu lange braten, sonst wird der Knoblauch bitter). Passierte Tomaten zugeben und je nach
+    Konsistenz 5-10 Minuten einkochen. Frische Kraeuter (z. B. Petersilie) unterruehren. Warm
+    oder kalt servieren, nach Belieben mit Creme fraiche verfeinert.
+  main_ingredient:
+  - 1364
+  - 1465
+  name: Gekochter Taco-Dip mit Paprika, Chili und Creme fraiche
+  origin:
+  - mexican
+  prep_minutes: 15
+  recipe_id: 106
+  recipe_spec: sauce
+  recipe_type: dip
+  side_dish: null
+  sweet: false
+  variant_of: 105
+  veg_type: vegetarian
+- cook_minutes: 15
+  cooking_method: pan
+  instructions: Gnocchi nach Packungsanweisung garen. Knoblauch fein hacken und im Olivenoel
+    kurz anduensten. Schinken wuerfeln und mitbraten. Mit Sahne abloeschen und aufkochen.
+    Schmelzkaese und Parmesan in der Sauce schmelzen lassen, mit Salz und Pfeffer wuerzen.
+    Gnocchi in die Sauce geben und servieren.
+  main_ingredient:
+  - 1392
+  name: Gnocchi in Kaese-Schinken-Sahnesauce mit Knoblauch
+  origin:
+  - italian
+  prep_minutes: 5
+  recipe_id: 107
+  recipe_spec: pan_dish
+  recipe_type: main_dish
+  side_dish: 1413
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 15
+  cooking_method: oven
+  instructions: Spinat (TK) in der Sahne aufkochen, mit Salz, Pfeffer und wenig rotem Thai-Currypulver
+    wuerzen und nach und nach mit der Bruehe aufgiessen. Gnocchi (Kuehlregal) mit der gewuerfelten
+    Zwiebel in etwas Fett kurz knusprig braten. Klein geschnittenes Haehnchenfleisch (alternativ
+    Putenfleisch) dazugeben und mitbraten. Gnocchi und Fleisch in eine Auflaufform geben und
+    die Spinatsauce darauf verteilen. Mozzarella in Scheiben schneiden oder zupfen und darueberstreuen.
+    Im auf 180 Grad Umluft vorgeheizten Ofen ca. 15 Minuten auf der mittleren Schiene goldbraun
+    ueberbacken.
+  main_ingredient:
+  - 732
+  - 1483
+  name: Gnocchi-Spinat-Auflauf mit Haehnchen, Thai-Curry und Mozzarella
+  origin: []
+  prep_minutes: 20
+  recipe_id: 108
+  recipe_spec: casserole
+  recipe_type: main_dish
+  side_dish: 1413
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 15
+  cooking_method: pan
+  instructions: Frische Bandnudeln nach Packungsanweisung kochen (nur 2-3 Minuten; alternativ
+    200-250 g getrocknete). Spinat von den Staengeln befreien und in einem Wasserbad gruendlich
+    waschen. Zwiebel in Ringe schneiden und in einer Pfanne mit hohem Rand im Oel bei kleiner
+    bis mittlerer Hitze glasig duensten (nicht braten). Bruehepulver mit 125 ml Wasser mischen
+    und dazugiessen (alternativ Weisswein). Knoblauch fein hacken und zugeben, dann den Spinat
+    nach und nach zusammenfallen lassen. Raeucherlachs in Stuecke schneiden und zugeben (alternativ
+    ca. 250 g frischer Lachs, roh gewuerfelt). Etwas Fluessigkeit abnehmen, mit der Staerke
+    glattruehren und zurueck in die Pfanne geben, ebenso Cremefine (oder Schmand). Mit Salz,
+    Pfeffer und frisch geriebener Muskatnuss wuerzen. Nudeln abgiessen, untermischen und servieren.
+  main_ingredient:
+  - 1486
+  - 1484
+  name: Bandnudeln mit frischem Spinat und Raeucherlachs in Rahmsauce
+  origin:
+  - italian
+  prep_minutes: 15
+  recipe_id: 109
+  recipe_spec: pasta
+  recipe_type: main_dish
+  side_dish: 1460
+  sweet: false
+  variant_of: null
+  veg_type: fish
+- cook_minutes: 15
+  cooking_method: pan
+  instructions: Bandnudeln (oder Tagliatelle) nach Packungsanweisung garen. Lachs in Stuecke
+    schneiden, in der Butter anbraten und herausnehmen. Tomatenmark in der Pfanne anroesten,
+    mit Sahne und Gemuesebruehe abloeschen und aufkochen. Mit in etwas Wasser angeruehrter
+    Speisestaerke andicken, mit Gemuesebruehepulver abschmecken und Dill unterruehren. Lachs
+    und Nudeln in die Sosse geben und heiss servieren.
+  main_ingredient:
+  - 1485
+  name: Bandnudeln mit Lachs in Tomaten-Dill-Sahnesauce
+  origin:
+  - italian
+  prep_minutes: 10
+  recipe_id: 110
+  recipe_spec: pasta
+  recipe_type: main_dish
+  side_dish: 1460
+  sweet: false
+  variant_of: null
+  veg_type: fish
+- cook_minutes: 30
+  cooking_method: pan
+  instructions: 'Ergibt 6 Wraps. Haehnchen marinieren: Haehnchenschenkel mit Salz, Pfeffer,
+    Chilipulver, geraeuchertem Paprikapulver, Knoblauchpulver, Kreuzkuemmel, Koriander, Kurkuma
+    und Zwiebelpulver vermengen. 1 EL Zitronensaft, 2 EL Toum, 1 TL Paprikamark, Tomatenmark
+    und 2 EL Oel zugeben und gut mischen. Abgedeckt mindestens 2 Stunden oder ueber Nacht
+    marinieren. Glasur: 120 ml Oel, 1 EL Paprikamark (oder Tomatenmark), 1 EL Sumach, 1 Prise
+    Salz und Granatapfelsirup verruehren. Sumach-Zwiebeln: Zwiebelscheiben mit einem Spritzer
+    Zitronensaft, 1 TL Sumach, Petersilie, Salz und 1 EL Oel vermengen. Pommes nach Packungsanweisung
+    zubereiten. Oel in einer Pfanne bei mittlerer bis hoher Hitze erhitzen und das Haehnchen
+    portionsweise ca. 8-10 Minuten braten, bis es durchgegart und leicht angeroestet ist.
+    Pitabrot mit Toum bestreichen, mit Haehnchen, Pommes, Sumach-Zwiebeln und Tomatenwuerfeln
+    belegen und fest aufrollen. In einer Pfanne von jeder Seite 1-2 Minuten anroesten, mit
+    der Glasur bestreichen und weiterbraten, bis der Wrap goldbraun und knusprig ist. Warm
+    mit zusaetzlichem Toum und Pommes servieren.'
+  main_ingredient:
+  - 1532
+  name: Chicken-Shawarma-Wrap mit Toum, Sumach-Zwiebeln und Pommes
+  origin:
+  - oriental
+  prep_minutes: 140
+  recipe_id: 111
+  recipe_spec: sandwich
+  recipe_type: main_dish
+  side_dish: 1543
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 60
+  cooking_method: oven
+  instructions: Backofen auf 180 Grad Ober-/Unterhitze vorheizen. Geschaelte Mandarinen in
+    einer Pfanne mit etwas Butter und Zucker bei mittlerer Hitze ca. 15 Minuten sanft koecheln
+    lassen, dabei regelmaessig umruehren. Joghurt (vollfett), Eier, Vanilleextrakt, Zucker,
+    Backpulver, Mehl (ggf. etwas mehr), geschmolzene Butter und die karamellisierten Mandarinen
+    im Mixer zu einem glatten Teig verarbeiten. Eine Springform (20 cm) mit Backpapier auslegen
+    und den Teig einfuellen. Ca. 60 Minuten backen, Staebchenprobe machen. Kurz ruhen lassen,
+    aus der Form loesen und vollstaendig abkuehlen lassen.
+  main_ingredient:
+  - 1545
+  name: Mandarinen-Joghurt-Ruehrkuchen
+  origin: []
+  prep_minutes: 25
+  recipe_id: 112
+  recipe_spec: baked
+  recipe_type: sweet
+  side_dish: null
+  sweet: true
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 5
+  cooking_method: pot
+  instructions: Fuer 1 Portion. Eigelb, Mayonnaise und die Wuerzbeutel der Ramen in einer
+    Schuessel zu einer Paste verruehren. Nudeln nach Packungsanweisung kochen und Kochwasser
+    auffangen. 4-5 EL Kochwasser unter die Wuerzpaste ruehren, bis eine saemige, cremige Bruehe
+    entsteht. Nudeln hineingeben und mit Fruehlingszwiebeln und Sesam toppen.
+  main_ingredient:
+  - 1546
+  name: Instant-Ramen mit cremiger Eigelb-Mayo-Bruehe
+  origin:
+  - asian
+  prep_minutes: 2
+  recipe_id: 113
+  recipe_spec: soup
+  recipe_type: snack
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 5
+  cooking_method: pot
+  instructions: Fuer 1 Portion. Knoblauch fein hacken, die weissen Enden der Fruehlingszwiebeln
+    in feine Ringe schneiden und mit den Wuerzbeuteln in eine Schuessel geben. Nudeln nach
+    Packungsanweisung kochen. Waehrenddessen das Oel erhitzen (nach Belieben ein Spiegelei
+    darin braten). Heisses Oel in die Wuerzschuessel giessen, umruehren und den Reisessig
+    zugeben. Nudeln darin schwenken, bis sie glaenzen. Mit gehacktem Fruehlingszwiebelgruen
+    und Sesam servieren.
+  main_ingredient:
+  - 1546
+  name: Instant-Ramen glasiert mit heissem Knoblauch-Fruehlingszwiebel-Oel
+  origin:
+  - asian
+  prep_minutes: 5
+  recipe_id: 114
+  recipe_spec: pasta
+  recipe_type: snack
+  side_dish: null
+  sweet: false
+  variant_of: 113
+  veg_type: meat
+- cook_minutes: 10
+  cooking_method: pot
+  instructions: Fuer 1 Portion. Bruehwuerfel in 500 ml kochendem Wasser aufloesen. Speisestaerke
+    mit 2 TL kaltem Wasser glattruehren und unter Ruehren langsam in die koechelnde Bruehe
+    giessen. Ebenfalls unter Ruehren das verquirlte Ei langsam einlaufen lassen, sodass feine
+    Eierflocken entstehen. Nudeln hineingeben und nach Packungsanweisung garen. Wuerzbeutel
+    einruehren. Mit Fruehlingszwiebeln, Sesam und einem Spritzer Sesamoel servieren.
+  main_ingredient:
+  - 1546
+  name: Instant-Ramen als Eierflockensuppe
+  origin:
+  - asian
+  prep_minutes: 5
+  recipe_id: 115
+  recipe_spec: soup
+  recipe_type: snack
+  side_dish: null
+  sweet: false
+  variant_of: 113
+  veg_type: meat
+- cook_minutes: 55
+  cooking_method: oven
+  instructions: Ergibt 12 Muffins. Kirschtomaten halbieren, mit Olivenoel und etwas Salz bei
+    160 Grad 30 Minuten roesten. Knoblauch hacken, zu den Tomaten geben und weitere 10 Minuten
+    roesten. Spinat grob hacken (nicht zu fein). Tomaten, Spinat und zerbroeselten Feta in
+    eine Muffinform (antihaftbeschichtet oder gefettet) verteilen. Eier mit Salz und Pfeffer
+    verquirlen und daruebergiessen. Bei 170 Grad 15-20 Minuten backen, bis die Muffins goldbraun
+    und aufgegangen sind. Einige Minuten in der Form abkuehlen lassen. Nach Belieben mit Schnittlauch
+    garnieren.
+  main_ingredient:
+  - 205
+  - 1389
+  name: Eier-Muffins mit Ofentomaten, Feta und Spinat
+  origin: []
+  prep_minutes: 15
+  recipe_id: 116
+  recipe_spec: others
+  recipe_type: snack
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 20
+  cooking_method: oven
+  instructions: Ergibt 12 Muffins. Speckwuerfel (oder Pancetta) in einer Pfanne bei mittlerer
+    Hitze knusprig braten, bis das Fett ausgetreten ist. Speck mit einem Schaumloeffel herausnehmen,
+    das Fett in der Pfanne lassen. Lauch (am besten junger Lauch) fein schneiden und im Speckfett
+    10 Minuten weich und leicht gebraeunt braten. Speck, Lauch und Schnittlauch in eine Muffinform
+    (antihaftbeschichtet oder gefettet) verteilen. Eier mit Salz und Pfeffer verquirlen und
+    daruebergiessen. Bei 170 Grad 15-20 Minuten backen, bis die Muffins goldbraun und aufgegangen
+    sind. Kurz in der Form abkuehlen lassen. Nach Belieben mit geriebenem Parmesan und Schnittlauch
+    garnieren.
+  main_ingredient:
+  - 205
+  - 1410
+  - 1462
+  name: Eier-Muffins mit Speck, Lauch und Schnittlauch
+  origin: []
+  prep_minutes: 20
+  recipe_id: 117
+  recipe_spec: others
+  recipe_type: snack
+  side_dish: null
+  sweet: false
+  variant_of: 116
+  veg_type: meat
+- cook_minutes: 60
+  cooking_method: oven
+  instructions: Backofen auf 205 Grad Ober-/Unterhitze vorheizen. Von den Knoblauchknollen
+    eine Kappe abschneiden, mit 1 EL Olivenoel betraeufeln, mit 1 TL Salz bestreuen, in Alufolie
+    wickeln und 45-60 Minuten roesten. Zwiebeln reiben und gruendlich ausdruecken. Rinderhack
+    (700-900 g, mager) mit gehacktem Knoblauch, 2 TL geraeuchertem Paprikapulver, 2 TL Kreuzkuemmel,
+    Piment, 2 TL Salz, 2 TL Pfeffer, Kurkuma, Zimt, ca. 20 g Petersilie, optional Koriander
+    und den Zwiebeln 2-3 Minuten kneten. Auf einem Backblech zu einem ca. 1,25 cm dicken Rechteck
+    druecken, in 2,5 cm breite Streifen einschneiden und mit 4 EL Olivenoel betraeufeln. 12-15
+    Minuten backen, dann 2-5 Minuten unter dem Grill knusprig werden lassen. Fuer den Salat
+    rote Zwiebel, geviertelte Kirschtomaten, ca. 10 g Petersilie, je 1 TL Salz und Pfeffer,
+    Sumach und den Saft einer halben Zitrone mischen. Fuer die Sauce die Roestknoblauchzehen
+    ausdruecken und zerdruecken, mit Joghurt, Saft einer halben Zitrone, Tahini, Eiswasser
+    und je 1 TL Paprikapulver, Kreuzkuemmel, Salz und Pfeffer verruehren (optional Kraeuter
+    dazu). Lavash oder Pita mit Sauce bestreichen, Kefta und Salat darauflegen, fest aufrollen
+    und in einer leicht geoelten Pfanne von beiden Seiten knusprig anbraten.
+  main_ingredient:
+  - 1461
+  name: Beef-Kefta-Wrap mit Roestknoblauch-Joghurt-Sauce
+  origin:
+  - oriental
+  prep_minutes: 30
+  recipe_id: 118
+  recipe_spec: sandwich
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 30
+  cooking_method: pot
+  instructions: Fuer 4 Portionen. Schinkenwuerfel in einem Topf mit etwas Oel anbraten. Saure
+    Bohnen hinzufuegen. Kartoffeln schaelen, in Streifen schneiden und mit den Rohessern auf
+    die Bohnen legen. Mit Wasser auffuellen und 1/2 Stunde kochen lassen.
+  main_ingredient:
+  - 1549
+  name: Saure Bohnen mit Kartoffeln, Schinken und Rohesser
+  origin:
+  - home-style
+  prep_minutes: 10
+  recipe_id: 119
+  recipe_spec: stew
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 35
+  cooking_method: pot
+  instructions: Zwiebel klein hacken. Kartoffeln und Suppengemuese schaelen und in mundgerechte
+    Stuecke schneiden. Als Suppengemuese eine beliebige Kombination aus Moehren, Knollensellerie,
+    Lauch und Petersilienwurzel verwenden (entspricht etwa 1 Bund). Butter in einem Topf erhitzen
+    und den Speck anbraten. Zwiebeln, Kartoffeln und Gemuese zugeben und kurz mitbraten. Linsen
+    unterheben und mit Fleischbruehe aufgiessen. Lorbeerblaetter und Majoran zugeben, aufkochen
+    und bei mittlerer Hitze zugedeckt 30 Minuten koecheln lassen. 5 Minuten vor Ende der Kochzeit
+    die in Scheiben geschnittenen Wiener Wuerstchen in der Suppe erwaermen. Mit Weissweinessig,
+    Salz und Pfeffer abschmecken und die Petersilie unterheben.
+  main_ingredient:
+  - 1552
+  name: Linsensuppe mit Speck und Wiener Wuerstchen
+  origin:
+  - home-style
+  prep_minutes: 15
+  recipe_id: 120
+  recipe_spec: soup
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: meat
+- cook_minutes: 30
+  cooking_method: oven
+  instructions: Linsen in einem Sieb gruendlich abspuelen. Zwiebel und Knoblauch klein hacken.
+    Moehren schaelen und in ganz kleine Wuerfel schneiden oder raspeln. Oel in einer Pfanne
+    erhitzen und Zwiebeln, Knoblauch und Moehren 2 Minuten anduensten. Linsen und Gemuesebruehe
+    zugeben, aufkochen und zugedeckt bei mittlerer Hitze 10-15 Minuten koecheln lassen. Passierte
+    Tomaten (alternativ gehackte Tomaten) und Kraeuter unterheben und mit Salz und Pfeffer
+    abschmecken. Backofen auf 200 Grad Ober- und Unterhitze vorheizen. Eine Auflaufform mit
+    Butter einfetten, eine Schicht Linsensauce hineingeben und mit Lasagneplatten bedecken.
+    Weiter schichten, bis alles aufgebraucht ist; die oberste Schicht ist Sauce. Creme fraiche
+    (alternativ Schmand) mit 3 EL Wasser verruehren und darauf verstreichen. Mit geriebenem
+    Mozzarella bedecken und 30 Minuten backen.
+  main_ingredient:
+  - 1553
+  name: Vegetarische Lasagne mit roter Linsen-Tomatensauce
+  origin:
+  - italian
+  prep_minutes: 30
+  recipe_id: 121
+  recipe_spec: casserole
+  recipe_type: main_dish
+  side_dish: 1384
+  sweet: false
+  variant_of: null
+  veg_type: vegetarian
+- cook_minutes: 25
+  cooking_method: pot
+  instructions: Zwiebel und Tomaten wuerfeln. Gruene Chilischote in 1 cm Stuecke schneiden.
+    Ingwer (daumengross) und Knoblauch mit dem Puerierstab zu einer Paste verarbeiten, evtl.
+    etwas Wasser zugeben. Kichererbsen abgiessen und kalt abspuelen. Oel erhitzen und Garam
+    Masala, Kurkuma, Kreuzkuemmel, Koriander und Chilipulver kurz anroesten. Ingwer-Knoblauch-Paste
+    kurz mitbraten, dann die Zwiebeln anbraten. Tomaten und Chili mit dem Wasser zugeben und
+    ca. 15 Minuten offen einkochen lassen, dabei oft umruehren. Die Sosse sollte dick sein;
+    bei Bedarf Wasser zugeben, damit nichts anbrennt. Kichererbsen hineingeben, mit Salz und
+    einer Prise Zucker abschmecken. Nochmals aufkochen und ein paar Kichererbsen zerdruecken,
+    damit die Sosse bindet.
+  main_ingredient:
+  - 1555
+  name: Kichererbsen-Curry (Chana Masala) mit Tomaten
+  origin:
+  - indian
+  prep_minutes: 15
+  recipe_id: 122
+  recipe_spec: pan_dish
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegan
+- cook_minutes: 15
+  cooking_method: pan
+  instructions: Blattspinat auftauen (evtl. in der Mikrowelle) und das Wasser abgiessen. Zwiebeln,
+    Knoblauch und Ingwer schaelen. Tomaten kreuzweise einritzen, mit heissem Wasser uebergiessen
+    und haeuten. Alternativ 1/2 Dose gehackte Tomaten verwenden, den Saft aber unbedingt abgiessen,
+    damit das Gericht nicht tomatig und roetlich wird. Zwiebeln und Tomaten wuerfeln, Knoblauch
+    und Ingwer sehr fein hacken. In einer hohen Pfanne Kokosoel erhitzen, Zwiebel, Knoblauch
+    und Ingwer glasig duensten. Spinat, Tomaten und Kokosmilch zugeben, mit Salz, Paprikapulver,
+    Kurkuma und Koriander wuerzen, umruehren und zugedeckt bei schwacher Hitze ca. 10 Minuten
+    koecheln lassen. Zum Schluss die gut abgetropften Kichererbsen unterruehren und kurz ziehen
+    lassen. Abschmecken und mit Chiliflocken bestreut servieren.
+  main_ingredient:
+  - 1555
+  - 1483
+  name: Spinat-Kichererbsen-Curry mit Kokosmilch
+  origin:
+  - indian
+  prep_minutes: 15
+  recipe_id: 123
+  recipe_spec: pan_dish
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
+  variant_of: null
+  veg_type: vegan
+- cook_minutes: 25
+  cooking_method: pot
+  instructions: Lauch putzen, gruendlich waschen, abtropfen lassen und in ca. 1 cm breite
+    Scheiben schneiden. Zwiebeln (weisse) in Streifen, Knoblauch in feine Scheiben schneiden.
+    100 g Parmesan (oder anderen italienischen Hartkaese) fein reiben, den Rest in duenne
+    Spaene hobeln. Olivenoel in einem grossen Topf erhitzen. Lauch, Zwiebeln, Knoblauch, Thymianstiele
+    und 3 Pimentkoerner darin bei mittlerer Hitze 5 Minuten duensten. Bruehe, Sahne und geriebenen
+    Kaese unter Ruehren zugeben, aufkochen und bei milder Hitze mit halb geschlossenem Deckel
+    ca. 15 Minuten kochen. Inzwischen Kichererbsen abspuelen und abtropfen lassen. Tomaten
+    abtropfen lassen, dabei 2 EL Tomatenoel auffangen, und grob schneiden. Kichererbsen zum
+    Eintopf geben und unter Ruehren 5 Minuten erhitzen. Kurz mit dem Stabmixer anmixen, Tomaten
+    unterruehren und mit Salz und Pfeffer abschmecken. Mit Kaesespaenen und Pfeffer bestreuen,
+    mit Tomatenoel betraeufeln und servieren.
+  main_ingredient:
+  - 1555
+  - 1462
+  name: Kichererbsen-Lauch-Eintopf mit Parmesan und getrockneten Tomaten
+  origin:
+  - italian
+  prep_minutes: 15
+  recipe_id: 124
+  recipe_spec: stew
+  recipe_type: main_dish
+  side_dish: null
+  sweet: false
   variant_of: null
   veg_type: vegetarian

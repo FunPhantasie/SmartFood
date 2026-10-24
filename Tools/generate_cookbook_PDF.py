@@ -33,9 +33,14 @@ HISTORY_YAML = DATA_DIR / "history.yaml"      # optional: Bewertungen -> Scores 
 ORIGIN_DE = {"asian": "Asiatisch", "oriental": "Orientalisch", "mexican": "Mexikanisch", "indian": "Indisch",
              "italian": "Italienisch", "home-style": "Hausmannskost", "mediterranean": "Mediterran",
              "american": "Amerikanisch"}
-METHOD_DE = {"oven": "Ofen", "pan": "Pfanne", "pot": "Topf", "grill": "Grill", "raw": "Roh", "steam": "Dampf"}
-SPEC_DE = {"soup": "Suppe", "salad": "Salat", "casserole": "Auflauf", "bowl": "Bowl",
-           "sandwich": "Sandwich", "others": "Sonstiges"}
+METHOD_DE = {"oven": "Ofen", "pan": "Pfanne", "pot": "Topf", "grill": "Grill", "raw": "Roh", "steam": "Dampf",
+             "microwave": "Mikrowelle"}
+SPEC_DE = {"soup": "Suppe", "stew": "Eintopf", "salad": "Salat", "casserole": "Auflauf",
+           "pasta": "Nudelgericht", "pan_dish": "Pfannengericht", "bowl": "Bowl",
+           "sandwich": "Sandwich & Wrap", "baked": "Gebäck", "sauce": "Sauce & Dip", "others": "Sonstiges"}
+# Reihenfolge der Art-Gruppen innerhalb eines Kapitels (unbekannte Arten danach, ohne Art ganz am Ende)
+SPEC_ORDER = ["soup", "stew", "salad", "pasta", "pan_dish", "casserole", "bowl", "sandwich", "baked", "sauce",
+              "others"]
 SEASON_DE = {"all": "Ganzjährig", "always": "Ganzjährig", "spring": "Frühling", "summer": "Sommer",
              "autumn": "Herbst", "winter": "Winter"}
 VEG_DE = {"vegan": "Vegan", "vegetarian": "Vegetarisch", "meat": "Fleisch", "fish": "Fisch"}
@@ -171,11 +176,25 @@ def parse_recipes(doc: dict) -> Dict[int, Recipe]:
             origin=tuple(origin if isinstance(origin, list) else [origin]),
             cooking_method=r.get("cooking_method"),
             recipe_spec=r.get("recipe_spec"),
-            main_ingredient=r.get("main_ingredient"),
+            main_ingredient=main_ingredient_ids(r.get("main_ingredient")),
             season=r.get("season"),
             side_dish=(int(r["side_dish"]) if isinstance(r.get("side_dish"), int) else None),
         )
     return out
+
+
+def main_ingredient_ids(value) -> Tuple[int, ...]:
+    """main_ingredient darf eine einzelne ID oder eine Liste von IDs sein (mehrere Hauptzutaten)."""
+    if value in (None, "", "null"):
+        return ()
+    values = value if isinstance(value, (list, tuple)) else [value]
+    out = []
+    for v in values:
+        try:
+            out.append(int(v))
+        except (TypeError, ValueError):
+            continue
+    return tuple(out)
 
 
 def parse_history(doc: dict) -> Dict[int, dict]:
@@ -200,6 +219,8 @@ def parse_links(doc: dict) -> List[RecipeIngredientLink]:
                 qty = None
         unit = (str(r.get("unit")).strip() if r.get("unit") is not None else None)
         note = (str(r.get("note")).strip() if r.get("note") is not None else None)
+        if r.get("optional") is True:   # optionale Zutat -> "(optional)" hinter dem Namen
+            note = "optional" + (", " + note if note else "")
 
         out.append(RecipeIngredientLink(recipe_id=rid, ingredient_id=iid, quantity=qty, unit=unit,note=note))
     return out
@@ -224,14 +245,34 @@ def infer_section(recipe: Recipe) -> str:
     return RECIPE_TYPE_TO_SECTION.get(rt, "Hauptgerichte")
 
 
+def spec_rank(spec: Optional[str]) -> Tuple[int, str]:
+    """Sortierschluessel fuer die Art: bekannte in SPEC_ORDER-Reihenfolge, unbekannte alphabetisch, keine zuletzt."""
+    if not spec:
+        return (len(SPEC_ORDER) + 1, "")
+    return (SPEC_ORDER.index(spec), "") if spec in SPEC_ORDER else (len(SPEC_ORDER), spec)
+
+
+def recipe_sort_key(rec: Recipe, recipes: Dict[int, Recipe]) -> tuple:
+    """Kapitel -> Art -> Name; Varianten direkt hinter ihrem Grundrezept (wenn gleiche Art)."""
+    root = recipes.get(rec.variant_of) if rec.variant_of is not None else None
+    if root is None or root.recipe_spec != rec.recipe_spec:
+        root = rec
+    return (spec_rank(rec.recipe_spec), root.name.lower(), root.recipe_id,
+            rec is not root, rec.name.lower(), rec.recipe_id)
+
+
 def group_recipes_by_section(recipes: Dict[int, Recipe]) -> Dict[str, List[Recipe]]:
     groups: Dict[str, List[Recipe]] = {}
     for rec in recipes.values():
         sec = infer_section(rec)
         groups.setdefault(sec, []).append(rec)
     for k in groups:
-        groups[k].sort(key=lambda r: (r.name.lower(), r.recipe_id))
+        groups[k].sort(key=lambda r: recipe_sort_key(r, recipes))
     return groups
+
+
+def spec_title(spec: Optional[str]) -> str:
+    return SPEC_DE.get(spec, spec) if spec else "Ohne Art"
 def group_ingredients_by_veg_type(ingredients):
     """Zutaten nach veg_type, Grundzutaten und Gewuerze je in einer eigenen Gruppe."""
     buckets = defaultdict(list)
@@ -269,10 +310,16 @@ def generate_content(
             L.append("")
             continue
 
+        current_spec = object()
         for rec in recs:
+            # Ueberschrift je Art (Suppe, Eintopf, ...) als \subsection, Rezepte darunter als \subsubsection
+            if rec.recipe_spec != current_spec:
+                current_spec = rec.recipe_spec
+                L.append(r"\subsection{" + lG.latex_escape(spec_title(current_spec)) + r"}")
+                L.append("")
             L.append(r"\noindent\begin{minipage}{\linewidth}")
 
-            L.append(r"\subsection{" + lG.latex_escape(rec.name) + r"}\label{" + recipe_label(rec) + "}")
+            L.append(r"\subsubsection{" + lG.latex_escape(rec.name) + r"}\label{" + recipe_label(rec) + "}")
 
 
 
@@ -312,7 +359,7 @@ def generate_content(
             by_category = defaultdict(list)
             for lk, ing in recipe_to_ings.get(rec.recipe_id, []):
                 by_category[ing.category if ing else "ingredient"].append(
-                    ingredient_text(lk, ing, lk.ingredient_id == rec.main_ingredient))
+                    ingredient_text(lk, ing, lk.ingredient_id in (rec.main_ingredient or ())))
             for category, title, as_list in INGREDIENT_BLOCKS:
                 items = by_category.get(category, [])
                 if not items and not (category == "ingredient" and not by_category):
