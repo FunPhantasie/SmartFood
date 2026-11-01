@@ -216,25 +216,25 @@ def recipe_features(recipe: dict, data: dict) -> dict:
     """Alles, was die Daempfung von einem Rezept braucht. Einzige Stelle, die die Datenfelder
     kennt - fehlende Felder (origin, cooking_method, recipe_spec, main_ingredient, side_dish) ergeben
     einfach leere Werte, die Regel greift dann nicht.
-    main_ingredient und side_dish sind Rezeptfelder (beim Erstellen bestaetigt, None = keine): Zutaten
-    aus ingredients.yaml, die in der Zutatenliste des Rezepts stehen muessen - sonst ValueError
-    (Datenfehler, siehe YamlEditor.data_problems). Ohne Hauptzutat / Beilage wird darueber nicht gedaempft."""
+    main_ingredient (eine ID oder eine Liste) und side_dish sind Rezeptfelder (beim Erstellen bestaetigt,
+    None = keine): Zutaten aus ingredients.yaml, die in der Zutatenliste des Rezepts stehen muessen - sonst
+    ValueError (Datenfehler, siehe YamlEditor.data_problems). Ohne Hauptzutat / Beilage wird darueber nicht gedaempft.
+    meats = Rezeptfeld meat_types (Fleischsorten, beim Bearbeiten aus den Zutaten befuellt); fehlt das
+    Feld, wird es aus den meat_type der Zutaten abgeleitet."""
     ingredients = {i.get("ingredient_id"): i for i in data.get("ingredients", [])}
     rid = recipe.get("recipe_id")
     ids = [ri.get("ingredient_id") for ri in data.get("recipe_ingredients", [])
            if ri.get("recipe_id") == rid]
     origin = recipe.get("origin") or []
-    roles = {}
-    for field in ("main_ingredient", "side_dish"):
-        value = recipe.get(field)
-        value = None if value == yr.NOT_SPECIFIC else value
-        if value is not None and value not in ingredients:
+    side = recipe.get("side_dish")
+    side = None if side == yr.NOT_SPECIFIC else side
+    mains = yr.main_ingredients(recipe.get("main_ingredient"))
+    for field, value in [("main_ingredient", m) for m in mains] + ([("side_dish", side)] if side is not None else []):
+        if value not in ingredients:
             raise ValueError(f"recipe {rid}: {field} {value!r} is not in ingredients.yaml")
-        if value is not None and value not in ids:
+        if value not in ids:
             raise ValueError(f"recipe {rid}: {field} {value!r} is not in its ingredient list")
-        roles[field] = value
-    main, side = roles["main_ingredient"], roles["side_dish"]
-    main_info = ingredients.get(main, {})
+    meats = recipe.get("meat_types")
     specs = {recipe.get("recipe_spec")} & DAMP_SPECS
     if recipe.get("sweet"):
         specs.add("sweet")
@@ -244,9 +244,10 @@ def recipe_features(recipe: dict, data: dict) -> dict:
         "method": recipe.get("cooking_method"),
         "specs": specs,
         "sides": {side} if side is not None else set(),
-        "main": main,
-        "main_meat_or_side": main_info.get("veg_type") == "meat" or bool(main_info.get("side_dish")),
-        "meats": {i for i in ids if ingredients.get(i, {}).get("veg_type") == "meat"},
+        "mains": set(mains),
+        "mains_meat_or_side": {m for m in mains if ingredients[m].get("veg_type") in ("meat", "fish")
+                               or ingredients[m].get("side_dish")},
+        "meats": set(meats if meats is not None else yr.meat_types_of(data, ids)),
     }
 
 
@@ -258,7 +259,7 @@ def merge_last_supper(features: list[dict]) -> dict:
         "methods": {f["method"] for f in features if f["method"]},
         "specs": set().union(*(f["specs"] for f in features)),
         "sides": set().union(*(f["sides"] for f in features)),
-        "mains": {f["main"] for f in features if f["main"]},
+        "mains": set().union(*(f["mains"] for f in features)),
         "meats": [m for f in features for m in sorted(f["meats"], key=str)],
     }
 
@@ -281,8 +282,9 @@ def calc_damping(cand: dict, ls: dict, season_now: str) -> tuple[float, float, l
         mult *= f; log.append(f"meat x{f:.1f}")
     if cand["meats"] & set(ls["meats"]):
         off -= 3; log.append("same meat -3")
-    if cand["main"] and cand["main"] in ls["mains"]:
-        if cand["main_meat_or_side"]:
+    same_mains = cand["mains"] & ls["mains"]      # mehrere Hauptzutaten: Regel trotzdem nur einmal
+    if same_mains:
+        if same_mains & cand["mains_meat_or_side"]:
             mult *= 1 - 0.1; log.append("main=meat/side x0.9")
         else:
             off -= 3; log.append("main -3")

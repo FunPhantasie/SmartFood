@@ -57,7 +57,10 @@ Runs **after** date_score, because `remove` comes from date_score.
 - 5 proposals + buffer for dismissing; new recipes are marked **Neu**
 - button **"Neue Rezepte (nie gekocht)"** → only the new pool
 - filter **"Zufall (T)"** 1–10
-- Server: `GET /api/propsals?user=<id>&t=<1-10>&pool=all|new`, `POST /api/propsals` with
+- filter **"Unverträglichkeiten"** (Laktosefrei / Glutenfrei) – remembered in the browser, sent with every request
+- include / exclude suggest the real ingredient names; meal types = the `recipe_type` values of the data
+- card buttons: **×** = not now (`repeat_rating` 0), **🚫** = never propose again (blacklist, needs a user)
+- Server: `GET /api/proposals?user=<id>&t=<1-10>&pool=all|new&allergies=lactose,gluten`, `POST /api/proposals` with
   `meal_type, diet, include, exclude, allergies, user_id, count, t, pool`. Empty result → `message`.
 
 ## 7. Rating UI ([Server/rating.html](../Server/rating.html)) ✅ 🧪
@@ -66,7 +69,7 @@ Taste, Wdh (repeat) and effort all **0–10**, prefilled with the mean (or 5). P
 
 ## 8. Cookbook PDF ([Tools/generate_cookbook_PDF.py](../Tools/generate_cookbook_PDF.py)) ✅ 🧪
 Reads `Server/server_data` (same data as the website). Per recipe: times, season / type / cuisine / cooking method / spec,
-ratings (mean from the history, otherwise the recipe's default rating 5, marked "Standard"), ingredient list split into
+ratings (mean from the history, otherwise the recipe's default rating 5, marked "N.R."), ingredient list split into
 Zutaten / Grundzutaten / Gewürze with the main ingredient in **bold**. No scores that change over time.
 The appendix lists only ingredients used by a recipe.
 
@@ -78,20 +81,21 @@ Per recipe there is exactly **one** history entry. The arrays inside rotate (max
 |---|---|---|---|---|
 | `dates` | history | list ISO date | days when cooked (rated or "cooked once"), last 20 | `[]` |
 | `last_date` | history | ISO date | last cooked (also via "cooked once") | missing → never cooked |
-| `repeat_rating` | history | list int **0–10** | desire to repeat (5 = neutral) | `5`; dismiss / seed for uncooked recipes: `0` |
+| `repeat_rating` | history | list int **0–10** | desire to repeat (5 = neutral) | `5`; dismiss: `0` |
 | `taste_rating` | history | list int **0–10** | taste (0 = bad, 10 = great) | `5` |
 | `effort_rating` | history | list int **0–10** | effort (0 = low, **10 = high effort**) | `5` |
 | `prep_minutes` / `cook_minutes` | recipe | int | times – both or none | cooked: 45 min total · never cooked: median score |
 | `season` | recipe | str | season | `all` |
 | `variant_of` | recipe | id / null | original recipe of a variant | `null` |
 | `sweet` | recipe | bool | sweet dish | `false` |
-| `veg_type` | recipe | str | vegan / vegetarian / meat | – |
+| `veg_type` | recipe | str | vegan / vegetarian / fish / meat (from the ingredients) | – |
 | `origin` | recipe | list str | cuisine | `[]` |
 | `cooking_method` | recipe | str | oven, pan, … | `null` |
 | `recipe_spec` | recipe | str | soup, casserole, … | `null` |
-| `main_ingredient` | recipe | `ingredient_id` / `null` | main ingredient, must be in the recipe's ingredients – damping (`ls_mains`) | `null` = none → not damped |
+| `main_ingredient` | recipe | list of `ingredient_id` / `null` | main ingredient(s), each must be in the recipe's ingredients – damping (`ls_mains`). A single id is still read | `null` = none → not damped |
 | `side_dish` | recipe | `ingredient_id` / `null` | side dish (rice, noodles, …), must be in the recipe's ingredients – damping (`ls_sides`), variants | `null` = none → not damped |
-| type of meat | ingredients with `veg_type = meat` | `ingredient_id` | chicken, beef, … (`ls_meats`) | ❓ VIII.11 |
+| `meat_types` | recipe | list str | meat types of the dish (`ls_meats`): set from the ingredients' `meat_type` whenever the ingredient list is edited, adjustable | missing → from the ingredients |
+| `meat_type` | ingredient | str / null | beef, pork, poultry, lamb, game, fish, other – only for `veg_type = meat / fish` | `null` = no meat type (broth, instant ramen, oyster / worcester sauce) |
 | `side_dish` | ingredient | bool | ingredient is a side (rice, noodles, …) | `false` |
 | wishlist | wishlist | recipe_id, user_id | "put on next" | – |
 | blacklist | blacklist | recipe_id, user_id | user doesn't like it at all | – |
@@ -102,34 +106,43 @@ Per recipe there is exactly **one** history entry. The arrays inside rotate (max
 
 - **Season:** all, spring, summer, autumn, winter
 - **Recipe type:** main dish, dessert, dip, spice mix, side dish, snack, starter
-- **Recipe specs:** soup, salad, casserole, bowl, sandwich, others
-  - 💡 keep it one value per recipe, so damping stays simple
-- **Cooking method:** oven, pan, pot, grill, raw, steam
+- **Recipe specs:** soup, stew, salad, pasta, pan_dish, casserole, bowl, sandwich, baked, sauce, others (same as the cookbook PDF)
+  - one value per recipe, so damping stays simple; only soup / casserole (+ `sweet`) are damped
+- **Cooking method:** oven, pan, pot, grill, raw, steam, microwave
 - **Origin:** asian, oriental, mexican, indian, italian, home-style, mediterranean, american (can have multiple)
 - **Main ingredient + side dish** ✅ 🧪 (`creation.html`, `YamlEditor.suggest_main_and_side`, `POST /api/recipe/suggest`):
   - the app **suggests** both – main: a normal ingredient whose name is in the recipe name, otherwise the one with the largest weight share; side: an ingredient with `side_dish: true`
+  - **several main ingredients** possible (checkboxes); damping: the main rule fires once, `×0.9` if one of the shared mains is meat / a side, otherwise `−3`
   - only a suggestion: saving is blocked until both are confirmed ("Übernehmen", own choice or "keine")
   - "keine" → `null` (e.g. Pekingsuppe); such a recipe is not damped via main / side
 - **Variants** ✅ 🧪 (`variant_of` = main recipe of the family):
   - button "Variante mit anderer Beilage": copies the saved recipe, swaps the side dish, saves the copy as variant
   - saving a recipe with the same ingredients as an existing one but another side dish asks "als Variante speichern?" (`YamlEditor.side_dish_variant_of`)
   - the cookbook PDF links all variants of a family after the instructions (name, side dish, page)
+- **Meat types** ✅ 🧪 (`meat_types`, `YamlEditor.meat_types_of`): checkboxes in `creation.html`, set from the ingredients'
+  `meat_type` on every change of the ingredient list, can be adjusted before saving. Damping reads the recipe field.
 
 ## Ingredients – one format for every ingredient ✅ 🧪
 
-`ingredient_id, name, unit, veg_type, category, side_dish, lactose_free, gluten_free, shelf_life_days, kcal, protein, carbs, fat`
+`ingredient_id, name, unit, veg_type, meat_type, category, side_dish, lactose_free, gluten_free, shelf_life_days, kcal, protein, carbs, fat`
 (order + defaults: `YamlEditor.INGREDIENT_FIELDS`; the server normalizes every save, so all forms / tools write the same format)
 
 - **category:** `ingredient` (Zutat) · `basic` (Grundzutat: water, flour, sugar, starch, …) · `spice` (Gewürz: soy sauce, pepper, salt, …). Replaces the old `spice: true` flag.
   The cookbook PDF splits every ingredient list into Zutaten / Grundzutaten / Gewürze.
 - **unit:** reference unit of the nutrition values (and default unit when adding the ingredient to a recipe). The unit in a recipe link may differ.
 - **kcal, protein, carbs, fat:** per `unit` of the ingredient (g). No calculation uses them yet.
+- **veg_type:** vegan · vegetarian · fish · meat
+- **meat_type:** only for meat / fish: beef · pork · poultry · lamb · game · fish · other, `null` = doesn't count as a meat type (broth, fish sauces).
+  Fish is handled exactly like meat (meat type `fish`; a fish main ingredient counts as meat for the main rule) – no extra logic.
+  Mixed minced meat is `beef` – tick pork in the recipe if needed.
 - **lactose_free / gluten_free:** `true` / `false` / `null` (= unknown, doesn't filter). Set in the ingredient forms.
 
-## Blacklist – filter ✅ 🧪 · button / endpoint to add entries ⬜ 🟠
+## Blacklist ✅ 🧪
 
 `server_data/blacklist.yaml`, same structure as `wishlist.yaml`: `recipe_id, user_id, date`.
-Read by `propose()` (`user_blacklist`). There is no button / endpoint to add entries yet.
+Read by `propose()` (`user_blacklist`). Added / removed with `POST /api/blacklist/toggle {recipe_id, user_id}`
+(user required): button **🚫** on the proposal cards and **"Nicht mehr vorschlagen"** on the recipe page (also undo).
+A recipe is on at most one of wishlist / blacklist per user – adding it to one removes it from the other.
 
 # VI. Old Formula (removed)
 
@@ -157,7 +170,7 @@ See git history for details.
 8. ~~**III negative scores**~~ → softmax, no clamp needed.
 9. ~~**II.1 factor with ≤ 1 date**~~ → ≤ 2 dates → `amp = 1`.
 10. ❓ **II.3:** is the negative offset too strong? (tune in [Testing/damping.ipynb](Testing/damping.ipynb))
-11. ❓ **II.3 type of meat:** app uses the ingredients with `veg_type = meat` (`recipe_features`). Keep that, or a new recipe field?
+11. ~~**II.3 type of meat**~~ → recipe field `meat_types`, filled from the ingredients' `meat_type` when the recipe is edited (user, 2026-11-01).
 12. ~~**III wishlist damped?**~~ → wishlist 10 is damped, but `wishlist_score/5` (+2) is added undamped after damping.
 13. ~~**Edge cases**~~ → decided in the "Edge Cases" table at the end of each notebook (2026-10-22).
 
@@ -179,3 +192,10 @@ See git history for details.
 - 2026-10-13 – II.1 new logic (user): target `T` = mean gap + Wdh-weighted shift towards / away from the rotation point `M`, tanh reaches 90 % at `T` (amp clipped to [1, 4]). Notebook rewritten, sanity checks 15/15. `repeat_rating` now 0–10 (UI, `RatingLogic`, data: old `(x − 1) · 2.5`). "Einmal gekocht" now also adds to `dates` (other arrays get `None`), so `dates` holds every cook (last 20).
 - 2026-10-19 – Rearanged a lot Of Text out of ProposeLogic into Testing Nootbooks where the Explain should happen Al lot to clean yet.
 - 2026-10-22 – Notebook texts rewritten, edge cases decided (user). Backend synchronised with the notebooks: date_score (rotation point from history, Wdh shift + correction with the recipe's own mean, amplification, new-user guards), reward (effort 0–10, midpoint defaults, `max(0, time)`), damping (same meat −3, meats counted per meal, main_ingredient attributes from `ingredients.yaml`, error if not in the recipe). New: pool of never cooked recipes (median score without times, fills short lists, swaps, website button "Neue Rezepte"), `T` = 4 adjustable 1–10, wishlist overrides `remove`, empty-result message + reroll. Effort UI + data 0–10, partial ratings rejected. Cookbook PDF shows ratings + reward. This doc reduced to the overview. Backend test 94/94, every notebook checks `notebook == backend`, new `test_with_data.ipynb`.
+- 2026-11-01 – `main_ingredient` may be a list (several main ingredients: logic, `data_problems`, creation page checkboxes).
+  Meat types (VIII.11): ingredient field `meat_type` + recipe field `meat_types` (broth / instant ramen no longer count as meat).
+  Blacklist button + `POST /api/blacklist/toggle`, allergy filter on the home page (also GET `?allergies=`), `veg_type` fish in
+  the forms, recipe specs / cooking methods aligned with the cookbook PDF. Endpoint renamed `/api/propsals` → `/api/proposals`.
+  Removed unused `RatingLogic.recipe_scores` / `weighted_shuffle` / `ensure_uncooked_seed` and `/api/create/<id>`. Backend test 126/126.
+- 2026-11-01 – fish handled like meat: meat type `fish` (salmon, tuna, redfish; fish sauces `null`), main rule treats a fish main as meat.
+  All unknown `gluten_free` / `lactose_free` filled (product-dependent → "contains", so the filter rather excludes too much). Backend test 127/127.

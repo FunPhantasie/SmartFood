@@ -127,6 +127,7 @@
   <button class="btn secondary" id="btnCooked">✓ Einmal gekocht</button>
   <button class="btn" id="btnRate">⭐ Gekocht &amp; bewerten</button>
   <button class="btn muted" id="btnUpcoming">Auf demnächst setzen</button>
+  <button class="btn muted" id="btnBlacklist">🚫 Nicht mehr vorschlagen</button>
 </div>
 
 <script>
@@ -212,30 +213,39 @@ async function loadRecipe(){
   };
   refreshCurrentPickButton();
 
-  // "Auf demnaechst setzen": user-abhaengige Wunschliste, gespeichert als eigener
-  // history-Eintrag (type: "wishlist") - genauso user-abhaengig abfragbar wie history/gekocht.
+  // "Auf demnaechst setzen" (wishlist.yaml) und "Nicht mehr vorschlagen" (blacklist.yaml):
+  // user-abhaengige Listen. Ein Rezept steht nie auf beiden - der Server nimmt es beim
+  // Hinzufuegen von der anderen Liste und schickt deshalb beide Zustaende zurueck.
   const userId = window.SmartFoodUser.get();
   const btnUpcoming = document.getElementById("btnUpcoming");
-  function refreshUpcomingButton(wishlisted){
-    btnUpcoming.classList.toggle("active", !!wishlisted);
-    btnUpcoming.textContent = wishlisted ? "✓ Auf der Wunschliste" : "Auf demnächst setzen";
+  const btnBlacklist = document.getElementById("btnBlacklist");
+  function refreshListButtons(state){
+    btnUpcoming.classList.toggle("active", !!state.wishlisted);
+    btnUpcoming.textContent = state.wishlisted ? "✓ Auf der Wunschliste" : "Auf demnächst setzen";
+    btnBlacklist.classList.toggle("active", !!state.blacklisted);
+    btnBlacklist.textContent = state.blacklisted ? "🚫 Wird nicht mehr vorgeschlagen (rückgängig)" : "🚫 Nicht mehr vorschlagen";
   }
-  btnUpcoming.onclick = async () => {
-    btnUpcoming.disabled = true;
+  async function toggleList(url, btn){
+    btn.disabled = true;
     try {
-      const res = await fetch("/api/wishlist/toggle", {
+      const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ recipe_id: Number(id), user_id: window.SmartFoodUser.get() || null }),
       });
       const result = await res.json();
       if(!res.ok) throw new Error(result.error || ("HTTP " + res.status));
-      refreshUpcomingButton(result.wishlisted);
+      refreshListButtons(result);
     } catch (e) {
       alert("Konnte nicht gespeichert werden: " + e.message);
     } finally {
-      btnUpcoming.disabled = false;
+      btn.disabled = false;
     }
+  }
+  btnUpcoming.onclick = () => toggleList("/api/wishlist/toggle", btnUpcoming);
+  btnBlacklist.onclick = () => {
+    if(!window.SmartFoodUser.get()){ alert("Bitte oben zuerst einen User wählen."); return; }
+    toggleList("/api/blacklist/toggle", btnBlacklist);
   };
 
   const r = await fetch(`/api/recipe/${id}?user=${encodeURIComponent(userId || "")}`);
@@ -247,7 +257,7 @@ async function loadRecipe(){
   const data = await r.json();
   const recipe = data.recipe;
   const ingredients = data.ingredients || [];
-  refreshUpcomingButton(data.wishlisted);
+  refreshListButtons(data);
 
   hasCooked = !!data.has_cooked;
   if(!hasCooked){

@@ -81,6 +81,7 @@
     .pill { font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(148,163,184,0.3); display:inline-block; }
     .pill.meat { border-color: rgba(248,113,113,0.6); color:#fecaca; }
     .pill.vegan { border-color: rgba(34,197,94,0.6); color:#bbf7d0; }
+    .pill.fish { border-color: rgba(56,189,248,0.6); color:#bae6fd; }
     .pill.vegetarian { border-color: rgba(59,130,246,0.6); color:#bfdbfe; }
 
     .toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
@@ -112,7 +113,21 @@
             <select id="ing_veg">
               <option value="vegan">vegan</option>
               <option value="vegetarian">vegetarian</option>
+              <option value="fish">fish</option>
               <option value="meat">meat</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Fleischsorte (nur bei meat / fish)</label>
+            <select id="ing_meat_type">
+              <option value="">— keine (z.B. Brühe) —</option>
+              <option value="beef">Rind</option>
+              <option value="pork">Schwein</option>
+              <option value="poultry">Geflügel</option>
+              <option value="lamb">Lamm</option>
+              <option value="game">Wild</option>
+              <option value="fish">Fisch</option>
+              <option value="other">Sonstiges</option>
             </select>
           </div>
           <div class="col">
@@ -220,7 +235,7 @@
         <div class="tablewrap">
           <table id="ingredientsTable">
             <thead><tr>
-              <th>ID</th><th>Name</th><th>Veg</th><th>Kategorie</th><th>Einheit</th><th>Haltbarkeit</th>
+              <th>ID</th><th>Name</th><th>Veg</th><th>Fleisch</th><th>Kategorie</th><th>Einheit</th><th>Haltbarkeit</th>
               <th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th><th>Side</th><th>Laktosefrei</th><th>Glutenfrei</th><th></th>
             </tr></thead>
             <tbody></tbody>
@@ -261,6 +276,7 @@
   function clearForm() {
     $('#ing_name').value = '';
     $('#ing_veg').value = 'vegan';
+    $('#ing_meat_type').value = '';
     $('#ing_category').value = 'ingredient';
     $('#ing_unit').value = '';
     $('#ing_side').checked = false;
@@ -280,6 +296,7 @@
     selectedIngredientId = Number(ing.ingredient_id);
     $('#ing_name').value = ing.name || '';
     $('#ing_veg').value = ing.veg_type || 'vegan';
+    $('#ing_meat_type').value = ing.meat_type || '';
     $('#ing_category').value = ing.category || (ing.spice ? 'spice' : 'ingredient');
     $('#ing_unit').value = ing.unit ?? '';
     $('#ing_side').checked = !!ing.side_dish;
@@ -301,6 +318,8 @@
       name: $('#ing_name').value.trim(),
       unit: $('#ing_unit').value || null,
       veg_type: $('#ing_veg').value,
+      // Fleischsorte zaehlt nur bei Fleisch-Zutaten (YamlEditor.MEAT_TYPES), sonst null
+      meat_type: ['meat', 'fish'].includes($('#ing_veg').value) ? ($('#ing_meat_type').value || null) : null,
       category: $('#ing_category').value || 'ingredient',
       side_dish: $('#ing_side').checked,
       lactose_free: selectToTri($('#ing_lactose').value),
@@ -314,6 +333,7 @@
   }
 
   const CATEGORY_LABEL = { ingredient: 'Zutat', basic: 'Grundzutat', spice: 'Gewürz' };
+  const MEAT_LABEL = { beef: 'Rind', pork: 'Schwein', poultry: 'Geflügel', lamb: 'Lamm', game: 'Wild', fish: 'Fisch', other: 'Sonstiges' };
 
   // lactose_free / gluten_free: true / false / null (= unbekannt, filtert nicht)
   function triToSelect(v) { return v === true ? 'true' : v === false ? 'false' : ''; }
@@ -381,6 +401,7 @@
         <td>${ing.ingredient_id}</td>
         <td>${escapeHtml(ing.name)}</td>
         <td><span class="pill ${ing.veg_type}">${ing.veg_type}</span></td>
+        <td>${MEAT_LABEL[ing.meat_type] ?? ''}</td>
         <td>${CATEGORY_LABEL[ing.category] ?? 'Zutat'}</td>
         <td>${escapeHtml(ing.unit ?? '')}</td>
         <td>${ing.shelf_life_days ?? ''}</td>

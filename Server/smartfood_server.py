@@ -1,11 +1,9 @@
-#Kommentar
-import os, json, yaml
+import yaml
 from pathlib import Path
 from flask import Flask, send_from_directory, request, jsonify
 from Tools import YamlEditor as yr
 from Tools import RatingLogic as rl
 from Tools import ProposeLogic as pl
-from Tools.YamlEditor import Ingredient, Recipe, RecipeIngredientLink
 APP_DIR = Path(__file__).parent.resolve()
 DATA_DIR = APP_DIR / "server_data"
 DATA_DIR.mkdir(exist_ok=True)
@@ -19,7 +17,6 @@ FILES = {
     "blacklist": DATA_DIR / "blacklist.yaml",
     "users": DATA_DIR / "users.yaml",
 }
-CACHE = {}
 def _ensure_files():
     """
     Teste ob die Datein Existieren ansonsten erstelle Blanks.
@@ -49,6 +46,29 @@ def save_all(data):
     for key, p in FILES.items():
         if key in data:
             yr.update_yaml(p, key, data[key])
+
+
+def _find_recipe(data, recipe_id):
+    return next((r for r in data.get("recipes", []) if r.get("recipe_id") == recipe_id), None)
+
+
+def _recipe_ingredients(data, recipe_id):
+    """Zutatenliste eines Rezepts fuer die Seiten: recipe_ingredients + Name / veg_type aus ingredients.yaml.
+    Fehlt eine Zutat in ingredients.yaml, wird sie uebersprungen."""
+    ingredients_by_id = {ing.get("ingredient_id"): ing for ing in data.get("ingredients", [])}
+    out = []
+    for ri in data.get("recipe_ingredients", []):
+        ing = ingredients_by_id.get(ri.get("ingredient_id"))
+        if ri.get("recipe_id") != recipe_id or not ing:
+            continue
+        out.append({
+            "ingredient_id": ri.get("ingredient_id"),
+            "name": ing.get("name"),
+            "veg_type": ing.get("veg_type"),
+            "quantity": ri.get("quantity"),
+            "unit": ri.get("unit"),
+        })
+    return out
 
 
 app = Flask(__name__, static_folder=str(APP_DIR), static_url_path="/static")
@@ -134,24 +154,27 @@ def _proposal_response(data, picks, key, t):
     return out
 
 
-@app.get("/api/propsals")
+@app.get("/api/proposals")
 def get_default_recipes():
     """GET: Hauptgerichte ohne Filter (Startbildschirm) - Vorschlags-Pipeline ProposeLogic.propose.
-    Optional: ?t=<1-10> Zufall (Softmax-Temperatur), ?pool=new nur nie gekochte Rezepte."""
+    Optional: ?t=<1-10> Zufall (Softmax-Temperatur), ?pool=new nur nie gekochte Rezepte,
+    ?allergies=lactose,gluten (YamlEditor.ALLERGENS)."""
     try:
         data = load_all()
         t = pl.clamp_t(request.args.get("t", type=float))
+        allergies = [a for a in request.args.get("allergies", "").split(",") if a]
         picks = pl.propose(data, user_id=request.args.get("user") or None, t=t,
-                           pool=request.args.get("pool", "all"))
+                           pool=request.args.get("pool", "all"), allergies=allergies)
         return jsonify(_proposal_response(data, picks, "main_dish", t))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.post("/api/propsals")
+@app.post("/api/proposals")
 def propose_meal():
     """POST: Gefilterte Rezeptvorschlaege basierend auf Kriterien im Request-Body.
     count Vorschlaege (Standard 10): die ersten werden angezeigt, der Rest ist Puffer fuers Wegklicken.
-    t: Zufall 1-10 (Standard ProposeLogic.SOFTMAX_T), pool: "all" | "new" (nur nie gekochte Rezepte)."""
+    t: Zufall 1-10 (Standard ProposeLogic.SOFTMAX_T), pool: "all" | "new" (nur nie gekochte Rezepte),
+    allergies: z.B. ["lactose", "gluten"]."""
     try:
         payload = request.get_json(force=True) or {}
 
@@ -175,8 +198,8 @@ def propose_meal():
 
 @app.post("/api/recipe/suggest")
 def api_recipe_suggest():
-    """Vorschlaege fuer creation.html (der User muss sie bestaetigen): Hauptzutat, Beilage und ob das
-    Rezept eine Beilagen-Variante eines bestehenden Rezepts ist.
+    """Vorschlaege fuer creation.html (der User muss sie bestaetigen): Hauptzutat, Beilage, Fleischsorten
+    und ob das Rezept eine Beilagen-Variante eines bestehenden Rezepts ist.
     Body: {recipe_id (beim Bearbeiten), name, items: [{ingredient_id, quantity, unit}]}"""
     try:
         payload = request.get_json(force=True) or {}
@@ -188,90 +211,13 @@ def api_recipe_suggest():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.get("/api/create/<int:recipe_id>")
+@app.get("/api/recipe/<int:recipe_id>")
 def api_get_recipe(recipe_id):
     data = load_all()
-
     recipes = data.get("recipes", [])
-    recipe_ingredients = data.get("recipe_ingredients", [])
-    ingredients = data.get("ingredients", [])
-
-    #next(iterator, default=None)
-    #(r for r in recipes if r.get("recipe_id") == recipe_id) erzeugt Generator der erst auf anfrage einzeln werte Ausgibt
-    #deswegen next
-    recipe = next(
-        (r for r in recipes if r.get("recipe_id") == recipe_id),
-        None
-    )
+    recipe = _find_recipe(data, recipe_id)
     if recipe is None:
         return jsonify({"error": "recipe not found"}), 404
-
-    # 🔑 Ingredient lookup
-    ingredients_by_id = {
-        ing.get("ingredient_id"): ing
-        for ing in ingredients
-    }
-
-    # 🔗 Join recipe_ingredients ↔ ingredients
-    resolved_ingredients = []
-    for ri in recipe_ingredients:
-        if ri.get("recipe_id") != recipe_id:
-            continue
-
-        ing = ingredients_by_id.get(ri.get("ingredient_id"))
-        if not ing:
-            continue  # Ingredient fehlt im YAML → überspringen
-
-        resolved_ingredients.append({
-            "ingredient_id": ri.get("ingredient_id"),
-            "name": ing.get("name"),
-            "veg_type": ing.get("veg_type"),
-            "quantity": ri.get("quantity"),
-            "unit": ri.get("unit"),
-        })
-
-    return jsonify({
-        "recipe": recipe,
-        "ingredients": resolved_ingredients,
-    })
-@app.get("/api/recipe/<int:recipe_id>")
-def api_get_recipe1(recipe_id):
-    data = load_all()
-
-    recipes = data.get("recipes", [])
-    recipe_ingredients = data.get("recipe_ingredients", [])
-    ingredients = data.get("ingredients", [])
-
-    recipe = next(
-        (r for r in recipes if r.get("recipe_id") == recipe_id),
-        None
-    )
-    if recipe is None:
-        return jsonify({"error": "recipe not found"}), 404
-
-    # 🔑 Ingredient lookup
-    ingredients_by_id = {
-        ing.get("ingredient_id"): ing
-        for ing in ingredients
-    }
-
-    # 🔗 Join recipe_ingredients ↔ ingredients
-    resolved_ingredients = []
-    for ri in recipe_ingredients:
-        if ri.get("recipe_id") != recipe_id:
-            continue
-
-        ing = ingredients_by_id.get(ri.get("ingredient_id"))
-        if not ing:
-            continue  # Ingredient fehlt im YAML → überspringen
-
-        resolved_ingredients.append({
-            "ingredient_id": ri.get("ingredient_id"),
-            "name": ing.get("name"),
-            "veg_type": ing.get("veg_type"),
-            "quantity": ri.get("quantity"),
-            "unit": ri.get("unit"),
-        })
 
     # Andere Rezepte aus der gleichen "Familie" (gleiches Hauptrezept) finden,
     # egal ob das aktuelle Rezept selbst das Haupt ist oder eine Variante.
@@ -286,19 +232,20 @@ def api_get_recipe1(recipe_id):
         and (r.get("recipe_id") == main_id or r.get("variant_of") == main_id)
     ]
 
+    user = request.args.get("user")
     return jsonify({
         "recipe": recipe,
-        "ingredients": resolved_ingredients,
+        "ingredients": _recipe_ingredients(data, recipe_id),
         "variants": variants,
-        "wishlisted": rl.is_wishlisted(data, recipe_id, request.args.get("user")),
+        "wishlisted": rl.is_wishlisted(data, recipe_id, user),
+        "blacklisted": bool(user) and rl.is_blacklisted(data, recipe_id, user),
         "has_cooked": rl.has_cooked(data, recipe_id),
     })
 
 
-@app.post("/api/wishlist/toggle")
-def api_wishlist_toggle():
-    """'Auf demnaechst setzen'-Button: fuegt das Rezept fuer den User zur Wunschliste
-    hinzu bzw. entfernt es wieder (Toggle), gespeichert user-abhaengig in history.yaml."""
+def _toggle_user_list(toggle):
+    """Gemeinsamer Ablauf fuer Wunschliste / Blacklist. Antwort enthaelt beide Zustaende, weil ein
+    Rezept nie auf beiden Listen steht (Hinzufuegen nimmt es von der anderen)."""
     try:
         payload = request.get_json(force=True) or {}
         recipe_id = payload.get("recipe_id")
@@ -306,14 +253,31 @@ def api_wishlist_toggle():
             return jsonify({"error": "recipe_id required"}), 400
 
         data = load_all()
-        wishlisted = rl.toggle_wishlist(data, int(recipe_id), payload.get("user_id"))
+        user_id = payload.get("user_id")
+        toggle(data, int(recipe_id), user_id)
         save_all(data)
 
-        return jsonify({"ok": True, "wishlisted": wishlisted})
+        return jsonify({"ok": True,
+                        "wishlisted": rl.is_wishlisted(data, int(recipe_id), user_id),
+                        "blacklisted": rl.is_blacklisted(data, int(recipe_id), user_id)})
     except ValueError as e:
-        return jsonify({"error": str(e)}), 404
+        return jsonify({"error": str(e)}), 404 if "not found" in str(e) else 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.post("/api/wishlist/toggle")
+def api_wishlist_toggle():
+    """'Auf demnaechst setzen'-Button: fuegt das Rezept fuer den User zur Wunschliste
+    hinzu bzw. entfernt es wieder (Toggle), gespeichert user-abhaengig in wishlist.yaml."""
+    return _toggle_user_list(rl.toggle_wishlist)
+
+
+@app.post("/api/blacklist/toggle")
+def api_blacklist_toggle():
+    """'Nicht mehr vorschlagen'-Button: das Rezept wird diesem User nie mehr vorgeschlagen
+    (blacklist.yaml, Toggle). Braucht einen User."""
+    return _toggle_user_list(rl.toggle_blacklist)
 
 
 @app.post("/api/history/cooked")
@@ -342,33 +306,13 @@ def api_rating_get(recipe_id):
     damit das Formular sinnvoll vorbefuellt werden kann."""
     try:
         data = load_all()
-        recipes = data.get("recipes", [])
-        recipe_ingredients = data.get("recipe_ingredients", [])
-        ingredients = data.get("ingredients", [])
-
-        recipe = next((r for r in recipes if r.get("recipe_id") == recipe_id), None)
+        recipe = _find_recipe(data, recipe_id)
         if recipe is None:
             return jsonify({"error": "recipe not found"}), 404
 
-        ingredients_by_id = {ing.get("ingredient_id"): ing for ing in ingredients}
-        resolved_ingredients = []
-        for ri in recipe_ingredients:
-            if ri.get("recipe_id") != recipe_id:
-                continue
-            ing = ingredients_by_id.get(ri.get("ingredient_id"))
-            if not ing:
-                continue
-            resolved_ingredients.append({
-                "ingredient_id": ri.get("ingredient_id"),
-                "name": ing.get("name"),
-                "veg_type": ing.get("veg_type"),
-                "quantity": ri.get("quantity"),
-                "unit": ri.get("unit"),
-            })
-
         return jsonify({
             "recipe": recipe,
-            "ingredients": resolved_ingredients,
+            "ingredients": _recipe_ingredients(data, recipe_id),
             "last_actual_times": rl.last_actual_times(data, recipe_id),
             "default_ratings": rl.default_ratings(data, recipe_id),
         })
@@ -414,8 +358,5 @@ def api_rating_post():
         return jsonify({"error": str(e)}), 500
 
 
-
-
 if __name__ == "__main__":
-    CACHE = load_all()
     app.run(host="127.0.0.1", port=5000, debug=True)

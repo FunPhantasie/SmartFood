@@ -2,12 +2,8 @@ from __future__ import annotations
 from datetime import date
 from typing import Optional
 import math
-import random
 
 from Tools import YamlEditor as yr
-
-DEFAULT_SCORE = 5.0  # Score fuer Rezepte ohne jede Bewertung (neutral auf der 0-10 Geschmacks-Skala)
-MIN_WEIGHT = 0.2      # Rezepte mit sehr schlechtem Score sollen trotzdem noch (selten) vorkommen
 
 # Pro Rezept gibt es GENAU EINEN history-Eintrag (Key: recipe_id). taste_rating/repeat_rating/
 # effort_rating/prep_minutes/cook_minutes/dates sind darin je ein rollierendes Array - beim
@@ -60,47 +56,80 @@ def _push_rotating(entry: dict, key: str, value) -> None:
         del arr[0]
 
 
-def is_wishlisted(data: dict, recipe_id: int, user_id) -> bool:
-    """User-abhaengige 'Auf demnaechst setzen'-Wunschliste - eigene Collection (wishlist.yaml,
-    Key 'wishlist'), getrennt von der eigentlichen Koch-/Bewertungs-history."""
+# Wunschliste ('Auf demnaechst setzen', wishlist.yaml) und Blacklist ('Nicht mehr vorschlagen',
+# blacklist.yaml) sind user-abhaengige Listen mit gleichem Aufbau: {recipe_id, user_id, date}.
+# Ein Rezept steht pro User hoechstens auf einer der beiden - Hinzufuegen nimmt es von der anderen.
+USER_LISTS = ("wishlist", "blacklist")
+
+
+def _on_list(data: dict, key: str, recipe_id: int, user_id) -> bool:
     return any(
         w.get("recipe_id") == recipe_id and str(w.get("user_id")) == str(user_id)
-        for w in data.get("wishlist", [])
+        for w in data.get(key, [])
     )
 
 
-def add_wishlist(data: dict, recipe_id: int, user_id) -> Optional[dict]:
+def _add_to_list(data: dict, key: str, recipe_id: int, user_id) -> Optional[dict]:
     _find_recipe(data, recipe_id)
-    if is_wishlisted(data, recipe_id, user_id):
+    for other in USER_LISTS:
+        if other != key:
+            _remove_from_list(data, other, recipe_id, user_id)
+    if _on_list(data, key, recipe_id, user_id):
         return None
-    wishlist = data.setdefault("wishlist", [])
     entry = {"recipe_id": recipe_id, "user_id": user_id, "date": date.today().isoformat()}
-    wishlist.append(entry)
+    data.setdefault(key, []).append(entry)
     return entry
 
 
-def remove_wishlist(data: dict, recipe_id: int, user_id) -> bool:
-    before = data.get("wishlist", [])
+def _remove_from_list(data: dict, key: str, recipe_id: int, user_id) -> bool:
+    before = data.get(key, [])
     after = [
         w for w in before
         if not (w.get("recipe_id") == recipe_id and str(w.get("user_id")) == str(user_id))
     ]
-    data["wishlist"] = after
+    data[key] = after
     return len(after) != len(before)
 
 
-def toggle_wishlist(data: dict, recipe_id: int, user_id) -> bool:
-    """Fuegt den Wunschlisten-Eintrag hinzu oder entfernt ihn. Rueckgabe: neuer Zustand (True = jetzt gewuenscht)."""
-    if is_wishlisted(data, recipe_id, user_id):
-        remove_wishlist(data, recipe_id, user_id)
+def _toggle_list(data: dict, key: str, recipe_id: int, user_id) -> bool:
+    """Fuegt den Eintrag hinzu oder entfernt ihn. Rueckgabe: neuer Zustand (True = jetzt auf der Liste)."""
+    if _on_list(data, key, recipe_id, user_id):
+        _remove_from_list(data, key, recipe_id, user_id)
         return False
-    add_wishlist(data, recipe_id, user_id)
+    _add_to_list(data, key, recipe_id, user_id)
     return True
+
+
+def is_wishlisted(data: dict, recipe_id: int, user_id) -> bool:
+    return _on_list(data, "wishlist", recipe_id, user_id)
+
+
+def add_wishlist(data: dict, recipe_id: int, user_id) -> Optional[dict]:
+    return _add_to_list(data, "wishlist", recipe_id, user_id)
+
+
+def remove_wishlist(data: dict, recipe_id: int, user_id) -> bool:
+    return _remove_from_list(data, "wishlist", recipe_id, user_id)
+
+
+def toggle_wishlist(data: dict, recipe_id: int, user_id) -> bool:
+    return _toggle_list(data, "wishlist", recipe_id, user_id)
+
+
+def is_blacklisted(data: dict, recipe_id: int, user_id) -> bool:
+    return _on_list(data, "blacklist", recipe_id, user_id)
+
+
+def toggle_blacklist(data: dict, recipe_id: int, user_id) -> bool:
+    """'Nicht mehr vorschlagen': ProposeLogic.hard_filter wirft das Rezept fuer diesen User raus."""
+    if user_id in (None, ""):
+        raise ValueError("user_id required for the blacklist")
+    return _toggle_list(data, "blacklist", recipe_id, user_id)
 
 
 def has_cooked(data: dict, recipe_id: int) -> bool:
     """Wurde dieses Rezept schonmal wirklich gekocht (last_date gesetzt)? Ein reiner
-    dismiss/seed-Eintrag (siehe log_dismissed/ensure_uncooked_seed) zaehlt NICHT, weil der
+    dismiss-Eintrag (siehe log_dismissed) zaehlt NICHT, weil der
     kein last_date setzt - nur rate_recipe/log_cooked tun das."""
     entry = _find_history_entry(data, recipe_id)
     return bool(entry and entry.get("last_date"))
@@ -144,32 +173,15 @@ def default_ratings(data: dict, recipe_id: int) -> dict:
     }
 
 
-def _log_low_repeat(data: dict, recipe_id: int, value: int = 0) -> dict:
-    """Haengt value ans rollierende repeat_rating-Array des Rezepts an - ohne dates/last_date
-    oder die anderen Arrays anzufassen. Gemeinsame Basis fuer log_dismissed (User lehnt
-    Vorschlag ab) und ensure_uncooked_seed (Rezept ganz ohne history)."""
-    _find_recipe(data, recipe_id)
-    entry = _get_or_create_history_entry(data, recipe_id)
-    _push_rotating(entry, "repeat_rating", value)
-    return entry
-
-
 def log_dismissed(data: dict, recipe_id: int) -> dict:
     """'Nicht interessiert'-Button beim Vorschlag (/api/dismiss): senkt den Wiederholungs-
     Wunsch fuer dieses Rezept mit dem niedrigsten repeat_rating=0 - unabhaengig davon, ob
-    das Rezept schonmal gekocht wurde."""
-    return _log_low_repeat(data, recipe_id, 0)
-
-
-def ensure_uncooked_seed(data: dict, recipe_id: int) -> Optional[dict]:
-    """Falls dieses Rezept noch KEINEN history-Eintrag hat (noch nie gekocht/bewertet/
-    dismissed), wird ein initialer Eintrag mit repeat_rating=0 angelegt - damit ein komplett
-    unerprobtes Rezept in einer history-basierten Auswertung nicht wie ein neutral bewaehrtes
-    (DEFAULT_SCORE) behandelt wird. Gibt den neuen Eintrag zurueck, oder None wenn bereits
-    history existiert."""
-    if _find_history_entry(data, recipe_id) is not None:
-        return None
-    return _log_low_repeat(data, recipe_id, 0)
+    das Rezept schonmal gekocht wurde. Haengt nur an repeat_rating an, ohne dates/last_date
+    oder die anderen Arrays anzufassen."""
+    _find_recipe(data, recipe_id)
+    entry = _get_or_create_history_entry(data, recipe_id)
+    _push_rotating(entry, "repeat_rating", 0)
+    return entry
 
 
 def _cooked_today_unrated(entry: dict, today: str) -> bool:
@@ -317,36 +329,3 @@ def rate_recipe(
     update_recipe_times(data, target_recipe)
 
     return {"history_entry": entry, "recipe": target_recipe, "new_variant": new_variant}
-
-
-def recipe_scores(data: dict) -> dict:
-    """recipe_id -> durchschnittliche taste_rating ueber die history dieses Rezepts. Seit
-    der kombinierte 'score' (compute_score) auf Wunsch entfernt wurde, ist das die einzige
-    verbliebene Naeherung fuer weighted_shuffle - reine Uebergangsloesung, bis die neue
-    Propose-Mechanik (siehe ProposeLogic.build_propose_dataset) das ersetzt."""
-    scores = {}
-    for h in data.get("history", []):
-        values = [v for v in h.get("taste_rating", []) if v is not None]
-        if values:
-            scores[h["recipe_id"]] = sum(values) / len(values)
-    return scores
-
-
-def weighted_shuffle(recipes: list[dict], scores: dict, id_key: str = "recipe_id") -> list[dict]:
-    """Zufalls-Reihenfolge, aber Rezepte mit hoeherem Bewertungs-Score kommen tendenziell
-    weiter vorne. Unbewertete Rezepte bekommen DEFAULT_SCORE (neutral)."""
-    pool = list(recipes)
-    weights = [max(scores.get(r.get(id_key), DEFAULT_SCORE), MIN_WEIGHT) for r in pool]
-
-    out = []
-    while pool:
-        total = sum(weights)
-        pick = random.uniform(0, total)
-        acc = 0.0
-        for i, w in enumerate(weights):
-            acc += w
-            if pick <= acc:
-                out.append(pool.pop(i))
-                weights.pop(i)
-                break
-    return out

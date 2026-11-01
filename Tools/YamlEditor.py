@@ -20,10 +20,14 @@ import yaml
 # Erlaubte Werte der Rezept-/Zutatenfelder (docs/ProposeLogic.md V). Die Auswahllisten in
 # creation.html / ingredients.html muessen dazu passen.
 ORIGINS = ("asian", "oriental", "mexican", "indian", "italian", "home-style", "mediterranean", "american")
-COOKING_METHODS = ("oven", "pan", "pot", "grill", "raw", "steam")
-RECIPE_SPECS = ("soup", "salad", "casserole", "bowl", "sandwich", "others")
+COOKING_METHODS = ("oven", "pan", "pot", "grill", "raw", "steam", "microwave")
+RECIPE_SPECS = ("soup", "stew", "salad", "pasta", "pan_dish", "casserole", "bowl", "sandwich", "baked", "sauce",
+                "others")   # gleiche Reihenfolge wie generate_cookbook_PDF.SPEC_ORDER
 NOT_SPECIFIC = "not specific"     # main_ingredient ohne bestimmte Hauptzutat
 ALLERGENS = ("lactose", "gluten")  # Zutat hat <allergen>_free: true / false / null (= unbekannt)
+# Fleischsorte einer Fleisch-Zutat (null = zaehlt nicht als Fleischsorte, z.B. Bruehe). Das Rezept
+# speichert daraus meat_types - beim Bearbeiten aus den Zutaten befuellt, beim Daempfen vom Rezept gelesen.
+MEAT_TYPES = ("beef", "pork", "poultry", "lamb", "game", "fish", "other")   # fish zaehlt wie eine Fleischsorte
 # Zutat (normal) | Grundzutat (Wasser, Mehl, Zucker, Staerke ...) | Gewuerz (Sojasauce, Pfeffer, Salz ...)
 INGREDIENT_CATEGORIES = ("ingredient", "basic", "spice")
 NUTRITION_KEYS = ("kcal", "protein", "carbs", "fat")   # jeweils pro `unit` DER ZUTAT (nicht pro Rezept-Einheit)
@@ -33,7 +37,8 @@ INGREDIENT_FIELDS = {
     "ingredient_id": None,
     "name": None,
     "unit": None,             # Bezugseinheit der Naehrwerte, zugleich Standard-Einheit im Rezept
-    "veg_type": None,         # vegan | vegetarian | meat
+    "veg_type": None,         # vegan | vegetarian | fish | meat
+    "meat_type": None,        # MEAT_TYPES oder null
     "category": "ingredient", # INGREDIENT_CATEGORIES
     "side_dish": False,
     "lactose_free": None,     # true / false / null (= unbekannt)
@@ -83,9 +88,24 @@ class Recipe:
     origin: Tuple[str, ...] = ()            # ORIGINS, mehrere moeglich
     cooking_method: Optional[str] = None    # COOKING_METHODS
     recipe_spec: Optional[str] = None       # RECIPE_SPECS
-    main_ingredient: Optional[int | str] = None   # ingredient_id oder None (= keine Hauptzutat)
+    main_ingredient: Tuple[int, ...] = ()   # ingredient_ids der Hauptzutaten, () = keine (main_ingredients())
     season: Optional[str] = None            # all, spring, summer, autumn, winter (fehlt = all)
     side_dish: Optional[int] = None         # ingredient_id der Beilage oder None (= keine Beilage)
+    meat_types: Tuple[str, ...] = ()        # MEAT_TYPES
+
+
+def main_ingredients(value) -> list:
+    """main_ingredient eines Rezepts als Liste: eine ID, eine Liste von IDs oder None / "not specific"
+    (= keine Hauptzutat -> [])."""
+    if value is None or value == NOT_SPECIFIC:
+        return []
+    return [v for v in value if v is not None] if isinstance(value, list) else [value]
+
+
+def meat_types_of(data: dict, ingredient_ids) -> list[str]:
+    """Fleischsorten der Zutaten (meat_type, ohne null), sortiert - Vorschlag fuer das Rezeptfeld meat_types."""
+    by_id = {i.get("ingredient_id"): i for i in data.get("ingredients", [])}
+    return sorted({by_id[i]["meat_type"] for i in ingredient_ids if by_id.get(i, {}).get("meat_type")})
 
 
 # ------------------------------------------------------------
@@ -114,7 +134,8 @@ def _choice(ing: dict, reason: str) -> dict:
 
 def suggest_main_and_side(data: dict, name: str, items: list[dict]) -> dict:
     """Vorschlag fuer Hauptzutat und Beilage eines Rezepts aus Name + Zutatenliste.
-    items: [{ingredient_id, quantity, unit}]. Rueckgabe {"main_ingredient": {...} | None, "side_dish": ...}.
+    items: [{ingredient_id, quantity, unit}]. Rueckgabe {"main_ingredient": {...} | None, "side_dish": ...,
+    "meat_types": [...]}.
     - Beilage: Zutat mit side_dish: true (bei mehreren die schwerste)
     - Hauptzutat: normale Zutat (keine Beilage / Grundzutat / Gewuerz), deren Name im Rezeptnamen
       vorkommt (oder umgekehrt), sonst die mit dem groessten Gewichtsanteil."""
@@ -138,7 +159,8 @@ def suggest_main_and_side(data: dict, name: str, items: list[dict]) -> dict:
     else:
         main = None
     return {"main_ingredient": main,
-            "side_dish": _choice(side[0], "Beilagen-Zutat") if side else None}
+            "side_dish": _choice(side[0], "Beilagen-Zutat") if side else None,
+            "meat_types": meat_types_of(data, [it.get("ingredient_id") for it in items])}
 
 
 def side_dish_variant_of(data: dict, recipe_id, items: list[dict]) -> Optional[dict]:
@@ -181,6 +203,8 @@ def data_problems(data: dict) -> list[str]:
                 problems.append(f"ingredient {iid}: {a}_free must be true/false/null")
         if i.get("category") not in (None, *INGREDIENT_CATEGORIES):
             problems.append(f"ingredient {iid}: unknown category {i.get('category')!r}")
+        if i.get("meat_type") not in (None, *MEAT_TYPES):
+            problems.append(f"ingredient {iid}: unknown meat_type {i.get('meat_type')!r}")
         for key in NUTRITION_KEYS:
             value = i.get(key)
             if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float)) or value < 0):
@@ -198,10 +222,12 @@ def data_problems(data: dict) -> list[str]:
             problems.append(f"recipe {rid}: unknown recipe_spec {r.get('recipe_spec')!r}")
         if (r.get("prep_minutes") is None) != (r.get("cook_minutes") is None):
             problems.append(f"recipe {rid}: only one of prep_minutes / cook_minutes is set")
-        for field in ("main_ingredient", "side_dish"):    # None = keine Hauptzutat / Beilage
-            value = r.get(field)
-            if value in (None, NOT_SPECIFIC):
-                continue
+        for o in r.get("meat_types") or []:
+            if o not in MEAT_TYPES:
+                problems.append(f"recipe {rid}: unknown meat_type {o!r}")
+        side = r.get("side_dish")
+        for field, value in [("main_ingredient", m) for m in main_ingredients(r.get("main_ingredient"))] \
+                + ([("side_dish", side)] if side not in (None, NOT_SPECIFIC) else []):    # None = keine Hauptzutat / Beilage
             if value not in ingredient_ids:
                 problems.append(f"recipe {rid}: {field} {value!r} is not an ingredient_id")
             elif (rid, value) not in links:

@@ -43,7 +43,8 @@ def F(season="all", origin=(), spec=None, sweet=False, side=None, meat=None, mai
     """Damping features of one recipe (same shape as pl.recipe_features)."""
     specs = ({spec} & pl.DAMP_SPECS) | ({"sweet"} if sweet else set())
     return {"season": season, "origins": set(origin), "method": None, "specs": specs,
-            "sides": {side} if side else set(), "main": main, "main_meat_or_side": main_meat_or_side,
+            "sides": {side} if side else set(), "mains": {main} if main else set(),
+            "mains_meat_or_side": {main} if main and main_meat_or_side else set(),
             "meats": {meat} if meat else set()}
 
 
@@ -93,6 +94,7 @@ def example_data():
            (3, "Chicken", False, "meat", "ingredient"), (4, "Beef", False, "meat", "ingredient"),
            (5, "Pumpkin", False, "vegan", "ingredient"), (6, "Tomato", False, "vegan", "ingredient"),
            (7, "Water", False, "vegan", "basic"), (8, "Salt", False, "vegan", "spice")]
+    meat_type = {3: "poultry", 4: "beef"}
     recipes = [   # id, name, type, veg, origin, spec, main, prep, cook, variant_of, ingredients
         (1, "Chicken curry", "main_dish", "meat", ["indian"], None, 3, 15, 25, None, [1, 3]),
         (2, "Pumpkin soup", "main_dish", "vegan", [], "soup", 5, 15, 20, None, [5]),
@@ -113,7 +115,8 @@ def example_data():
     }
     data = {
         "ingredients": [yr.normalize_ingredient({"ingredient_id": i, "name": n, "side_dish": s, "veg_type": v,
-                                                 "category": c}) for i, n, s, v, c in ing],
+                                                 "meat_type": meat_type.get(i), "category": c})
+                        for i, n, s, v, c in ing],
         "recipes": [{"recipe_id": i, "name": n, "recipe_type": t, "veg_type": v, "origin": o,
                      "recipe_spec": sp, "main_ingredient": m, "prep_minutes": p, "cook_minutes": c,
                      "variant_of": vo, "season": "all", "sweet": False,
@@ -175,7 +178,7 @@ def pools(data=None):
 
 
 def server_calls():
-    """GET + POST /api/propsals through Flask's test client on the example data (no running server)."""
+    """GET + POST /api/proposals through Flask's test client on the example data (no running server)."""
     from Server import smartfood_server as srv
 
     class FixedDate(date):          # server uses date.today() -> pin it to TODAY like the example data
@@ -187,14 +190,53 @@ def server_calls():
     srv.load_all, pl.date = example_data, FixedDate
     try:
         client = srv.app.test_client()
-        get = client.get("/api/propsals?user=u1").get_json()
-        post = client.post("/api/propsals", json={"meal_type": "main_dish", "diet": "vegan", "user_id": "u1",
+        get = client.get("/api/proposals?user=u1").get_json()
+        post = client.post("/api/proposals", json={"meal_type": "main_dish", "diet": "vegan", "user_id": "u1",
                                                   "include": [], "exclude": ["tomato"], "count": 10}).get_json()
-        new = client.get("/api/propsals?user=u1&pool=new&t=99").get_json()
-        empty = client.post("/api/propsals", json={"meal_type": "snack", "user_id": "u1"}).get_json()
+        new = client.get("/api/proposals?user=u1&pool=new&t=99").get_json()
+        empty = client.post("/api/proposals", json={"meal_type": "snack", "user_id": "u1"}).get_json()
+        srv.load_all = gluten_data
+        gluten = client.get("/api/proposals?user=u1&allergies=gluten").get_json()
+        gluten_post = client.post("/api/proposals", json={"user_id": "u1", "allergies": ["gluten"]}).get_json()
     finally:
         srv.load_all, pl.date = load_all, real_date
-    return get, post, new, empty
+    return get, post, new, empty, (gluten, gluten_post)
+
+
+def gluten_data():
+    """Example data where the noodles contain gluten."""
+    data = example_data()
+    data["ingredients"][1]["gluten_free"] = False
+    return data
+
+
+def with_temp_server(data, calls):
+    """Runs calls(client) against a server that reads / writes temp copies of `data` - the real
+    server_data is never written. Returns (result of calls, data saved afterwards)."""
+    from Server import smartfood_server as srv
+    files = srv.FILES
+    with tempfile.TemporaryDirectory() as tmp:
+        srv.FILES = {k: Path(tmp) / p.name for k, p in files.items()}
+        try:
+            srv.save_all(data)
+            result = calls(srv.app.test_client())
+            return result, srv.load_all()
+        finally:
+            srv.FILES = files
+
+
+def blacklist_endpoint():
+    """'Nicht mehr vorschlagen' on Butter chicken (4) for u1, then Pumpkin risotto (10, on the wishlist)."""
+    def calls(c):
+        post = lambda url, **body: c.post(url, json=body)
+        return {
+            "add": post("/api/blacklist/toggle", recipe_id=4, user_id="u1").get_json(),
+            "page": c.get("/api/recipe/4?user=u1").get_json(),
+            "wish": post("/api/blacklist/toggle", recipe_id=10, user_id="u1").get_json(),
+            "no_user": post("/api/blacklist/toggle", recipe_id=4).status_code,
+            "unknown": post("/api/blacklist/toggle", recipe_id=999, user_id="u1").status_code,
+        }
+    return with_temp_server(example_data(), calls)
 
 
 def save_keeps_missing_keys():
@@ -350,8 +392,7 @@ def sanity_checks():
     _, _, hits_new, _ = run_propose(300, pool="new")
     ds, main_pool, new_pool = pools(data)
     ts = pl.calc_total_score
-    gluten_data = example_data()
-    gluten_data["ingredients"][1]["gluten_free"] = False          # noodles contain gluten
+    gluten = gluten_data()          # noodles contain gluten
     k3 = pl.propose(data, user_id="u1", today=TODAY, k=3, rng=random.Random(2))
     k10 = pl.propose(data, user_id="u1", today=TODAY, k=10, rng=random.Random(2))
     no_times = example_data()
@@ -365,7 +406,20 @@ def sanity_checks():
     wish_today["wishlist"].append({"recipe_id": 5, "user_id": "u1"})
     no_wish = example_data()
     next(h for h in no_wish["history"] if h["recipe_id"] == 5).update(entry(5, 10, 5))
-    srv_get, srv_post, srv_new, srv_empty = server_calls()
+    srv_get, srv_post, srv_new, srv_empty, (srv_gluten, srv_gluten_post) = server_calls()
+    bl, bl_saved = blacklist_endpoint()
+    lists = example_data()
+    rl.toggle_blacklist(lists, 10, "u1")                       # on the wishlist -> moves to the blacklist
+    moved_to_blacklist = rl.is_blacklisted(lists, 10, "u1") and not rl.is_wishlisted(lists, 10, "u1")
+    rl.toggle_wishlist(lists, 10, "u1")                        # and back
+    moved_to_wishlist = rl.is_wishlisted(lists, 10, "u1") and not rl.is_blacklisted(lists, 10, "u1")
+    curry = data["recipes"][0]                                 # chicken curry: rice + chicken
+    broth = {**data, "ingredients": data["ingredients"] + [yr.normalize_ingredient(
+        {"ingredient_id": 9, "name": "Chicken broth", "veg_type": "meat", "meat_type": None})],
+             "recipe_ingredients": data["recipe_ingredients"] + [{"recipe_id": 2, "ingredient_id": 9}]}
+    fish = {**data, "ingredients": data["ingredients"] + [yr.normalize_ingredient(
+        {"ingredient_id": 10, "name": "Salmon", "veg_type": "fish", "meat_type": "fish"})],
+            "recipe_ingredients": data["recipe_ingredients"] + [{"recipe_id": 2, "ingredient_id": 10}]}
     rd = real_data()
     not_specific = dict(data["recipes"][0], main_ingredient=yr.NOT_SPECIFIC)
     shift_nb = lambda r, m: m * math.exp(-(r - (5 + math.log(1 - 0.9) / 0.3)) * 0.3) + m * 0.9 - m   # notebook form
@@ -434,7 +488,30 @@ def sanity_checks():
         ("damp: same main, it is meat -> x0.9", "main=meat/side x0.9" in damp("Butter chicken")[2]),
         ("damp: meat factor clamped at 0", pl.calc_damping(F(meat="x"), {**LS, "meats": ["c"] * 12}, "autumn")[0] == 0),
         ("damp: main is a side_dish ingredient (attribute from ingredients.yaml)",
-         pl.recipe_features(dict(data["recipes"][4], main_ingredient=2), data)["main_meat_or_side"]),
+         pl.recipe_features(dict(data["recipes"][4], main_ingredient=2), data)["mains_meat_or_side"] == {2}),
+        ("damp: several main ingredients (list) -> all used, meat / side flagged per ingredient",
+         (lambda f: f["mains"] == {1, 3} and f["mains_meat_or_side"] == {1, 3})(
+             pl.recipe_features(dict(curry, main_ingredient=[3, 1]), data))
+         and pl.recipe_features(dict(data["recipes"][9], main_ingredient=[5, 1]), data)["mains_meat_or_side"] == {1}),
+        ("damp: main list with one ingredient not in the recipe -> error",
+         raises(lambda: pl.recipe_features(dict(curry, main_ingredient=[3, 6]), data))),
+        ("damp: several mains in common -> main rule only once",
+         (lambda r: r.count("main -3") == 1)(pl.calc_damping(
+             {**F(), "mains": {"pumpkin", "tomato"}}, {**LS, "mains": {"pumpkin", "tomato"}}, "autumn")[2])),
+        ("damp: mains in common, one of them meat -> x0.9 instead of -3",
+         (lambda r: "main=meat/side x0.9" in r and "main -3" not in r)(pl.calc_damping(
+             {**F(), "mains": {"pumpkin", "chicken"}, "mains_meat_or_side": {"chicken"}}, LS, "autumn")[2])),
+        ("damp: meat types from the recipe field meat_types",
+         pl.recipe_features(dict(curry, meat_types=["beef"]), data)["meats"] == {"beef"}
+         and pl.recipe_features(dict(curry, meat_types=[]), data)["meats"] == set()),
+        ("damp: no meat_types field -> from the ingredients' meat_type",
+         pl.recipe_features(curry, data)["meats"] == {"poultry"}),
+        ("damp: meat ingredient without meat_type (broth) is no meat type",
+         pl.recipe_features(broth["recipes"][1], broth)["meats"] == set()),
+        ("damp: fish is handled like meat (meat type 'fish', main = fish -> meat/side)",
+         (lambda f: "fish" in f["meats"] and f["mains_meat_or_side"] == {10})(
+             pl.recipe_features(dict(fish["recipes"][1], main_ingredient=10, meat_types=["fish"]), fish))
+         and not yr.data_problems({**fish, "recipes": [dict(curry, meat_types=["fish"])]})),
         ("damp: sides come from the recipe field side_dish (none -> not damped, even with rice inside)",
          pl.recipe_features(data["recipes"][0], data)["sides"] == {1}
          and pl.recipe_features(dict(data["recipes"][0], side_dish=None), data)["sides"] == set()),
@@ -478,7 +555,7 @@ def sanity_checks():
         ("filter: include needs ALL ingredients", allowed(include=["chicken", "rice"]) == [4]),
         ("filter: exclude by name", allowed(exclude=["Rice"]) == [5, 6, 7, 9]),
         ("filter: allergy -> ingredient with gluten_free False removed",
-         allowed(gluten_data, allergies=["gluten"]) == [4, 6, 7, 10]),
+         allowed(gluten, allergies=["gluten"]) == [4, 6, 7, 10]),
         ("filter: allergy field missing -> not filtered", allowed(allergies=["gluten", "lactose"]) == allowed()),
         ("filter: diet vegetarian includes vegan", allowed(diet="vegetarian") == [5, 7, 10]),
         ("filter: diet nonvegan", allowed(diet="nonvegan") == [4, 6, 9]),
@@ -486,13 +563,23 @@ def sanity_checks():
         ("propose: k=3 -> 3 recipes", len(k3) == 3),
         ("propose: k > candidates -> every candidate once",
          sorted(r["recipe_id"] for r in k10) == allowed()),
-        ("server: GET /api/propsals -> 5 allowed recipes, new ones flagged",
+        ("server: GET /api/proposals -> 5 allowed recipes, new ones flagged",
          len(srv_get["main_dish"]) == pl.PROPOSAL_COUNT and {r["id"] for r in srv_get["main_dish"]} <= set(allowed())
          and all(r["is_new"] == (r["id"] in NEW_RECIPES | {10}) for r in srv_get["main_dish"])),   # 10: wishlist, never cooked
         ("server: POST vegan, exclude tomato -> only pumpkin risotto", [r["id"] for r in srv_post["recipes"]] == [10]),
         ("server: GET pool=new -> only new recipes, t clamped to 10",
          {r["id"] for r in srv_new["main_dish"]} == NEW_RECIPES and srv_new["t"] == 10),
         ("server: nothing found -> empty list + message", srv_empty["recipes"] == [] and srv_empty.get("message")),
+        ("server: allergies on GET (?allergies=) and POST -> gluten recipes removed",
+         all({r["id"] for r in res} <= set(allowed(gluten, allergies=["gluten"])) and len(res) == 4
+             for res in (srv_gluten["main_dish"], srv_gluten_post["recipes"]))),
+        ("blacklist: endpoint adds per user, recipe page shows it, no longer proposed",
+         bl["add"]["blacklisted"] and bl["page"]["blacklisted"] and rl.is_blacklisted(bl_saved, 4, "u1")
+         and 4 not in allowed(bl_saved)),
+        ("blacklist: wishlist recipe moves from the wishlist to the blacklist (and back)",
+         bl["wish"] == {"ok": True, "blacklisted": True, "wishlisted": False}
+         and moved_to_blacklist and moved_to_wishlist),
+        ("blacklist: needs a user (400), unknown recipe 404", (bl["no_user"], bl["unknown"]) == (400, 404)),
         ("server: saving without wishlist/blacklist keeps them", save_keeps_missing_keys()),
         ("rating: effort missing -> rejected", rating_rejected(effort_rating=None)),
         ("rating: effort above 10 -> rejected", rating_rejected(effort_rating=11)),
@@ -500,11 +587,12 @@ def sanity_checks():
         ("rating: complete rating accepted", not rating_rejected()),
         ("rating: no history -> prefill 5 / 5 / 5", [rl.default_ratings(data, 9)[k] for k in
                                                      ("taste_rating", "repeat_rating", "effort_rating")] == [5, 5, 5]),
-        ("cookbook PDF: ratings from history, else recipe defaults (Standard)",
-         "Geschmack 8,0/10 •" in cookbook and "Geschmack 5,0/10 (Standard)" in cookbook),
+        ("cookbook PDF: ratings from history, else recipe defaults (N.R. = not rated)",
+         "Geschmack 8,0/10 •" in cookbook and "Geschmack 5,0/10 (N.R.)" in cookbook),
         ("cookbook PDF: no reward / times cooked / last date", not any(
             s in cookbook for s in ("Reward", "gekocht", "zuletzt"))),
-        ("cookbook PDF: season, type, cuisine", r"Saison: Ganzjährig • Typ: Fleisch • Küche: Indisch" in cookbook),
+        ("cookbook PDF: season, type, cuisine", "Saison: Ganzjährig}" in cookbook
+         and "Typ: Fleisch • Küche: Indisch" in cookbook),
         ("cookbook PDF: main ingredient bold", r"\textbf{Chicken}" in cookbook and r"\textbf{Tomato}" in cookbook),
         ("cookbook PDF: Zutaten / Grundzutaten / Gewürze split",
          all(s in cookbook for s in (r"\textbf{Zutaten:}", r"\textbf{Grundzutaten:}", r"\textbf{Gewürze:}"))
@@ -526,6 +614,9 @@ def sanity_checks():
              "recipe_id": 1, "name": "Chicken curry"}
          and yr.side_dish_variant_of({**family, "recipes": family["recipes"][:1]}, None,
                                      [{"ingredient_id": 1}, {"ingredient_id": 3}]) is None),
+        ("suggest: meat types from the ingredients",
+         yr.suggest_main_and_side(data, "x", [{"ingredient_id": 3}, {"ingredient_id": 4}, {"ingredient_id": 1}])[
+             "meat_types"] == ["beef", "poultry"]),
         ("suggest: endpoint /api/recipe/suggest", (lambda s: s["main_ingredient"]["ingredient_id"] == 3
                                                     and s["side_dish"]["ingredient_id"] == 2
                                                     and s["variant_of"]["recipe_id"] == 1)(suggest_endpoint())),
@@ -541,8 +632,14 @@ def sanity_checks():
          all(list(i)[:len(yr.INGREDIENT_FIELDS)] == list(yr.INGREDIENT_FIELDS) for i in rd["ingredients"])),
         ("fields: example data valid", yr.data_problems(data) == []),
         ("fields: every wrong value found", len(yr.data_problems(bad_field_data())) == 8),
+        ("fields: main_ingredient list -> every id checked",
+         yr.data_problems({**data, "recipes": [dict(curry, main_ingredient=[3, 1])]}) == []
+         and len(yr.data_problems({**data, "recipes": [dict(curry, main_ingredient=[3, 6, 99])]})) == 2),
+        ("fields: unknown meat_type (recipe + ingredient) found",
+         len(yr.data_problems({**data, "recipes": [dict(curry, meat_types=["dragon"])],
+                               "ingredients": data["ingredients"] + [{"ingredient_id": 9, "meat_type": "x"}]})) == 2),
         ("fields: main_ingredient 'not specific' -> no main rule",
-         pl.recipe_features(not_specific, data)["main"] is None),
+         pl.recipe_features(not_specific, data)["mains"] == set()),
         ("real data: field values valid (YamlEditor.data_problems)", yr.data_problems(rd) == []),
         ("real data: propose() only allowed recipes, one per family", real_propose_ok(rd)),
     ]

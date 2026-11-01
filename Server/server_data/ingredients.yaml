@@ -3,6 +3,7 @@ ingredients:
   name: Bambus
   unit: Dose
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -16,6 +17,7 @@ ingredients:
   name: Tomatenmark
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -29,6 +31,7 @@ ingredients:
   name: Erbsen
   unit: Tasse
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -42,6 +45,7 @@ ingredients:
   name: Ei
   unit: Stück
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -55,6 +59,7 @@ ingredients:
   name: Sojasauce
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -68,10 +73,11 @@ ingredients:
   name: Rinderbruehe
   unit: Liter
   veg_type: meat
+  meat_type: null
   category: ingredient
   side_dish: false
-  lactose_free: null
-  gluten_free: null
+  lactose_free: true
+  gluten_free: false
   shelf_life_days: null
   kcal: 70
   protein: 11
@@ -81,6 +87,7 @@ ingredients:
   name: Zucker
   unit: g
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -94,10 +101,11 @@ ingredients:
   name: Reiswein
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
-  gluten_free: null
+  gluten_free: false
   shelf_life_days: null
   kcal: 7
   protein: 0.1
@@ -107,6 +115,7 @@ ingredients:
   name: Chilisauce
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -120,6 +129,7 @@ ingredients:
   name: Mu-Err-Pilze
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -133,6 +143,7 @@ ingredients:
   name: Ketchup
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -146,6 +157,7 @@ ingredients:
   name: Austersauce
   unit: EL
   veg_type: fish
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -159,6 +171,7 @@ ingredients:
   name: Reisessig
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -172,6 +185,7 @@ ingredients:
   name: Chilioel
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -185,6 +199,7 @@ ingredients:
   name: Fruehlingszwiebel
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -198,6 +213,7 @@ ingredients:
   name: Ingwer
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -211,6 +227,7 @@ ingredients:
   name: Glasnudeln
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: true
   lactose_free: true
@@ -224,6 +241,7 @@ ingredients:
   name: Camemberts
   unit: Stück
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -237,6 +255,7 @@ ingredients:
   name: Haehnchenbrustfilet
   unit: g
   veg_type: meat
+  meat_type: poultry
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -250,6 +269,7 @@ ingredients:
   name: Ananas
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -263,6 +283,7 @@ ingredients:
   name: Wasser
   unit: ml
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -276,6 +297,7 @@ ingredients:
   name: Maisstaerke
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -289,6 +311,7 @@ ingredients:
   name: Salz
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -302,6 +325,7 @@ ingredients:
   name: Pfeffer
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -315,6 +339,7 @@ ingredients:
   name: Schalotte
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -328,10 +353,11 @@ ingredients:
   name: Bruehwuerfel (Rind)
   unit: Stück
   veg_type: meat
+  meat_type: null
   category: spice
   side_dish: false
-  lactose_free: null
-  gluten_free: null
+  lactose_free: true
+  gluten_free: false
   shelf_life_days: null
   kcal: 20
   protein: 1
@@ -341,6 +367,7 @@ ingredients:
   name: Rindfleisch
   unit: g
   veg_type: meat
+  meat_type: beef
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -354,6 +381,7 @@ ingredients:
   name: Zwiebel
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -367,6 +395,7 @@ ingredients:
   name: Pflanzenoel (Sonnenblumen-/Rapsoel)
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -380,6 +409,7 @@ ingredients:
   name: Paprikapulver (edelsuess)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -393,6 +423,7 @@ ingredients:
   name: Dosentomaten
   unit: Dose
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -406,6 +437,7 @@ ingredients:
   name: Gewuerznelke
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -419,6 +451,7 @@ ingredients:
   name: Majoran (getrocknet)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -432,6 +465,7 @@ ingredients:
   name: Lorbeerblatt
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -445,6 +479,7 @@ ingredients:
   name: Kartoffeln
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: true
   lactose_free: true
@@ -458,6 +493,7 @@ ingredients:
   name: Paprikaschote
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -471,6 +507,7 @@ ingredients:
   name: Rosenpaprika
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -484,6 +521,7 @@ ingredients:
   name: Moehren
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -497,6 +535,7 @@ ingredients:
   name: Honig
   unit: EL
   veg_type: vegetarian
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -510,6 +549,7 @@ ingredients:
   name: Weissweinessig
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -523,6 +563,7 @@ ingredients:
   name: Zitronensaft
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -536,6 +577,7 @@ ingredients:
   name: Meerrettich
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -549,6 +591,7 @@ ingredients:
   name: Apfel
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -562,6 +605,7 @@ ingredients:
   name: Pinienkerne
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -575,6 +619,7 @@ ingredients:
   name: Thunfisch (naturell)
   unit: g
   veg_type: fish
+  meat_type: fish
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -588,6 +633,7 @@ ingredients:
   name: Mais (Dose)
   unit: Dose
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -601,6 +647,7 @@ ingredients:
   name: Senf
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -614,10 +661,11 @@ ingredients:
   name: Fertige Tomatensauce
   unit: Packung
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
-  lactose_free: null
-  gluten_free: null
+  lactose_free: true
+  gluten_free: true
   shelf_life_days: null
   kcal: 175
   protein: 5.5
@@ -627,6 +675,7 @@ ingredients:
   name: Hackfleisch (gemischt)
   unit: g
   veg_type: meat
+  meat_type: beef
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -640,6 +689,7 @@ ingredients:
   name: Knoblauchzehe
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -653,6 +703,7 @@ ingredients:
   name: Tabasco
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -666,6 +717,7 @@ ingredients:
   name: Butter
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: false
@@ -679,6 +731,7 @@ ingredients:
   name: Mehl
   unit: g
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -692,6 +745,7 @@ ingredients:
   name: Milch
   unit: ml
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -705,6 +759,7 @@ ingredients:
   name: Parmesan
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -718,6 +773,7 @@ ingredients:
   name: Lasagneplatten
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: true
   lactose_free: true
@@ -731,6 +787,7 @@ ingredients:
   name: Margarine
   unit: g
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -744,6 +801,7 @@ ingredients:
   name: Gyrosgewuerz
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -757,6 +815,7 @@ ingredients:
   name: Thymian (getrocknet)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -770,6 +829,7 @@ ingredients:
   name: Oliven (schwarz)
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -783,6 +843,7 @@ ingredients:
   name: Feta (Schafskaese)
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -796,6 +857,7 @@ ingredients:
   name: Gemuesezwiebel
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -809,6 +871,7 @@ ingredients:
   name: Chicoree
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -822,6 +885,7 @@ ingredients:
   name: Kochschinken
   unit: g
   veg_type: meat
+  meat_type: pork
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -835,6 +899,7 @@ ingredients:
   name: Gouda
   unit: Scheibe
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -848,6 +913,7 @@ ingredients:
   name: Weizenvollkornmehl
   unit: g
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -861,6 +927,7 @@ ingredients:
   name: Backpulver
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -874,6 +941,7 @@ ingredients:
   name: Reibekaese
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -887,6 +955,7 @@ ingredients:
   name: Muskatnuss (gemahlen)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -900,6 +969,7 @@ ingredients:
   name: Eigelb
   unit: Stück
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -913,6 +983,7 @@ ingredients:
   name: Sahne
   unit: ml
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -926,6 +997,7 @@ ingredients:
   name: Erdnuesse
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -939,6 +1011,7 @@ ingredients:
   name: Pistazien
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -952,6 +1025,7 @@ ingredients:
   name: Kuemmel
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -965,6 +1039,7 @@ ingredients:
   name: Mohn
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -978,6 +1053,7 @@ ingredients:
   name: Sesam
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -991,6 +1067,7 @@ ingredients:
   name: Dinkelmehl
   unit: g
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -1004,6 +1081,7 @@ ingredients:
   name: Trockenhefe
   unit: Packung
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -1017,6 +1095,7 @@ ingredients:
   name: Olivenoel
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -1030,6 +1109,7 @@ ingredients:
   name: Thymian (frisch)
   unit: Bund
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1043,6 +1123,7 @@ ingredients:
   name: Frischhefe
   unit: Wuerfel
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -1056,6 +1137,7 @@ ingredients:
   name: Speckwuerfel
   unit: g
   veg_type: meat
+  meat_type: pork
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1069,6 +1151,7 @@ ingredients:
   name: Saure Sahne
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -1082,6 +1165,7 @@ ingredients:
   name: Basilikum (frisch)
   unit: Blatt
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1095,6 +1179,7 @@ ingredients:
   name: Gnocchi
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: true
   lactose_free: true
@@ -1108,6 +1193,7 @@ ingredients:
   name: Rotbarschfilet
   unit: g
   veg_type: fish
+  meat_type: fish
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1121,6 +1207,7 @@ ingredients:
   name: Salbei (frisch)
   unit: Blatt
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1134,6 +1221,7 @@ ingredients:
   name: Liebstoeckel (frisch)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1147,6 +1235,7 @@ ingredients:
   name: Wermut (trocken)
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1160,6 +1249,7 @@ ingredients:
   name: Banane
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1173,6 +1263,7 @@ ingredients:
   name: Putenschnitzel
   unit: g
   veg_type: meat
+  meat_type: poultry
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1186,6 +1277,7 @@ ingredients:
   name: Cayennepfeffer
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1199,6 +1291,7 @@ ingredients:
   name: Sherry (trocken)
   unit: ml
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1212,6 +1305,7 @@ ingredients:
   name: Mango-Chutney
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1225,6 +1319,7 @@ ingredients:
   name: Currypulver
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1238,6 +1333,7 @@ ingredients:
   name: Rohschinken
   unit: g
   veg_type: meat
+  meat_type: pork
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1251,10 +1347,11 @@ ingredients:
   name: Streuwuerze
   unit: TL
   veg_type: vegetarian
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: false
-  gluten_free: null
+  gluten_free: false
   shelf_life_days: null
   kcal: 5
   protein: 0.4
@@ -1264,6 +1361,7 @@ ingredients:
   name: Fluessigwuerze
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1277,6 +1375,7 @@ ingredients:
   name: Kraeuterfrischkaese
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -1290,6 +1389,7 @@ ingredients:
   name: Paniermehl
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -1303,6 +1403,7 @@ ingredients:
   name: Kraeutersauce (Fertigpackung)
   unit: Packung
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -1316,6 +1417,7 @@ ingredients:
   name: Schmelzkaese
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -1329,6 +1431,7 @@ ingredients:
   name: Gurke
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1342,6 +1445,7 @@ ingredients:
   name: Magerquark
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -1355,6 +1459,7 @@ ingredients:
   name: Joghurt
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -1368,6 +1473,7 @@ ingredients:
   name: Schmand
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -1381,6 +1487,7 @@ ingredients:
   name: Dill (frisch)
   unit: Bund
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1394,6 +1501,7 @@ ingredients:
   name: Oregano (getrocknet)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1407,10 +1515,11 @@ ingredients:
   name: Gyrosfleisch (gewuerzt)
   unit: g
   veg_type: meat
+  meat_type: pork
   category: ingredient
   side_dish: false
-  lactose_free: null
-  gluten_free: null
+  lactose_free: true
+  gluten_free: true
   shelf_life_days: null
   kcal: 1.7
   protein: 0.2
@@ -1420,6 +1529,7 @@ ingredients:
   name: Zucchini
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1433,6 +1543,7 @@ ingredients:
   name: Tomate
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1446,6 +1557,7 @@ ingredients:
   name: Frischkaese
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -1459,6 +1571,7 @@ ingredients:
   name: Italienische Kraeuter (getrocknet)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1472,6 +1585,7 @@ ingredients:
   name: Petersilie (frisch)
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1485,6 +1599,7 @@ ingredients:
   name: Tomatensaft
   unit: ml
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1498,6 +1613,7 @@ ingredients:
   name: Weissbrot
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1511,6 +1627,7 @@ ingredients:
   name: Bleichsellerie
   unit: Stange
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1524,6 +1641,7 @@ ingredients:
   name: Kuerbisfleisch
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1537,6 +1655,7 @@ ingredients:
   name: Rindertatar
   unit: g
   veg_type: meat
+  meat_type: beef
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1550,6 +1669,7 @@ ingredients:
   name: Kuerbiskernoel
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -1563,10 +1683,11 @@ ingredients:
   name: Gemuesebruehe
   unit: Liter
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
-  gluten_free: null
+  gluten_free: false
   shelf_life_days: null
   kcal: 20
   protein: 1
@@ -1576,10 +1697,11 @@ ingredients:
   name: Chili-con-Carne-Gewuerz
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
-  gluten_free: null
+  gluten_free: true
   shelf_life_days: null
   kcal: 9
   protein: 0.4
@@ -1589,6 +1711,7 @@ ingredients:
   name: Harissa
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1602,6 +1725,7 @@ ingredients:
   name: Tortillachips
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1615,6 +1739,7 @@ ingredients:
   name: Weisswein (trocken)
   unit: ml
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1628,6 +1753,7 @@ ingredients:
   name: Piment (gemahlen)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1641,9 +1767,10 @@ ingredients:
   name: Toastbrot
   unit: Scheibe
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
-  lactose_free: null
+  lactose_free: false
   gluten_free: false
   shelf_life_days: null
   kcal: 66
@@ -1654,6 +1781,7 @@ ingredients:
   name: Halbfettmargarine
   unit: g
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -1667,6 +1795,7 @@ ingredients:
   name: Kuerbiskerne
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1680,6 +1809,7 @@ ingredients:
   name: Ahornsirup
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -1693,6 +1823,7 @@ ingredients:
   name: Spaghetti
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: true
   lactose_free: true
@@ -1706,6 +1837,7 @@ ingredients:
   name: Bandnudeln
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: true
   lactose_free: true
@@ -1719,6 +1851,7 @@ ingredients:
   name: Rinderhackfleisch
   unit: g
   veg_type: meat
+  meat_type: beef
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1732,6 +1865,7 @@ ingredients:
   name: Lauch
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1745,6 +1879,7 @@ ingredients:
   name: Rote Zwiebel
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1758,6 +1893,7 @@ ingredients:
   name: Kraeuter der Provence
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1771,6 +1907,7 @@ ingredients:
   name: Passierte Tomaten
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1784,6 +1921,7 @@ ingredients:
   name: Rotwein (trocken)
   unit: ml
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1797,6 +1935,7 @@ ingredients:
   name: Chilipulver
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1810,6 +1949,7 @@ ingredients:
   name: Kidneybohnen (Dose)
   unit: Dose
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1823,6 +1963,7 @@ ingredients:
   name: Mirin
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1836,6 +1977,7 @@ ingredients:
   name: Sesamoel
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -1849,6 +1991,7 @@ ingredients:
   name: Champignons
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1862,6 +2005,7 @@ ingredients:
   name: Ramen-Nudeln
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: true
   lactose_free: true
@@ -1875,10 +2019,11 @@ ingredients:
   name: Huehnerbruehe
   unit: Liter
   veg_type: meat
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
-  gluten_free: null
+  gluten_free: false
   shelf_life_days: null
   kcal: 40
   protein: 6
@@ -1888,10 +2033,11 @@ ingredients:
   name: Miso-Paste
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
-  gluten_free: null
+  gluten_free: false
   shelf_life_days: null
   kcal: 35
   protein: 2
@@ -1901,6 +2047,7 @@ ingredients:
   name: Aceto Balsamico
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1914,6 +2061,7 @@ ingredients:
   name: Balsamico bianco
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1927,6 +2075,7 @@ ingredients:
   name: Aufbackbroetchen
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: true
   lactose_free: true
@@ -1940,6 +2089,7 @@ ingredients:
   name: Broetchen (altbacken)
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -1953,9 +2103,10 @@ ingredients:
   name: Blaetterteig (Kuehlregal)
   unit: Rolle
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
-  lactose_free: null
+  lactose_free: true
   gluten_free: false
   shelf_life_days: null
   kcal: 1100
@@ -1966,6 +2117,7 @@ ingredients:
   name: Muerbeteig (Kuehlregal)
   unit: Rolle
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -1979,6 +2131,7 @@ ingredients:
   name: Zimt (gemahlen)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -1992,6 +2145,7 @@ ingredients:
   name: Puderzucker
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -2005,6 +2159,7 @@ ingredients:
   name: Blattspinat (TK)
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2018,6 +2173,7 @@ ingredients:
   name: Blattspinat (frisch)
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2031,6 +2187,7 @@ ingredients:
   name: Lachsfilet
   unit: g
   veg_type: fish
+  meat_type: fish
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2044,6 +2201,7 @@ ingredients:
   name: Raeucherlachs
   unit: g
   veg_type: fish
+  meat_type: fish
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2057,6 +2215,7 @@ ingredients:
   name: Basmatireis
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: true
   lactose_free: true
@@ -2070,6 +2229,7 @@ ingredients:
   name: Sushi-Reis
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: true
   lactose_free: true
@@ -2083,6 +2243,7 @@ ingredients:
   name: Gruene Bohnen
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2096,6 +2257,7 @@ ingredients:
   name: Chilischote
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2109,10 +2271,11 @@ ingredients:
   name: Gelbe Currypaste
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
-  gluten_free: null
+  gluten_free: true
   shelf_life_days: null
   kcal: 20
   protein: 0.5
@@ -2122,10 +2285,11 @@ ingredients:
   name: Rote Currypaste
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
-  gluten_free: null
+  gluten_free: true
   shelf_life_days: null
   kcal: 20
   protein: 0.5
@@ -2135,6 +2299,7 @@ ingredients:
   name: Kokosmilch
   unit: ml
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2148,6 +2313,7 @@ ingredients:
   name: Limettensaft
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2161,6 +2327,7 @@ ingredients:
   name: Limette
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2174,6 +2341,7 @@ ingredients:
   name: Kokosoel
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -2187,6 +2355,7 @@ ingredients:
   name: Pak Choi
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2200,6 +2369,7 @@ ingredients:
   name: Mie-Nudeln
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: true
   lactose_free: true
@@ -2213,6 +2383,7 @@ ingredients:
   name: Spaetzle (Kuehlregal)
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: true
   lactose_free: true
@@ -2226,6 +2397,7 @@ ingredients:
   name: Ofenkaese
   unit: Packung
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2239,6 +2411,7 @@ ingredients:
   name: Brokkoli
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2252,6 +2425,7 @@ ingredients:
   name: Kopfsalat
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2265,6 +2439,7 @@ ingredients:
   name: Eisbergsalat
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2278,6 +2453,7 @@ ingredients:
   name: Feldsalat
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2291,6 +2467,7 @@ ingredients:
   name: Rucola
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2304,10 +2481,11 @@ ingredients:
   name: Worcestersauce
   unit: TL
   veg_type: fish
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
-  gluten_free: null
+  gluten_free: false
   shelf_life_days: null
   kcal: 4
   protein: 0
@@ -2317,9 +2495,10 @@ ingredients:
   name: Burgerbroetchen
   unit: Stück
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: true
-  lactose_free: null
+  lactose_free: false
   gluten_free: false
   shelf_life_days: null
   kcal: 180
@@ -2330,6 +2509,7 @@ ingredients:
   name: Creme double
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -2343,6 +2523,7 @@ ingredients:
   name: Creme fraiche
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -2356,6 +2537,7 @@ ingredients:
   name: Schnittlauch (frisch)
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2369,6 +2551,7 @@ ingredients:
   name: Knollensellerie
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2382,6 +2565,7 @@ ingredients:
   name: Kreuzkuemmel (gemahlen)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2395,6 +2579,7 @@ ingredients:
   name: Paprikapulver (geraeuchert)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2408,6 +2593,7 @@ ingredients:
   name: Zitronenschale (abgerieben)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2421,6 +2607,7 @@ ingredients:
   name: Pilze (gemischt, z.B. Waldpilze)
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2434,6 +2621,7 @@ ingredients:
   name: Griechischer Joghurt
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -2447,6 +2635,7 @@ ingredients:
   name: Kardamom (gemahlen)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2460,6 +2649,7 @@ ingredients:
   name: Koriander (gemahlen)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2473,6 +2663,7 @@ ingredients:
   name: Koriander (frisch)
   unit: Bund
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2486,6 +2677,7 @@ ingredients:
   name: Wassermelone
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2499,6 +2691,7 @@ ingredients:
   name: Minze (frisch)
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2512,6 +2705,7 @@ ingredients:
   name: Apfelsaft
   unit: ml
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2525,6 +2719,7 @@ ingredients:
   name: Huettenkaese
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -2538,6 +2733,7 @@ ingredients:
   name: Noriblatt
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2551,10 +2747,11 @@ ingredients:
   name: Wasabipaste
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
-  gluten_free: null
+  gluten_free: true
   shelf_life_days: null
   kcal: 15
   protein: 0.2
@@ -2564,6 +2761,7 @@ ingredients:
   name: Maismehl
   unit: g
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -2577,6 +2775,7 @@ ingredients:
   name: Dinkelvollkornmehl
   unit: g
   veg_type: vegan
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -2590,6 +2789,7 @@ ingredients:
   name: Hirse
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: true
   lactose_free: true
@@ -2603,6 +2803,7 @@ ingredients:
   name: Salsa (Taco-Sauce)
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2616,6 +2817,7 @@ ingredients:
   name: Peperoni (eingelegt)
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2629,6 +2831,7 @@ ingredients:
   name: Mozzarella
   unit: g
   veg_type: vegetarian
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: false
@@ -2642,6 +2845,7 @@ ingredients:
   name: Haehnchenschenkel (ohne Knochen)
   unit: g
   veg_type: meat
+  meat_type: poultry
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2655,6 +2859,7 @@ ingredients:
   name: Knoblauchpulver
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2668,6 +2873,7 @@ ingredients:
   name: Knoblauchknolle
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2681,6 +2887,7 @@ ingredients:
   name: Kurkuma (gemahlen)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2694,6 +2901,7 @@ ingredients:
   name: Zwiebelpulver
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2707,6 +2915,7 @@ ingredients:
   name: Sumach
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2720,6 +2929,7 @@ ingredients:
   name: Granatapfelsirup
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2733,6 +2943,7 @@ ingredients:
   name: Paprikamark
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2746,6 +2957,7 @@ ingredients:
   name: Toum (Knoblauchdip)
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2759,6 +2971,7 @@ ingredients:
   name: Tahini
   unit: EL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2772,6 +2985,7 @@ ingredients:
   name: Pitabrot
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: true
   lactose_free: true
@@ -2785,6 +2999,7 @@ ingredients:
   name: Pommes frites
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: true
   lactose_free: true
@@ -2798,6 +3013,7 @@ ingredients:
   name: Vanilleextrakt
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2811,6 +3027,7 @@ ingredients:
   name: Mandarine
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2824,9 +3041,10 @@ ingredients:
   name: Instant-Ramen
   unit: Packung
   veg_type: meat
+  meat_type: null
   category: ingredient
   side_dish: false
-  lactose_free: null
+  lactose_free: true
   gluten_free: false
   shelf_life_days: null
   kcal: 380
@@ -2837,6 +3055,7 @@ ingredients:
   name: Mayonnaise
   unit: EL
   veg_type: vegetarian
+  meat_type: null
   category: basic
   side_dish: false
   lactose_free: true
@@ -2850,10 +3069,11 @@ ingredients:
   name: Bruehwuerfel (Huhn)
   unit: Stück
   veg_type: meat
+  meat_type: null
   category: spice
   side_dish: false
-  lactose_free: null
-  gluten_free: null
+  lactose_free: true
+  gluten_free: false
   shelf_life_days: null
   kcal: 20
   protein: 1
@@ -2863,6 +3083,7 @@ ingredients:
   name: Saure Bohnen
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2876,10 +3097,11 @@ ingredients:
   name: Rohesser (Rohwurst)
   unit: Stück
   veg_type: meat
+  meat_type: pork
   category: ingredient
   side_dish: false
   lactose_free: true
-  gluten_free: null
+  gluten_free: true
   shelf_life_days: null
   kcal: 330
   protein: 18
@@ -2889,6 +3111,7 @@ ingredients:
   name: Petersilienwurzel
   unit: Stück
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2902,6 +3125,7 @@ ingredients:
   name: Tellerlinsen
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2915,6 +3139,7 @@ ingredients:
   name: Rote Linsen
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2928,10 +3153,11 @@ ingredients:
   name: Wiener Wuerstchen
   unit: Stück
   veg_type: meat
+  meat_type: pork
   category: ingredient
   side_dish: false
   lactose_free: true
-  gluten_free: null
+  gluten_free: true
   shelf_life_days: null
   kcal: 140
   protein: 6
@@ -2941,6 +3167,7 @@ ingredients:
   name: Kichererbsen (Dose)
   unit: Dose
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -2954,6 +3181,7 @@ ingredients:
   name: Garam Masala
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2967,6 +3195,7 @@ ingredients:
   name: Chiliflocken
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2980,6 +3209,7 @@ ingredients:
   name: Koriander (getrocknet, gerebelt)
   unit: TL
   veg_type: vegan
+  meat_type: null
   category: spice
   side_dish: false
   lactose_free: true
@@ -2993,6 +3223,7 @@ ingredients:
   name: Getrocknete Tomaten in Oel
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true
@@ -3006,6 +3237,7 @@ ingredients:
   name: Kirschtomaten
   unit: g
   veg_type: vegan
+  meat_type: null
   category: ingredient
   side_dish: false
   lactose_free: true

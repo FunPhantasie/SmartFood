@@ -83,8 +83,10 @@
   transform: translateY(9px); /* move text down */
 }
 /* Herkunft-Gruppe: Checkboxen stehen in einer Reihe, nicht neben Eingabefeldern -> nicht absenken */
-#rec_origin .checkbox input[type="checkbox"], #rec_origin .checkbox span { transform: none; }
-#rec_origin { gap: 14px; margin-top: 6px; }
+#rec_origin .checkbox input[type="checkbox"], #rec_origin .checkbox span,
+#rec_main .checkbox input[type="checkbox"], #rec_main .checkbox span,
+#rec_meat .checkbox input[type="checkbox"], #rec_meat .checkbox span { transform: none; }
+#rec_origin, #rec_main, #rec_meat { gap: 14px; margin-top: 6px; flex-wrap: wrap; }
     .btn {
       cursor:pointer;
       padding: 10px 14px;
@@ -109,6 +111,7 @@
     .pill { font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(148,163,184,0.3); display:inline-block; }
     .pill.meat { border-color: rgba(248,113,113,0.6); color:#fecaca; }
     .pill.vegan { border-color: rgba(34,197,94,0.6); color:#bbf7d0; }
+    .pill.fish { border-color: rgba(56,189,248,0.6); color:#bae6fd; }
     .pill.vegetarian { border-color: rgba(59,130,246,0.6); color:#bfdbfe; }
 
     .toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
@@ -208,6 +211,7 @@
               <select id="ing_veg">
                 <option value="vegan">vegan</option>
                 <option value="vegetarian">vegetarian</option>
+                <option value="fish">fish</option>
                 <option value="meat">meat</option>
               </select>
             </div>
@@ -229,6 +233,19 @@
           </div>
 
           <div class="row">
+            <div class="col">
+              <label>Fleischsorte (nur bei meat / fish)</label>
+              <select id="ing_meat_type">
+                <option value="">— keine (z.B. Brühe) —</option>
+                <option value="beef">Rind</option>
+                <option value="pork">Schwein</option>
+                <option value="poultry">Geflügel</option>
+                <option value="lamb">Lamm</option>
+                <option value="game">Wild</option>
+                <option value="fish">Fisch</option>
+                <option value="other">Sonstiges</option>
+              </select>
+            </div>
             <div class="col">
               <label>Laktosefrei</label>
               <select id="ing_lactose">
@@ -352,6 +369,7 @@
               <option value="grill">Grill</option>
               <option value="raw">Roh</option>
               <option value="steam">Dampf</option>
+              <option value="microwave">Mikrowelle</option>
             </select>
           </div>
           <div class="col">
@@ -359,19 +377,17 @@
             <select id="rec_spec">
               <option value="">— nicht gesetzt —</option>
               <option value="soup">Suppe</option>
+              <option value="stew">Eintopf</option>
               <option value="salad">Salat</option>
+              <option value="pasta">Nudelgericht</option>
+              <option value="pan_dish">Pfannengericht</option>
               <option value="casserole">Auflauf</option>
               <option value="bowl">Bowl</option>
-              <option value="sandwich">Sandwich</option>
+              <option value="sandwich">Sandwich &amp; Wrap</option>
+              <option value="baked">Gebäck</option>
+              <option value="sauce">Sauce &amp; Dip</option>
               <option value="others">Sonstiges</option>
             </select>
-          </div>
-          <div class="col">
-            <label>Hauptzutat</label>
-            <select id="rec_main">
-              <option value="">— bitte bestätigen —</option>
-            </select>
-            <div class="hint" id="rec_main_hint"></div>
           </div>
           <div class="col">
             <label>Beilage</label>
@@ -379,6 +395,30 @@
               <option value="">— bitte bestätigen —</option>
             </select>
             <div class="hint" id="rec_side_hint"></div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:8px;">
+          <div class="col">
+            <label>Hauptzutaten (mehrere möglich – bitte bestätigen)</label>
+            <div id="rec_main" class="inline"></div>
+            <div class="hint" id="rec_main_hint"></div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:8px;">
+          <div class="col">
+            <label>Fleischsorten</label>
+            <div id="rec_meat" class="inline">
+              <label class="checkbox"><input type="checkbox" value="beef" /> <span>Rind</span></label>
+              <label class="checkbox"><input type="checkbox" value="pork" /> <span>Schwein</span></label>
+              <label class="checkbox"><input type="checkbox" value="poultry" /> <span>Geflügel</span></label>
+              <label class="checkbox"><input type="checkbox" value="lamb" /> <span>Lamm</span></label>
+              <label class="checkbox"><input type="checkbox" value="game" /> <span>Wild</span></label>
+              <label class="checkbox"><input type="checkbox" value="fish" /> <span>Fisch</span></label>
+              <label class="checkbox"><input type="checkbox" value="other" /> <span>Sonstiges</span></label>
+            </div>
+            <div class="hint">Wird bei jeder Änderung der Zutatenliste aus den Fleischsorten der Zutaten gesetzt – danach anpassbar.</div>
           </div>
         </div>
 
@@ -669,7 +709,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
 
     currentRecipeItems = [];
     renderRecipeIngredientList();
-    $('#rec_main').value = '';      // neues Rezept: Hauptzutat / Beilage muessen neu bestaetigt werden
+    setMainIngredients(undefined);  // neues Rezept: Hauptzutat / Beilage muessen neu bestaetigt werden
     $('#rec_side').value = '';
     lastSuggestion = null;
     setEditingRecipe(null);
@@ -705,6 +745,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     $('#ing_unit').value = '';
     $('#ing_category').value = 'ingredient';
     $('#ing_side').checked = false;
+    $('#ing_meat_type').value = '';
     $('#ing_lactose').value = '';
     $('#ing_gluten').value = '';
     selectedIngredientId = null;
@@ -718,6 +759,8 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
   // lactose_free / gluten_free: true / false / null (= unbekannt, filtert nicht)
   function triToSelect(v) { return v === true ? 'true' : v === false ? 'false' : ''; }
   function selectToTri(v) { return v === '' ? null : v === 'true'; }
+  // Fleischsorte zaehlt nur bei Fleisch-/Fisch-Zutaten (YamlEditor.MEAT_TYPES), sonst null
+  function readMeatType() { return ['meat', 'fish'].includes($('#ing_veg').value) ? ($('#ing_meat_type').value || null) : null; }
 
   function renderIngredients() {
     const tbody = $('#ingredientsTable tbody');
@@ -743,6 +786,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
         $('#ing_unit').value = ing.unit ?? '';
         $('#ing_category').value = categoryOf(ing);
         $('#ing_side').checked = !!ing.side_dish;
+        $('#ing_meat_type').value = ing.meat_type || '';
         $('#ing_lactose').value = triToSelect(ing.lactose_free);
         $('#ing_gluten').value = triToSelect(ing.gluten_free);
         $('#updateIngredient').disabled = false;
@@ -780,6 +824,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     const side_dish = $('#ing_side').checked;
     const lactose_free = selectToTri($('#ing_lactose').value);
     const gluten_free = selectToTri($('#ing_gluten').value);
+    const meat_type = readMeatType();
 
     if (!name) { alert('Ingredient name required'); return; }
 
@@ -792,6 +837,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
       $('#ing_unit').value = existing.unit ?? (unit ?? '');
       $('#ing_category').value = categoryOf(existing);
       $('#ing_side').checked = !!existing.side_dish;
+      $('#ing_meat_type').value = existing.meat_type || '';
       $('#ing_lactose').value = triToSelect(existing.lactose_free);
       $('#ing_gluten').value = triToSelect(existing.gluten_free);
       $('#updateIngredient').disabled = false;
@@ -801,7 +847,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
 
     const ingredient_id = nextId(ingredients, 'ingredient_id');
     // gleiches Format wie ingredients.yaml (YamlEditor.INGREDIENT_FIELDS), Naehrwerte pflegt ingredients.html
-    ingredients.push({ ingredient_id, name, unit, veg_type, category, side_dish, lactose_free, gluten_free,
+    ingredients.push({ ingredient_id, name, unit, veg_type, meat_type, category, side_dish, lactose_free, gluten_free,
                        shelf_life_days: null, kcal: null, protein: null, carbs: null, fat: null });
 
     renderIngredients();
@@ -836,6 +882,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     ing.category = $('#ing_category').value || 'ingredient';
     delete ing.spice;   // altes Feld, ersetzt durch category
     ing.side_dish = $('#ing_side').checked;
+    ing.meat_type = readMeatType();
     ing.lactose_free = selectToTri($('#ing_lactose').value);
     ing.gluten_free = selectToTri($('#ing_gluten').value);
 
@@ -1030,9 +1077,10 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     document.querySelectorAll('#rec_origin input').forEach(cb => { cb.checked = wanted.includes(cb.value); });
   }
 
-  // Hauptzutat / Beilage = eine der Zutaten des aktuellen Rezepts (ingredient_id) oder "keine" (-> null).
-  // "" = noch nicht bestaetigt -> Speichern wird blockiert. Der Server macht nur einen Vorschlag
-  // (/api/recipe/suggest), den der User per "Übernehmen" bestaetigen muss.
+  // Hauptzutaten = eine oder mehrere Zutaten des aktuellen Rezepts (Liste von ingredient_ids) oder "keine"
+  // (-> null). Beilage = eine Zutat oder "keine". Nichts gewaehlt = noch nicht bestaetigt -> Speichern
+  // wird blockiert. Der Server macht nur einen Vorschlag (/api/recipe/suggest), den der User per
+  // "Übernehmen" bestaetigen muss.
   let lastSuggestion = null;
   let suggestTimer = null;
 
@@ -1050,10 +1098,53 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     sel.value = [...sel.options].some(o => o.value === current) ? current : '';
   }
 
+  // Checkboxen der Hauptzutaten neu aufbauen (Zutatenliste geaendert), Haken bleiben erhalten
+  function renderMainChecks() {
+    const box = $('#rec_main');
+    if (!box) return;
+    const checked = new Set([...box.querySelectorAll('input:checked')].map(cb => cb.value));
+    const opts = [['none', 'keine'], ...currentRecipeItems.map(it => [String(Number(it.ingredient_id)), ingredientName(it.ingredient_id)])];
+    box.innerHTML = opts.map(([v, label]) =>
+      `<label class="checkbox"><input type="checkbox" value="${v}" ${checked.has(v) ? 'checked' : ''} /> <span>${escapeHtml(label)}</span></label>`).join('');
+    // "keine" schliesst die Zutaten aus und umgekehrt
+    box.querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => {
+      if (!cb.checked) return;
+      box.querySelectorAll('input').forEach(o => {
+        if (o !== cb && (cb.value === 'none' || o.value === 'none')) o.checked = false;
+      });
+    }));
+  }
+
+  // gespeicherter Wert -> Haken: Liste / einzelne ID, null / "not specific" = keine, undefined = unbestaetigt
+  function setMainIngredients(v) {
+    const ids = v === undefined ? [] : (v == null || v === 'not specific') ? ['none']
+      : (Array.isArray(v) ? v : [v]).map(x => String(Number(x)));
+    $('#rec_main').querySelectorAll('input').forEach(cb => { cb.checked = ids.includes(cb.value); });
+  }
+  function mainConfirmed() { return !!$('#rec_main').querySelector('input:checked'); }
+  function readMainIngredient() {
+    const ids = [...$('#rec_main').querySelectorAll('input:checked')].map(cb => cb.value).filter(v => v !== 'none');
+    return ids.length ? ids.map(Number) : null;
+  }
+
+  // Fleischsorten: aus den meat_type der Zutaten ableiten (YamlEditor.meat_types_of), anpassbar
+  function deriveMeatTypes() {
+    return [...new Set(currentRecipeItems
+      .map(it => ingredients.find(i => Number(i.ingredient_id) === Number(it.ingredient_id))?.meat_type)
+      .filter(Boolean))].sort();
+  }
+  function setMeatTypes(list) {
+    document.querySelectorAll('#rec_meat input').forEach(cb => { cb.checked = (list || []).includes(cb.value); });
+  }
+  function getMeatTypes() {
+    return [...document.querySelectorAll('#rec_meat input:checked')].map(cb => cb.value);
+  }
+
   function renderMainIngredientOptions() {
-    renderRoleSelect('#rec_main');
+    renderMainChecks();
     renderRoleSelect('#rec_side');
     renderOtherSideOptions();
+    setMeatTypes(deriveMeatTypes());
     scheduleSuggestion();
   }
 
@@ -1063,7 +1154,6 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     const v = $(selId).value;
     return (v === '' || v === 'none') ? null : Number(v);
   }
-  function readMainIngredient() { return readRole('#rec_main'); }
 
   function scheduleSuggestion() {
     clearTimeout(suggestTimer);
@@ -1097,7 +1187,10 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
       const value = s ? String(s.ingredient_id) : 'none';
       const text = s ? `${escapeHtml(s.name)} (${escapeHtml(s.reason)})` : 'keine';
       hint.innerHTML = `Vorschlag: ${text} <button type="button" class="btn" data-accept="${selId}" data-value="${value}">Übernehmen</button>`;
-      hint.querySelector('button').addEventListener('click', () => { $(selId).value = value; });
+      hint.querySelector('button').addEventListener('click', () => {
+        if (key === 'main_ingredient') setMainIngredients(s ? [s.ingredient_id] : null);
+        else $(selId).value = value;
+      });
     }
   }
 
@@ -1141,6 +1234,7 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     const types = currentRecipeItems.map(it => (ingredients.find(i => Number(i.ingredient_id) === Number(it.ingredient_id))?.veg_type || 'vegan'));
     let veg = 'vegan';
     if (types.includes('meat')) veg = 'meat';
+    else if (types.includes('fish')) veg = 'fish';
     else if (types.includes('vegetarian')) veg = 'vegetarian';
     const pill = $('#calculatedVeg');
     pill.textContent = veg;
@@ -1252,8 +1346,9 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
 
     renderRecipeIngredientList();
     // Optionen erst nach renderRecipeIngredientList da; gespeichertes Rezept = bereits bestaetigt (null = keine)
-    $('#rec_main').value = roleToSelect(r.main_ingredient);
+    setMainIngredients(r.main_ingredient);
     $('#rec_side').value = roleToSelect(r.side_dish);
+    if (Array.isArray(r.meat_types)) setMeatTypes(r.meat_types);   // gespeichert, sonst aus den Zutaten
     autoResizeTextarea($('#rec_instructions'));
   }
 
@@ -1302,8 +1397,8 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
     if (!Number.isFinite(prep) || prep < 0) { alert('Zubereitungszeit muss ≥ 0 sein'); return; }
     if (!Number.isFinite(cook) || cook < 0) { alert('Kochzeit muss ≥ 0 sein'); return; }
     if (!currentRecipeItems.length) { alert('Add at least one ingredient'); return; }
-    if ($('#rec_main').value === '' || $('#rec_side').value === '') {
-      alert('Bitte Hauptzutat und Beilage bestätigen – Vorschlag übernehmen, eine Zutat wählen oder „keine“.');
+    if (!mainConfirmed() || $('#rec_side').value === '') {
+      alert('Bitte Hauptzutat(en) und Beilage bestätigen – Vorschlag übernehmen, Zutaten wählen oder „keine“.');
       return;
     }
 
@@ -1343,7 +1438,8 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
       cooking_method: $('#rec_method').value || null,
       recipe_spec: $('#rec_spec').value || null,
       main_ingredient: readMainIngredient(),
-      side_dish: readRole('#rec_side')
+      side_dish: readRole('#rec_side'),
+      meat_types: getMeatTypes()
     };
 
     // prep_minutes/cook_minutes hier sind nur die anfaengliche Schaetzung. Sobald das

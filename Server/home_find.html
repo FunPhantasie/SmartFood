@@ -199,7 +199,7 @@
     .card .title{
       font-weight:750;
       font-size:13px;
-      margin:0 34px 6px 0;
+      margin:0 70px 6px 0;
     }
     .card .meta{
       font-size:12px;
@@ -225,6 +225,9 @@
       border-color: rgba(255,107,107,.38);
       background: rgba(255,107,107,.12);
     }
+    .closebtn.blacklist{ right:44px; font-weight:400; font-size:13px; }
+    .checkrow{ display:flex; gap:16px; flex-wrap:wrap; }
+    .checkrow label{ display:inline-flex; align-items:center; gap:6px; margin:0; font-size:13px; color:var(--text); }
 
     .splitHd{
       display:flex; align-items:center; justify-content:space-between; gap:10px;
@@ -303,14 +306,13 @@
             <div>
               <label for="mealType">Meal type</label>
               <select id="mealType">
-                <option value="main_dish">Main</option>
-                <option value="side">Side</option>
-                <option value="dessert">Dessert</option>
-                <option value="breakfast">Breakfast</option>
+                <option value="main_dish">Hauptspeise</option>
+                <option value="side_dish">Nebenspeise</option>
+                <option value="sweet">Süßspeise</option>
                 <option value="snack">Snack</option>
-                <option value="spice_mix">Gewürzmischung</option>
+                <option value="dip">Dip</option>
+                <option value="wuerzung">Würzmischung</option>
               </select>
-              <div class="help">Hinweis: Gewürzmischungen sind jetzt ein eigener Meal-Type (nicht „Spicy Level“).</div>
             </div>
 
             <div>
@@ -346,22 +348,21 @@
               <select id="randomness"></select>
               <div class="help">1 = fast immer die besten Rezepte, 10 = sehr zufällig. Standard 4.</div>
             </div>
+            <div>
+              <label>Unverträglichkeiten</label>
+              <div class="checkrow" id="allergies">
+                <label><input type="checkbox" value="lactose" /> Laktosefrei</label>
+                <label><input type="checkbox" value="gluten" /> Glutenfrei</label>
+              </div>
+              <div class="help">Gilt immer (wird gemerkt). Zutaten ohne Angabe werden nicht rausgefiltert – auf der Zutaten-Seite pflegen.</div>
+            </div>
           </div>
 
-          <label for="includeInput">Include ingredient/tag</label>
+          <label for="includeInput">Include Zutat (alle müssen drin sein)</label>
           <div class="row2">
             <div>
               <input id="includeInput" list="includeOptions" type="text" placeholder="Tippen oder auswählen…" />
-              <datalist id="includeOptions">
-                <option value="chicken"></option>
-                <option value="rice"></option>
-                <option value="tofu"></option>
-                <option value="broccoli"></option>
-                <option value="tomato"></option>
-                <option value="oats"></option>
-                <option value="curry"></option>
-                <option value="garlic"></option>
-              </datalist>
+              <datalist id="includeOptions"></datalist>
             </div>
             <div class="btnrow" style="margin:0">
               <button class="secondary" type="button" id="addInclude">Add</button>
@@ -369,17 +370,11 @@
           </div>
           <div class="chiprow" id="includeChips" aria-label="include list"></div>
 
-          <label for="excludeInput">Exclude ingredient/tag</label>
+          <label for="excludeInput">Exclude Zutat</label>
           <div class="row2">
             <div>
               <input id="excludeInput" list="excludeOptions" type="text" placeholder="Tippen oder auswählen…" />
-              <datalist id="excludeOptions">
-                <option value="peanuts"></option>
-                <option value="lactose"></option>
-                <option value="gluten"></option>
-                <option value="fish"></option>
-                <option value="cilantro"></option>
-              </datalist>
+              <datalist id="excludeOptions"></datalist>
             </div>
             <div class="btnrow" style="margin:0">
               <button class="secondary" type="button" id="addExclude">Add</button>
@@ -432,7 +427,8 @@ const state = {
   backendOk: null,
   t: 4,            // Softmax-Temperatur (Zufall), 1-10 - Standard wie ProposeLogic.SOFTMAX_T
   pool: "all",     // "all" = normale Vorschlaege, "new" = nur nie gekochte Rezepte
-  message: ""      // Hinweis vom Backend, wenn nichts gefunden wurde
+  message: "",     // Hinweis vom Backend, wenn nichts gefunden wurde
+  allergies: JSON.parse(localStorage.getItem("smartfood_allergies") || "[]")   // ["lactose", "gluten"]
 };
 const T_MIN = 1, T_MAX = 10;
 
@@ -500,24 +496,45 @@ async function dismissSuggestion(recipe, context){
   }
 }
 
+// "Nie mehr vorschlagen": Rezept fuer den aktuellen User auf die Blacklist (blacklist.yaml).
+// Rueckgaengig ueber die Rezeptseite.
+async function blacklistRecipe(recipe){
+  const user_id = window.SmartFoodUser?.get();
+  if(!user_id){ alert("Bitte oben zuerst einen User wählen."); return false; }
+  if(!confirm(`„${recipe.name}“ nie mehr vorschlagen?\n(Rückgängig auf der Rezeptseite)`)) return false;
+  try{
+    const r = await fetch("/api/blacklist/toggle", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({recipe_id: recipe.id, user_id})
+    });
+    const result = await r.json();
+    if(!r.ok) throw new Error(result.error || ("HTTP " + r.status));
+    return result.blacklisted;
+  }catch(e){
+    alert("Konnte nicht gespeichert werden: " + e.message);
+    return false;
+  }
+}
+
 async function fetchRecipes(filters = null){
   // Fetch recipes from backend - with or without filters
   // If filters provided: POST request
   // If no filters: GET request (defaults)
-  // t (Zufall) und pool ("all" | "new") gehen immer mit.
+  // t (Zufall), pool ("all" | "new") und allergies gehen immer mit.
   state.message = "";
   try{
     let r;
     if(filters){
-      r = await fetch("/api/propsals", {
+      r = await fetch("/api/proposals", {
         method: "POST",
         headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({...filters, t: state.t, pool: state.pool})
+        body: JSON.stringify({...filters, t: state.t, pool: state.pool, allergies: state.allergies})
       });
     } else {
       const user = window.SmartFoodUser?.get() || "";
-      const qs = new URLSearchParams({user, t: state.t, pool: state.pool});
-      r = await fetch("/api/propsals?" + qs.toString(), {method: "GET"});
+      const qs = new URLSearchParams({user, t: state.t, pool: state.pool, allergies: state.allergies.join(",")});
+      r = await fetch("/api/proposals?" + qs.toString(), {method: "GET"});
     }
 
     if(!r.ok) throw new Error("fetch failed");
@@ -569,11 +586,12 @@ function addChip(kind, value){
 function edit(recipe){
   location.href = window.SmartFoodUser.decorate(`/recipe?id=${encodeURIComponent(recipe.id)}`);
 }
-function cardEl(recipe, onClose){
+function cardEl(recipe, onClose, onBlacklist){
   const div = document.createElement("div");
   div.className = "card";
   div.innerHTML = `
-    <div class="closebtn" title="dismiss">×</div>
+    <div class="closebtn blacklist" title="Nie mehr vorschlagen">🚫</div>
+    <div class="closebtn" title="Gerade nicht (Wiederholungswunsch sinkt)">×</div>
     <p class="title">${recipe.name}${recipe.is_new ? '<span class="badge">Neu</span>' : ''}</p>
     <div class="meta">
       <span><b>${prettyMealType(recipe.recipe_type)}</b></span>
@@ -585,9 +603,13 @@ function cardEl(recipe, onClose){
   div.addEventListener("click", () => edit(recipe));
 
   // Klick auf X -> nur dismiss, nicht navigieren
-  div.querySelector(".closebtn").addEventListener("click", (e) => {
+  div.querySelector(".closebtn:not(.blacklist)").addEventListener("click", (e) => {
     e.stopPropagation();
     onClose();
+  });
+  div.querySelector(".closebtn.blacklist").addEventListener("click", (e) => {
+    e.stopPropagation();
+    onBlacklist();
   });
   return div;
 }
@@ -597,16 +619,20 @@ function renderSection(sectionKey){
   const cfg = state.defaults[sectionKey];
   const wrap = document.getElementById(sectionKey==="main_dish" ? "mainCards" : "snackCards");
   wrap.innerHTML = "";
+  // Karte entfernen und aus dem Puffer nachfuellen
+  const removeCard = (idx) => {
+    cfg.shown.splice(idx, 1);
+    if(cfg.buffer.length > 0){
+      cfg.shown.push(cfg.buffer.shift());
+    }
+    renderSection(sectionKey);
+  };
   cfg.shown.forEach((r, idx)=>{
     wrap.appendChild(cardEl(r, async ()=>{
       await dismissSuggestion(r, {mode:"defaults", section: sectionKey});
-      // remove
-      cfg.shown.splice(idx, 1);
-      // refill to keep 3
-      if(cfg.buffer.length > 0){
-        cfg.shown.push(cfg.buffer.shift());
-      }
-      renderSection(sectionKey);
+      removeCard(idx);
+    }, async ()=>{
+      if(await blacklistRecipe(r)) removeCard(idx);
     }));
   });
 
@@ -708,6 +734,26 @@ document.getElementById("toggleFilter").addEventListener("click", () => {
   btn.textContent = filterSec.classList.contains("collapsed") ? "Show Filters" : "Hide Filters";
 });
 
+document.querySelectorAll("#allergies input").forEach(cb => {
+  cb.checked = state.allergies.includes(cb.value);
+  cb.addEventListener("change", () => {
+    state.allergies = [...document.querySelectorAll("#allergies input:checked")].map(x => x.value);
+    localStorage.setItem("smartfood_allergies", JSON.stringify(state.allergies));
+  });
+});
+
+// Vorschlaege fuer Include / Exclude = echte Zutatennamen (der Filter vergleicht den Namen exakt)
+async function loadIngredientOptions(){
+  try{
+    const r = await fetch("/api/all");
+    if(!r.ok) return;
+    const names = [...new Set(((await r.json()).ingredients || []).map(i => i.name).filter(Boolean))].sort();
+    const html = names.map(n => `<option value="${n.replace(/"/g, "&quot;")}"></option>`).join("");
+    document.getElementById("includeOptions").innerHTML = html;
+    document.getElementById("excludeOptions").innerHTML = html;
+  }catch(e){ /* offline ok */ }
+}
+
 const randomness = document.getElementById("randomness");
 for(let t = T_MIN; t <= T_MAX; t++){
   randomness.add(new Option(t === 4 ? `${t} (Standard)` : String(t), String(t)));
@@ -738,6 +784,7 @@ if (currentPickRaw) {
 
 (async function boot(){
   await checkBackendOnline();
+  loadIngredientOptions();
   await loadDefaultRecipes();
 })();
 </script>
