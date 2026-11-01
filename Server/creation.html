@@ -513,7 +513,7 @@
   let recipes = [];           // [{recipe_id, veg_type, prep_minutes, cook_minutes, name, sweet, instructions, recipe_type, ...}]
   let recipeIngredients = []; // [{ingredient_id, recipe_id, quantity, unit}]
   let history = [];
-  let users = []; // nur durchgereicht (kein UI hier), damit save_all() users.yaml nicht leert
+  let users = []; // nur gelesen, wird nicht gespeichert
 
   let selectedIngredientId = null;
   let currentRecipeItems = []; // [{ingredient_id, quantity, unit}]
@@ -1493,7 +1493,9 @@ function autoSizeInputToContent(input, minPx = 180, maxPx = 520) {
 
   async function saveAll() {
     try {
-      const payload = { ingredients, recipes, recipe_ingredients: recipeIngredients, history, users };
+      // history / users nicht mitschicken: save_all schreibt nur mitgeschickte Collections - eine alte
+      // Kopie wuerde sonst Bewertungen ueberschreiben, die seit dem Laden der Seite dazugekommen sind
+      const payload = { ingredients, recipes, recipe_ingredients: recipeIngredients };
       const res = await fetch('/api/all', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

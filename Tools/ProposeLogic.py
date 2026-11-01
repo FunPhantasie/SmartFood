@@ -69,6 +69,14 @@ def _mean(values) -> Optional[float]:
     return sum(values) / len(values) if values else None
 
 
+def rating(entry: Optional[dict], key: str, defaults: Optional[dict] = None) -> float:
+    """Mittel der history-Bewertungen; ohne -> Vorab-Bewertung (default_ratings.yaml); ohne -> NEUTRAL_RATING."""
+    value = _mean((entry or {}).get(key))
+    if value is None:
+        value = (defaults or {}).get(key)
+    return NEUTRAL_RATING if value is None else value
+
+
 def _logistic(x: float) -> float:
     """1 / (1 + e^x) ohne Overflow bei sehr grossen x (Rezepte, die ueber Tage gehen)."""
     if x > 0:
@@ -136,8 +144,10 @@ def calc_date_score(amp: float, dist_last: float, tau: float) -> float:
     return MAX_SCORE * math.tanh(amp / tau * (dist_last - ZERO_CROSSING))
 
 
-def date_details(entry: Optional[dict], app: dict, today: Optional[date] = None) -> dict:
-    """date_score fuer EINEN history-Eintrag mit allen Zwischenwerten (fuer test_with_data)."""
+def date_details(entry: Optional[dict], app: dict, today: Optional[date] = None,
+                 defaults: Optional[dict] = None) -> dict:
+    """date_score fuer EINEN history-Eintrag mit allen Zwischenwerten (fuer test_with_data).
+    defaults: Vorab-Bewertung des Rezepts (YamlEditor.default_rating) fuer fehlende repeat_ratings."""
     today = today or date.today()
     entry = entry or {}
     out = {"dist_last": None, "n_dates": 0, "mean": None, "std": None, "repeat": None,
@@ -147,8 +157,7 @@ def date_details(entry: Optional[dict], app: dict, today: Optional[date] = None)
 
     dates = sorted({date.fromisoformat(d) for d in entry.get("dates") or []})
     dist_last = (today - date.fromisoformat(entry["last_date"])).days
-    repeat = _mean(entry.get("repeat_rating"))
-    repeat = NEUTRAL_RATING if repeat is None else repeat
+    repeat = rating(entry, "repeat_rating", defaults)
     out.update(dist_last=dist_last, n_dates=len(dates), repeat=repeat, amp=1.0)
 
     if len(dates) >= MIN_DATES_FOR_TARGET:
@@ -162,8 +171,9 @@ def date_details(entry: Optional[dict], app: dict, today: Optional[date] = None)
     return out
 
 
-def date_score(entry: Optional[dict], app: dict, today: Optional[date] = None) -> tuple[float, bool]:
-    d = date_details(entry, app, today)
+def date_score(entry: Optional[dict], app: dict, today: Optional[date] = None,
+               defaults: Optional[dict] = None) -> tuple[float, bool]:
+    d = date_details(entry, app, today, defaults)
     return d["date_score"], d["remove"]
 
 
@@ -188,13 +198,11 @@ def recipe_minutes(recipe: dict) -> Optional[float]:
     return (prep or 0) + (cook or 0)
 
 
-def reward_details(recipe: dict, entry: Optional[dict]) -> dict:
-    """reward mit Zwischenwerten. Fehlende Bewertungen -> NEUTRAL_RATING. Nie gekochtes Rezept
-    ohne Zeiten -> reward None (bekommt spaeter den Median-Score, siehe split_pools)."""
+def reward_details(recipe: dict, entry: Optional[dict], defaults: Optional[dict] = None) -> dict:
+    """reward mit Zwischenwerten. Fehlende Bewertungen -> Vorab-Bewertung (defaults), sonst NEUTRAL_RATING.
+    Nie gekochtes Rezept ohne Zeiten -> reward None (bekommt spaeter den Median-Score, siehe split_pools)."""
     entry = entry or {}
-    taste, effort = _mean(entry.get("taste_rating")), _mean(entry.get("effort_rating"))
-    taste = NEUTRAL_RATING if taste is None else taste
-    effort = NEUTRAL_RATING if effort is None else effort
+    taste, effort = rating(entry, "taste_rating", defaults), rating(entry, "effort_rating", defaults)
     minutes = recipe_minutes(recipe)
     if minutes is None and entry.get("last_date"):
         minutes = MISSING_TIME
@@ -202,8 +210,8 @@ def reward_details(recipe: dict, entry: Optional[dict]) -> dict:
     return {"taste": taste, "effort": effort, "minutes": minutes, "reward_score": reward}
 
 
-def reward_score(recipe: dict, entry: Optional[dict]) -> Optional[float]:
-    return reward_details(recipe, entry)["reward_score"]
+def reward_score(recipe: dict, entry: Optional[dict], defaults: Optional[dict] = None) -> Optional[float]:
+    return reward_details(recipe, entry, defaults)["reward_score"]
 
 
 # ================= II.3 damp_score =================
@@ -377,10 +385,11 @@ def draw_proposals(scores: dict, root_of: dict, k: int = PROPOSAL_COUNT,
 
 
 def swap_proposals(picks: list, new_pool: dict, main_pool: dict, root_of: dict,
-                   wishlist: set, rng=random, t: Optional[float] = None) -> list:
+                   wishlist: set, rng=random, t: Optional[float] = None, swapped: Optional[dict] = None) -> list:
     """Jeder Vorschlag wird mit Wahrscheinlichkeit 1 - p getauscht (p^5 = SWAP_P5), ausser er
     steht auf der Wunschliste. Ersatz per Softmax: erst aus den nie gekochten Rezepten, dann aus
-    dem Rest - nie ein Rezept oder eine Variante, die schon in der Liste steht. Nichts frei -> kein Tausch."""
+    dem Rest - nie ein Rezept oder eine Variante, die schon in der Liste steht. Nichts frei -> kein Tausch.
+    swapped (optional): wird mit {Index: ("new" | "main", ersetzte recipe_id)} gefuellt."""
     p = SWAP_P5 ** (1 / PROPOSAL_COUNT)
     out = list(picks)
     for idx, pick in enumerate(out):
@@ -391,13 +400,15 @@ def swap_proposals(picks: list, new_pool: dict, main_pool: dict, root_of: dict,
             repl = draw_proposals(pool, root_of, k=1, rng=rng, t=t, used_roots=used)
             if repl:
                 out[idx] = repl[0]
+                if swapped is not None:
+                    swapped[idx] = ("new" if pool is new_pool else "main", pick)
                 break
     return out
 
 
 def split_pools(dataset: dict, candidates: list) -> tuple[dict, dict]:
-    """Teilt die erlaubten Rezepte in den Haupt-Pool (gekocht oder auf der Wunschliste) und den
-    Pool der neuen, nie gekochten Rezepte. Rezepte ohne berechenbaren Score (nie gekocht, keine
+    """Teilt die erlaubten Rezepte in den Haupt-Pool (gekocht, vorab bewertet oder auf der Wunschliste)
+    und den Pool der neuen, nie gekochten Rezepte. Rezepte ohne berechenbaren Score (nie gekocht, keine
     Zeiten) bekommen den Median aller berechneten Scores der Kandidaten.
     Rueckgabe: ({recipe_id: score} Haupt-Pool, {recipe_id: score} neue Rezepte)."""
     computed = [dataset[i]["score"] for i in candidates if dataset[i]["score"] is not None]
@@ -407,7 +418,7 @@ def split_pools(dataset: dict, candidates: list) -> tuple[dict, dict]:
     for i in candidates:
         d = dataset[i]
         score = d["score"] if d["score"] is not None else median
-        (new if d["never_cooked"] and not d["wishlist"] else main)[i] = score
+        (new if d["never_cooked"] and not d["wishlist"] and not d.get("rated_ahead") else main)[i] = score
     return main, new
 
 
@@ -436,8 +447,9 @@ def build_propose_dataset(data: dict, user_id=None, today: Optional[date] = None
     for r in recipes:
         rid = r.get("recipe_id")
         entry = history_by_recipe[rid][0] if history_by_recipe.get(rid) else None   # genau ein Eintrag pro Rezept
-        d = date_details(entry, app, today)
-        rw = reward_details(r, entry)
+        defaults = yr.default_rating(data, rid)
+        d = date_details(entry, app, today, defaults)
+        rw = reward_details(r, entry, defaults)
         mult, off, rules = calc_damping(recipe_features(r, data), ls, season_now)
         wish = user_id is not None and rl.is_wishlisted(data, rid, user_id)
         score = None if rw["reward_score"] is None else calc_total_score(
@@ -449,6 +461,7 @@ def build_propose_dataset(data: dict, user_id=None, today: Optional[date] = None
             "ingredient_info": [ingredient_by_id[ri.get("ingredient_id")] for ri in ingredients_by_recipe.get(rid, [])
                                 if ri.get("ingredient_id") in ingredient_by_id],
             "never_cooked": not (entry or {}).get("last_date"),
+            "rated_ahead": any(v is not None for v in defaults.values()),   # Vorab-Bewertung -> bekannt
             "date": d,
             "reward": rw,
             "date_score": d["date_score"],
@@ -483,10 +496,27 @@ def hard_filter(dataset: dict, last_supper_ids: list, meal_type: str = "main_dis
     ]
 
 
+# Herkunft eines Vorschlags (propose_detailed -> Abzeichen auf der Karte)
+SOURCE_CYCLE = "cycle"          # normal aus dem Haupt-Pool gezogen (gekocht / vorab bewertet / Wunschliste)
+SOURCE_FILL = "fill"            # Haupt-Pool zu klein -> mit einem neuen Rezept aufgefuellt
+SOURCE_SWAP_NEW = "swap_new"    # beim Tauschen durch ein neues Rezept ersetzt
+SOURCE_SWAP_MAIN = "swap_main"  # beim Tauschen ersetzt, kein neues frei -> aus dem Haupt-Pool
+SOURCE_NEW_POOL = "new_pool"    # 'Neue Rezepte'-Button (pool="new")
+
+
 def propose(data: dict, user_id=None, today: Optional[date] = None, meal_type: str = "main_dish",
             diet: str = "any", blacklist: Optional[set] = None, rng=random, k: int = PROPOSAL_COUNT,
             include=(), exclude=(), allergies=(), t: Optional[float] = None, pool: str = "all") -> list[dict]:
-    """Ganze Vorschlags-Pipeline (I.1 - I.6 im Doc). Gibt bis zu k vorgeschlagene Rezept-Dicts zurueck.
+    """Ganze Vorschlags-Pipeline (I.1 - I.6 im Doc). Gibt bis zu k vorgeschlagene Rezept-Dicts zurueck."""
+    return [p["recipe"] for p in propose_detailed(data, user_id, today, meal_type, diet, blacklist, rng, k,
+                                                  include, exclude, allergies, t, pool)]
+
+
+def propose_detailed(data: dict, user_id=None, today: Optional[date] = None, meal_type: str = "main_dish",
+                     diet: str = "any", blacklist: Optional[set] = None, rng=random, k: int = PROPOSAL_COUNT,
+                     include=(), exclude=(), allergies=(), t: Optional[float] = None, pool: str = "all") -> list[dict]:
+    """Wie propose(), pro Vorschlag aber {recipe, source (SOURCE_*), score, wishlist, replaced}.
+    replaced = recipe_id, die beim Tauschen ersetzt wurde (sonst None).
     pool="all": aus dem Haupt-Pool ziehen, zu wenige -> mit neuen Rezepten auffuellen, dann tauschen.
     pool="new": nur aus den nie gekochten Rezepten ziehen ('Neue Rezepte'-Button).
     blacklist kommt zusaetzlich zur blacklist.yaml des Users dazu."""
@@ -500,17 +530,25 @@ def propose(data: dict, user_id=None, today: Optional[date] = None, meal_type: s
         return []
     root_of = {rid: variant_root(dataset[rid]["recipe"]) for rid in candidates}
     main_pool, new_pool = split_pools(dataset, candidates)
+    detail = lambda rid, source, replaced=None: {
+        "recipe": dataset[rid]["recipe"], "source": source, "score": {**main_pool, **new_pool}[rid],
+        "wishlist": dataset[rid]["wishlist"], "replaced": replaced}
     if pool == "new":
-        picks = draw_proposals(new_pool, root_of, k=k, rng=rng, t=t)
-        return [dataset[rid]["recipe"] for rid in picks]
+        return [detail(rid, SOURCE_NEW_POOL) for rid in draw_proposals(new_pool, root_of, k=k, rng=rng, t=t)]
 
     picks = draw_proposals(main_pool, root_of, k=k, rng=rng, t=t)
+    sources = [SOURCE_CYCLE] * len(picks)
     if len(picks) < k:   # zu wenige -> mit neuen Rezepten auffuellen
-        picks += draw_proposals(new_pool, root_of, k=k - len(picks), rng=rng, t=t,
-                                used_roots={root_of[i] for i in picks})
+        fill = draw_proposals(new_pool, root_of, k=k - len(picks), rng=rng, t=t,
+                              used_roots={root_of[i] for i in picks})
+        picks += fill
+        sources += [SOURCE_FILL] * len(fill)
+    swapped: dict = {}
     picks = swap_proposals(picks, new_pool, main_pool, root_of,
-                           wishlist={rid for rid in candidates if dataset[rid]["wishlist"]}, rng=rng, t=t)
-    return [dataset[rid]["recipe"] for rid in picks]
+                           wishlist={rid for rid in candidates if dataset[rid]["wishlist"]}, rng=rng, t=t,
+                           swapped=swapped)
+    return [detail(rid, {"new": SOURCE_SWAP_NEW, "main": SOURCE_SWAP_MAIN}[swapped[i][0]], swapped[i][1])
+            if i in swapped else detail(rid, sources[i]) for i, rid in enumerate(picks)]
 
 
 # ================= Frontend / bestehende Filter =================

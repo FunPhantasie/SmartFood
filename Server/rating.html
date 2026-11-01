@@ -227,7 +227,7 @@ async function loadRating(){
     });
   });
 
-  const r = await fetch(`/api/rating/${id}`);
+  const r = await fetch(`/api/rating/${id}?user=${encodeURIComponent(window.SmartFoodUser.get() || "")}`);   // Vorbefuellung des Users
   if(!r.ok){
     document.body.innerHTML = "❌ Rezept nicht gefunden";
     return;

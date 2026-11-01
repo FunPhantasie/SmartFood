@@ -430,9 +430,8 @@
   }
 
   // ---------------------- Server I/O ----------------------
-  // Voller Round-Trip ueber /api/all wie in creation.html: andere Collections
-  // (recipes, recipe_ingredients, history, users) werden nur durchgereicht,
-  // damit ein Speichern hier sie nicht versehentlich leert.
+  // Round-Trip ueber /api/all wie in creation.html: recipes / recipe_ingredients werden nur durchgereicht.
+  // history / users werden nicht mitgeschickt (save_all laesst nicht mitgeschickte Dateien unveraendert).
   let saveTimer = null;
   function scheduleSave() {
     setStatus('Saving…');
@@ -442,7 +441,9 @@
 
   async function saveAll() {
     try {
-      const payload = { ingredients, recipes, recipe_ingredients: recipeIngredients, history, users };
+      // history / users nicht mitschicken: save_all schreibt nur mitgeschickte Collections - eine alte
+      // Kopie wuerde sonst Bewertungen ueberschreiben, die seit dem Laden der Seite dazugekommen sind
+      const payload = { ingredients, recipes, recipe_ingredients: recipeIngredients };
       const res = await fetch('/api/all', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartFood – Dev: Vorab-Bewertung</title>
+  <style>
+    body{ font-family: system-ui, sans-serif; background:#0b0f17; color:#e9eefc; margin:0; padding:24px; }
+    h1{ margin:0 0 6px; font-size:22px; }
+    .muted{ color:#a7b4d6; font-size:13px; }
+    .bar{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:12px 0 18px; }
+    .bar select{ background:#121a2a; color:#e9eefc; border:1px solid #2a3a58; border-radius:8px; padding:6px 10px; }
+    .bar label{ display:inline-flex; align-items:center; gap:6px; font-size:13px; }
+    .progress{ height:8px; background:#121a2a; border-radius:999px; overflow:hidden; max-width:520px; }
+    .progress div{ height:100%; background:#22d3ee; width:0; transition:width .2s; }
+    .list{ display:flex; flex-direction:column; gap:12px; max-width:900px; }
+    .card{ background:#121a2a; border-radius:12px; padding:14px 16px; border:1px solid #1d2840; }
+    .card.saved{ border-color:#4cd4a6; }
+    .card .title{ font-weight:700; margin:0 0 4px; }
+    .card .title a{ color:#e9eefc; text-decoration:none; }
+    .card .title a:hover{ text-decoration:underline; }
+    .card .meta{ color:#a7b4d6; font-size:12px; margin-bottom:10px; }
+    .badge{ font-size:11px; font-weight:700; border-radius:999px; padding:1px 7px; margin-left:6px; }
+    .badge.ahead{ color:#4cd4a6; border:1px solid rgba(76,212,166,.45); }
+    .badge.real{ color:#fbbf24; border:1px solid rgba(251,191,36,.45); }
+    .row{ display:flex; align-items:center; gap:10px; margin:6px 0; flex-wrap:wrap; }
+    .row .lbl{ width:110px; font-size:13px; color:#a7b4d6; }
+    .scale{ display:flex; gap:4px; flex-wrap:wrap; }
+    .scale button{ width:30px; height:30px; border-radius:7px; border:1px solid #2a3a58; background:#0b1220;
+                   color:#7d8db3; font-size:13px; cursor:pointer; }
+    .scale button.active{ background:#22d3ee; color:#0f172a; border-color:#22d3ee; font-weight:700; }
+    .actions{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+    .btn{ border-radius:10px; padding:8px 14px; border:none; background:#22d3ee; color:#0f172a; font-weight:700; cursor:pointer; }
+    .btn.secondary{ background:#1a2436; color:#e9eefc; border:1px solid #2a3a58; }
+    .btn.danger{ background:#1a2436; color:#ff8a8a; border:1px solid rgba(255,107,107,.4); }
+    .btn:disabled{ opacity:.55; cursor:default; }
+    .empty{ border:1px dashed #2a3a58; border-radius:12px; padding:16px; color:#a7b4d6; max-width:900px; }
+  </style>
+</head>
+<body>
+<script src="/static/nav.js"></script>
+
+<h1>Dev: Vorab-Bewertung</h1>
+<div class="muted">
+  Für Gerichte, die du kennst, aber noch nicht über die App gekocht hast. Setzt <b>kein</b> Kochdatum –
+  gilt nur, bis es eine echte Bewertung gibt. Gespeichert pro User in <code>user_data/user_&lt;id&gt;.yaml</code>.
+</div>
+
+<div class="bar">
+  <span id="sf-user-slot" style="display:inline-flex; align-items:center; gap:6px;"></span>
+  <select id="typeFilter"><option value="">Alle Typen</option></select>
+  <label><input type="checkbox" id="showRated"> bereits bewertete zeigen</label>
+  <button class="btn secondary" type="button" id="btnShuffle">Neu mischen</button>
+  <button class="btn secondary" type="button" id="btnHome">Zur Startseite</button>
+</div>
+
+<div class="muted" id="progressText" style="margin-bottom:6px;"></div>
+<div class="progress"><div id="progressBar"></div></div>
+<div style="height:16px;"></div>
+
+<div class="list" id="list"></div>
+
+<script>
+const TYPE_LABEL = { main_dish: "Hauptgericht", side_dish: "Nebenspeise", sweet: "Süßspeise", snack: "Snack",
+                     dip: "Dip", wuerzung: "Gewürzmischung" };
+const SCALES = [
+  ["taste_rating", "Geschmack", "0 = schmeckt nicht · 10 = super lecker"],
+  ["effort_rating", "Aufwand", "0 = sehr einfach · 10 = sehr aufwendig"],
+  ["repeat_rating", "Wiederholen", "0 = selten · 5 = neutral · 10 = sehr oft"],
+];
+const userId = window.SmartFoodUser.get();
+let recipes = [];
+let order = [];          // zufaellige Reihenfolge der recipe_ids
+const skipped = new Set();
+
+function shuffle(a){
+  for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+
+function buildScale(container, initial){
+  let value = initial ?? null;
+  const buttons = [];
+  for(let i = 0; i <= 10; i++){
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = String(i);
+    b.onclick = () => { value = (value === i ? null : i); paint(); };   // nochmal klicken = abwaehlen
+    buttons.push(b);
+    container.appendChild(b);
+  }
+  function paint(){ buttons.forEach((b, i) => b.classList.toggle("active", i === value)); }
+  paint();
+  return { get: () => value };
+}
+
+function updateProgress(){
+  const rated = recipes.filter(r => r.rated).length;
+  document.getElementById("progressText").textContent =
+    `${rated} von ${recipes.length} Rezepten bewertet (vorab oder echt) · ${recipes.length - rated} offen`;
+  document.getElementById("progressBar").style.width = recipes.length ? `${100 * rated / recipes.length}%` : "0";
+}
+
+function cardEl(r){
+  const div = document.createElement("div");
+  div.className = "card";
+  const title = document.createElement("p");
+  title.className = "title";
+  const a = document.createElement("a");
+  a.href = window.SmartFoodUser.decorate(`/recipe?id=${encodeURIComponent(r.recipe_id)}`);
+  a.target = "_blank";
+  a.textContent = r.name;
+  title.appendChild(a);
+  const ahead = Object.values(r.default_rating).some(v => v !== null);
+  if(ahead) title.insertAdjacentHTML("beforeend", '<span class="badge ahead">vorab bewertet</span>');
+  if(r.history_rated) title.insertAdjacentHTML("beforeend", '<span class="badge real">echt bewertet</span>');
+  const meta = document.createElement("div");
+  meta.className = "meta";
+  meta.textContent = `${TYPE_LABEL[r.recipe_type] || r.recipe_type || "?"} · ${r.veg_type || "?"}`
+    + (r.history_rated ? " · hat schon echte Bewertungen – die zählen vor der Vorab-Bewertung" : "");
+  div.append(title, meta);
+
+  const scales = {};
+  for(const [key, label, hint] of SCALES){
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `<span class="lbl" title="${hint}">${label}</span>`;
+    const sc = document.createElement("div");
+    sc.className = "scale";
+    sc.title = hint;
+    // Wiederholen startet neutral bei 5, sonst die gespeicherte Vorab-Bewertung
+    const initial = r.default_rating[key] ?? (key === "repeat_rating" && !ahead ? 5 : null);
+    scales[key] = buildScale(sc, initial);
+    row.appendChild(sc);
+    div.appendChild(row);
+  }
+
+  const actions = document.createElement("div");
+  actions.className = "actions";
+  const save = Object.assign(document.createElement("button"), { className: "btn", type: "button", textContent: "Speichern" });
+  const skip = Object.assign(document.createElement("button"), { className: "btn secondary", type: "button", textContent: "Überspringen" });
+  actions.append(save, skip);
+  if(ahead){
+    const del = Object.assign(document.createElement("button"), { className: "btn danger", type: "button", textContent: "Vorab-Bewertung löschen" });
+    del.onclick = () => send(r, { taste_rating: null, effort_rating: null, repeat_rating: null }, del);
+    actions.appendChild(del);
+  }
+  div.appendChild(actions);
+
+  save.onclick = () => {
+    const values = Object.fromEntries(SCALES.map(([key]) => [key, scales[key].get()]));
+    if(values.taste_rating === null || values.effort_rating === null){
+      alert("Bitte mindestens Geschmack und Aufwand wählen.");
+      return;
+    }
+    send(r, values, save);
+  };
+  skip.onclick = () => { skipped.add(r.recipe_id); render(); };
+  return div;
+}
+
+async function send(r, values, btn){
+  btn.disabled = true;
+  try{
+    const res = await fetch("/api/dev/rating", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: userId, recipe_id: r.recipe_id, ...values }),
+    });
+    const out = await res.json();
+    if(!res.ok) throw new Error(out.error || ("HTTP " + res.status));
+    r.default_rating = Object.fromEntries(SCALES.map(([key]) => [key, out.default_rating ? out.default_rating[key] : null]));
+    r.rated = r.history_rated || out.default_rating !== null;
+    updateProgress();
+    render();
+  }catch(e){
+    btn.disabled = false;
+    alert("Konnte nicht gespeichert werden: " + e.message);
+  }
+}
+
+function render(){
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+  const type = document.getElementById("typeFilter").value;
+  const showRated = document.getElementById("showRated").checked;
+  const byId = new Map(recipes.map(r => [r.recipe_id, r]));
+  const shown = order.map(id => byId.get(id))
+    .filter(r => (!type || r.recipe_type === type) && (showRated || !r.rated) && !skipped.has(r.recipe_id));
+  if(!shown.length){
+    list.innerHTML = `<div class="empty">${skipped.size ? "Nichts mehr offen – übersprungene kommen mit „Neu mischen“ zurück." : "Alles bewertet 🎉"}</div>`;
+    return;
+  }
+  shown.forEach(r => list.appendChild(cardEl(r)));
+}
+
+async function boot(){
+  document.getElementById("btnHome").onclick = () => { location.href = window.SmartFoodUser.decorate("/"); };
+  if(!userId){
+    document.getElementById("list").innerHTML = '<div class="empty">Bitte oben zuerst einen User wählen – die Bewertungen gehören dem User.</div>';
+    return;
+  }
+  const res = await fetch(`/api/dev/ratings?user=${encodeURIComponent(userId)}`);
+  const out = await res.json();
+  if(!res.ok){
+    document.getElementById("list").innerHTML = `<div class="empty">Fehler: ${out.error || res.status}</div>`;
+    return;
+  }
+  recipes = out.recipes;
+  order = shuffle(recipes.map(r => r.recipe_id));
+  const typeFilter = document.getElementById("typeFilter");
+  for(const t of [...new Set(recipes.map(r => r.recipe_type).filter(Boolean))].sort()){
+    typeFilter.add(new Option(TYPE_LABEL[t] || t, t));
+  }
+  typeFilter.onchange = render;
+  document.getElementById("showRated").onchange = render;
+  document.getElementById("btnShuffle").onclick = () => { skipped.clear(); shuffle(order); render(); };
+  updateProgress();
+  render();
+}
+boot();
+</script>
+</body>
+</html>

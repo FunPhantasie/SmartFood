@@ -28,7 +28,7 @@ DATA_DIR = APP_DIR / "Server" / "server_data"   # gleiche Daten wie die Website
 RECIPES_YAML = DATA_DIR / "recipes.yaml"
 RECIPE_INGREDIENTS_YAML = DATA_DIR / "recipe_ingredients.yaml"
 INGREDIENTS_YAML = DATA_DIR / "ingredients.yaml"
-HISTORY_YAML = DATA_DIR / "history.yaml"      # optional: Bewertungen -> Scores im PDF
+USER_DIR = DATA_DIR / "user_data"              # history pro User -> Bewertungen im PDF (Schnitt ueber alle User)
 
 ORIGIN_DE = {"asian": "Asiatisch", "oriental": "Orientalisch", "mexican": "Mexikanisch", "indian": "Indisch",
              "italian": "Italienisch", "home-style": "Hausmannskost", "mediterranean": "Mediterran",
@@ -489,7 +489,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     recipes = parse_recipes(recipes_doc)
     ingredients = parse_ingredients(ingredients_doc)
     links = parse_links(links_doc)
-    history = parse_history(yr.load_yaml(HISTORY_YAML)) if HISTORY_YAML.exists() else {}
+    histories = [yr.load_user_file(p)["history"] for p in sorted(USER_DIR.glob("user_*.yaml"))]
+    history = parse_history({"history": rl.merge_histories(histories)})
 
     content = generate_content(recipes, ingredients, links, history)
     appendix = generate_ingredient_appendix(ingredients,links)

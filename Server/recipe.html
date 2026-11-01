@@ -170,7 +170,7 @@ async function loadRecipe(){
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ recipe_id: Number(id), user_id: userId || null }),
       });
-      if(!res.ok) throw new Error("HTTP " + res.status);
+      if(!res.ok) throw new Error((await res.json().catch(() => ({}))).error || ("HTTP " + res.status));
       // Nach dem Loggen ist die "aktuelle Auswahl" erledigt - zurueck zur Startseite.
       if(isCurrentPick()) localStorage.removeItem(CURRENT_PICK_KEY);
       location.href = window.SmartFoodUser.decorate("/");

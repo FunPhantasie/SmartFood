@@ -44,27 +44,34 @@ Runs **after** date_score, because `remove` comes from date_score.
 ## 4. Two pools ✅ 🧪
 | Pool | Recipes |
 |---|---|
-| **main** | cooked at least once, or on the wishlist |
-| **new** | never cooked – score with `date_score = 5` + reward from the recipe's times and midpoint ratings; no times → **median score** |
+| **main** | cooked at least once, rated ahead (developer page `/dev`), or on the wishlist – all per user |
+| **new** | never cooked and not rated ahead – score with `date_score = 5` + reward from the recipe's times and midpoint ratings; no times → **median score** |
 
 ## 5. Generate the list ✅ 🧪 ([total_score.ipynb](Testing/total_score.ipynb))
 1. softmax draw of 5 from the **main** pool (no recipe together with its variant), `T` = 4, user can set 1–10
 2. fewer than 5 → fill up from the **new** pool
 3. swapping: in 20 % of all lists one recipe is replaced, new recipes first (never a wishlist recipe)
 4. nothing left → message: browse recipes or reroll with more randomness (`T + 1`)
+5. every proposal remembers where it came from (`propose_detailed`, `SOURCE_*`): `cycle` (main pool), `fill`
+   (filled up from the new pool), `swap_new` / `swap_main` (swapped in, with the replaced recipe), `new_pool` (button)
 
 ## 6. Website ([Server/home_find.html](../Server/home_find.html)) ✅ 🟠
 - 5 proposals + buffer for dismissing; new recipes are marked **Neu**
+- badge with the source: **Zyklus** / **Aufgefüllt** / **Getauscht** (+ "getauscht statt …") / **Neue Rezepte**,
+  plus **Wunschliste** and the total score (tooltip explains it)
 - button **"Neue Rezepte (nie gekocht)"** → only the new pool
 - filter **"Zufall (T)"** 1–10
 - filter **"Unverträglichkeiten"** (Laktosefrei / Glutenfrei) – remembered in the browser, sent with every request
 - include / exclude suggest the real ingredient names; meal types = the `recipe_type` values of the data
+- panel **"Rezept suchen"**: every word must be in the recipe name or one of its ingredients (umlauts ignored),
+  name hits first, max. 30 – click → recipe page. Reads `/api/all`, no extra endpoint
 - card buttons: **×** = not now (`repeat_rating` 0), **🚫** = never propose again (blacklist, needs a user)
 - Server: `GET /api/proposals?user=<id>&t=<1-10>&pool=all|new&allergies=lactose,gluten`, `POST /api/proposals` with
   `meal_type, diet, include, exclude, allergies, user_id, count, t, pool`. Empty result → `message`.
 
 ## 7. Rating UI ([Server/rating.html](../Server/rating.html)) ✅ 🧪
-Taste, Wdh (repeat) and effort all **0–10**, prefilled with the mean (or 5). Partial ratings are rejected
+Taste, Wdh (repeat) and effort all **0–10**, prefilled with the mean (otherwise the rating ahead, otherwise 5).
+Rating sets **today** as cooking date – for dishes you know but didn't cook today, use the developer page `/dev` below. Partial ratings are rejected
 (all three ratings required, times both or none).
 
 ## 8. Cookbook PDF ([Tools/generate_cookbook_PDF.py](../Tools/generate_cookbook_PDF.py)) ✅ 🧪
@@ -81,9 +88,9 @@ Per recipe there is exactly **one** history entry. The arrays inside rotate (max
 |---|---|---|---|---|
 | `dates` | history | list ISO date | days when cooked (rated or "cooked once"), last 20 | `[]` |
 | `last_date` | history | ISO date | last cooked (also via "cooked once") | missing → never cooked |
-| `repeat_rating` | history | list int **0–10** | desire to repeat (5 = neutral) | `5`; dismiss: `0` |
-| `taste_rating` | history | list int **0–10** | taste (0 = bad, 10 = great) | `5` |
-| `effort_rating` | history | list int **0–10** | effort (0 = low, **10 = high effort**) | `5` |
+| `repeat_rating` | history | list int **0–10** | desire to repeat (5 = neutral) | rating ahead, else `5`; dismiss: `0` |
+| `taste_rating` | history | list int **0–10** | taste (0 = bad, 10 = great) | rating ahead, else `5` |
+| `effort_rating` | history | list int **0–10** | effort (0 = low, **10 = high effort**) | rating ahead, else `5` |
 | `prep_minutes` / `cook_minutes` | recipe | int | times – both or none | cooked: 45 min total · never cooked: median score |
 | `season` | recipe | str | season | `all` |
 | `variant_of` | recipe | id / null | original recipe of a variant | `null` |
@@ -144,6 +151,29 @@ Read by `propose()` (`user_blacklist`). Added / removed with `POST /api/blacklis
 (user required): button **🚫** on the proposal cards and **"Nicht mehr vorschlagen"** on the recipe page (also undo).
 A recipe is on at most one of wishlist / blacklist per user – adding it to one removes it from the other.
 
+## Per-user data – `server_data/user_data/user_<id>.yaml` ✅ 🧪
+
+One file per user (`user_id` from `users.yaml`) with two lists:
+- `history` – per recipe one entry: dates, ratings, times (structure see IV)
+- `default_ratings` – ratings ahead: `recipe_id, name, taste_rating, effort_rating, repeat_rating` (0–10 / `null`)
+
+The server loads the selected user's file into `data["history"]` / `data["default_ratings"]` (`load_all(user)`), so the
+logic itself is unchanged. No (known) user → both empty: proposals still work (everything new), but rating,
+"cooked once", dismiss and `/dev` answer **400**. Only ids from `users.yaml` are accepted (the id is in the file name).
+Changing the user in the nav reloads the page. The cookbook PDF averages over all users (`RatingLogic.merge_histories`).
+
+**Ratings ahead** – developer page **`/dev`** ([Server/dev.html](../Server/dev.html)): recipes the user hasn't rated yet
+(no rating ahead, no taste rating in the history) in random order; 0–10 buttons for taste / effort / repeat (repeat
+starts at 5), save, skip, reshuffle, filter by type, optionally show the rated ones to change / delete them.
+`GET /api/dev/ratings?user=`, `POST /api/dev/rating {user_id, recipe_id, taste_rating, effort_rating, repeat_rating}`
+(all `null` = remove). A value is used only while the history has no rating for it (`ProposeLogic.rating`: history mean →
+rating ahead → 5); **no cooking date** is set, so `date_score` stays 5. A recipe with any value counts as known: main pool,
+no **Neu** badge (`RatingLogic.is_new`).
+
+## Who owns which data
+- **per user:** `user_data/user_<id>.yaml` (history + ratings ahead), entries in `wishlist.yaml` / `blacklist.yaml` (`user_id`)
+- **shared:** recipes, recipe_ingredients, ingredients, users
+
 # VI. Old Formula (removed)
 
 Until 2026-09-28 the app used `repeatScore` with `date_score = 10 · repeat/5 · exp(−8 · s / d_last)`.
@@ -199,3 +229,6 @@ See git history for details.
   Removed unused `RatingLogic.recipe_scores` / `weighted_shuffle` / `ensure_uncooked_seed` and `/api/create/<id>`. Backend test 126/126.
 - 2026-11-01 – fish handled like meat: meat type `fish` (salmon, tuna, redfish; fish sauces `null`), main rule treats a fish main as meat.
   All unknown `gluten_free` / `lactose_free` filled (product-dependent → "contains", so the filter rather excludes too much). Backend test 127/127.
+- 2026-11-01 – Recipe search on the home page (name + ingredients). Admin file `default_ratings.yaml`: ratings ahead per recipe (fallback before 5, rated ahead = known / main pool), synced by the server. creation.html / ingredients.html no longer send `history` / `users` when saving (an old copy overwrote newer ratings). Backend test 132/132.
+- 2026-11-01 – History per user: `server_data/user_data/user_<id>.yaml` (history + ratings ahead), the old `history.yaml` moved to user 1 (Tim), the admin file `default_ratings.yaml` replaced by the developer page `/dev`. Rating / cooked / dismiss need a user. Cookbook averages over all users. Backend test 137/137.
+- 2026-11-01 – Proposal source shown on the cards (`ProposeLogic.propose_detailed`: cycle / fill / swap / new pool + score). Backend test 143/143.

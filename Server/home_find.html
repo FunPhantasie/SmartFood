@@ -61,8 +61,10 @@
     }
     main{
       display: flex;
-      justify-content: center;
-      padding:0 18px;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding:0 18px 18px;
     }
     .grid{
       display:grid;
@@ -256,6 +258,9 @@
       margin-left:6px;
       vertical-align:middle;
     }
+    .badge.src{ color:var(--muted); border-color:rgba(167,180,214,.35); background:rgba(167,180,214,.08); }
+    .badge.src.swap{ color:#fbbf24; border-color:rgba(251,191,36,.45); background:rgba(251,191,36,.10); }
+    .badge.src.fill{ color:var(--accent); border-color:rgba(122,162,255,.45); background:rgba(122,162,255,.10); }
     .empty{
       border:1px dashed rgba(255,255,255,.18);
       border-radius:14px;
@@ -284,6 +289,7 @@
         <div class="button-row">
         <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/create')">Create Recipe</button>
         <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/ingredients')">Ingredients</button>
+        <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/dev')">Dev: Vorab-Bewertung</button>
         <button class="btn good" id="btnAddRecipe" style="display:none;" >🛒 Aktuelle Auswahl laden</button>
         </div>
       </div>
@@ -412,6 +418,18 @@
         </div>
       </div>
     </section>
+
+    <!-- SUCHE -->
+    <section class="panel" aria-label="search" id="searchPanel" style="max-width:800px; width:100%;">
+      <div class="hd">
+        <h2>Rezept suchen</h2>
+        <span class="muted" style="font-size:12px" id="searchCount"></span>
+      </div>
+      <div class="bd">
+        <input id="searchInput" type="text" placeholder="Name oder Zutat, z.B. Lachs Kartoffel…" style="width:100%;" />
+        <div class="cards" id="searchResults" style="margin-top:10px;"></div>
+      </div>
+    </section>
   </main>
 
 <script>
@@ -481,6 +499,7 @@ async function dismissSuggestion(recipe, context){
   // context: {mode:"defaults"|"results", section:"main"|"snack"|"results"}
   const payload = {
     recipe_id: recipe?.id,
+    user_id: window.SmartFoodUser?.get() || null,   // history gehoert dem User - ohne User wird nichts gespeichert
     recipe_name: recipe?.name,
     recipe_type: recipe?.recipe_type,
     context
@@ -586,17 +605,37 @@ function addChip(kind, value){
 function edit(recipe){
   location.href = window.SmartFoodUser.decorate(`/recipe?id=${encodeURIComponent(recipe.id)}`);
 }
+// Herkunft aus der Ziehung (ProposeLogic.SOURCE_*): [Text, CSS-Klasse, Erklaerung]
+const SOURCE_INFO = {
+  cycle:     ["Zyklus", "", "Normal gezogen aus den bekannten Rezepten (gekocht, vorab bewertet oder Wunschliste)"],
+  fill:      ["Aufgefüllt", "fill", "Zu wenige bekannte Rezepte – mit einem neuen Rezept aufgefüllt"],
+  swap_new:  ["Getauscht", "swap", "Beim Tauschen durch ein neues Rezept ersetzt"],
+  swap_main: ["Getauscht", "swap", "Beim Tauschen ersetzt (kein neues Rezept frei)"],
+  new_pool:  ["Neue Rezepte", "fill", "Über „Neue Rezepte (nie gekocht)“ gezogen"],
+};
+function sourceBadge(recipe){
+  const info = SOURCE_INFO[recipe.source];
+  if(!info) return "";
+  let tip = info[2] + (recipe.replaced ? ` – statt „${recipe.replaced}“` : "");
+  if(recipe.wishlist) tip += " · steht auf der Wunschliste";
+  if(typeof recipe.score === "number") tip += ` · Score ${recipe.score}`;
+  const label = info[0] + (recipe.wishlist ? " · Wunschliste" : "");
+  return `<span class="badge src ${info[1]}" title="${tip.replace(/"/g, "&quot;")}">${label}</span>`;
+}
+
 function cardEl(recipe, onClose, onBlacklist){
   const div = document.createElement("div");
   div.className = "card";
   div.innerHTML = `
     <div class="closebtn blacklist" title="Nie mehr vorschlagen">🚫</div>
     <div class="closebtn" title="Gerade nicht (Wiederholungswunsch sinkt)">×</div>
-    <p class="title">${recipe.name}${recipe.is_new ? '<span class="badge">Neu</span>' : ''}</p>
+    <p class="title">${recipe.name}${recipe.is_new ? '<span class="badge">Neu</span>' : ''}${sourceBadge(recipe)}</p>
     <div class="meta">
       <span><b>${prettyMealType(recipe.recipe_type)}</b></span>
       <span>Typ: <b>${recipe.veg_type ?? "?"}</b></span>
       <span>~<b>${recipe.cook_t+recipe.prep_t ?? "?"}</b> min</span>
+      ${typeof recipe.score === "number" ? `<span>Score <b>${recipe.score}</b></span>` : ""}
+      ${recipe.replaced ? `<span>getauscht statt: <b>${recipe.replaced}</b></span>` : ""}
     </div>
   `;
   // Klick auf die Karte -> Detailseite
@@ -742,17 +781,76 @@ document.querySelectorAll("#allergies input").forEach(cb => {
   });
 });
 
-// Vorschlaege fuer Include / Exclude = echte Zutatennamen (der Filter vergleicht den Namen exakt)
+// Vorschlaege fuer Include / Exclude = echte Zutatennamen (der Filter vergleicht den Namen exakt).
+// Die Daten von /api/all nutzt auch die Rezeptsuche.
+let allData = null;
 async function loadIngredientOptions(){
   try{
     const r = await fetch("/api/all");
     if(!r.ok) return;
-    const names = [...new Set(((await r.json()).ingredients || []).map(i => i.name).filter(Boolean))].sort();
+    allData = await r.json();
+    const names = [...new Set((allData.ingredients || []).map(i => i.name).filter(Boolean))].sort();
     const html = names.map(n => `<option value="${n.replace(/"/g, "&quot;")}"></option>`).join("");
     document.getElementById("includeOptions").innerHTML = html;
     document.getElementById("excludeOptions").innerHTML = html;
+    runSearch();
   }catch(e){ /* offline ok */ }
 }
+
+/** -------------------------
+ *  Rezeptsuche: jedes Suchwort muss im Rezeptnamen oder in einer Zutat vorkommen
+ *  (Umlaute egal: "Hähnchen" findet "Haehnchen"). Treffer im Namen zuerst.
+ *  ------------------------- */
+const SEARCH_LIMIT = 30;
+function normSearch(s){
+  return String(s || "").toLowerCase()
+    .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss");
+}
+function runSearch(){
+  const words = normSearch(document.getElementById("searchInput").value).split(/\s+/).filter(Boolean);
+  const out = document.getElementById("searchResults");
+  const count = document.getElementById("searchCount");
+  out.innerHTML = "";
+  if(!allData){ count.textContent = ""; return; }
+  const recipes = allData.recipes || [];
+  if(!words.length){ count.textContent = `${recipes.length} Rezepte`; return; }
+
+  const ingName = new Map((allData.ingredients || []).map(i => [i.ingredient_id, normSearch(i.name)]));
+  const ingOf = new Map();
+  for(const ri of allData.recipe_ingredients || []){
+    if(!ingOf.has(ri.recipe_id)) ingOf.set(ri.recipe_id, []);
+    ingOf.get(ri.recipe_id).push(ingName.get(ri.ingredient_id) || "");
+  }
+  const hits = [];
+  for(const r of recipes){
+    const name = normSearch(r.name);
+    const ings = ingOf.get(r.recipe_id) || [];
+    if(!words.every(w => name.includes(w) || ings.some(n => n.includes(w)))) continue;
+    hits.push({ r, inName: words.filter(w => name.includes(w)).length });
+  }
+  hits.sort((a, b) => b.inName - a.inName || a.r.name.localeCompare(b.r.name));
+  count.textContent = hits.length > SEARCH_LIMIT ? `${hits.length} Treffer (erste ${SEARCH_LIMIT})` : `${hits.length} Treffer`;
+
+  for(const { r } of hits.slice(0, SEARCH_LIMIT)){
+    const div = document.createElement("div");
+    div.className = "card";
+    div.style.cursor = "pointer";
+    const title = document.createElement("p");
+    title.className = "title";
+    title.style.marginRight = "0";
+    title.textContent = r.name;
+    const minutes = (r.prep_minutes || 0) + (r.cook_minutes || 0);
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.innerHTML = `<span><b>${prettyMealType(r.recipe_type)}</b></span>
+      <span>Typ: <b>${r.veg_type ?? "?"}</b></span>
+      <span>~<b>${minutes || "?"}</b> min</span>`;
+    div.append(title, meta);
+    div.addEventListener("click", () => edit({ id: r.recipe_id }));
+    out.appendChild(div);
+  }
+}
+document.getElementById("searchInput").addEventListener("input", runSearch);
 
 const randomness = document.getElementById("randomness");
 for(let t = T_MIN; t <= T_MAX; t++){
@@ -766,7 +864,9 @@ document.getElementById("generateBtn").addEventListener("click", () => { state.p
 document.getElementById("newRecipesBtn").addEventListener("click", () => { state.pool = "new"; onPropose(); });
 document.getElementById("rerollBtn").addEventListener("click", () => { setT(state.t + 1); onPropose(); });
 document.getElementById("browseBtn").addEventListener("click", () => {
-  location.href = window.SmartFoodUser.decorate("/create");
+  const input = document.getElementById("searchInput");
+  input.scrollIntoView({ behavior: "smooth", block: "center" });
+  input.focus();
 });
 
 

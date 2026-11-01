@@ -1,0 +1,20 @@
+# Daten EINES Users (Dateiname = user_id aus users.yaml), vom Server geschrieben.
+# history:         pro Rezept ein Eintrag - Kochdaten, Bewertungen, Zeiten (siehe RatingLogic)
+# default_ratings: Vorab-Bewertung fuer Gerichte, die man kennt, aber noch nicht ueber die App gekocht hat
+#                  (taste / effort / repeat 0-10, Entwicklerseite /dev). name nur zur Orientierung.
+history:
+- cook_minutes:
+  - 10
+  dates:
+  - '2026-09-16'
+  effort_rating:
+  - 5
+  last_date: '2026-09-16'
+  prep_minutes:
+  - 60
+  recipe_id: 52
+  repeat_rating:
+  - 5
+  taste_rating:
+  - 6
+default_ratings: []

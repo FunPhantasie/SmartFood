@@ -73,7 +73,11 @@
     }
 
     select.value = getCurrentUserId();
-    select.addEventListener('change', () => setCurrentUserId(select.value));
+    select.addEventListener('change', () => {
+      setCurrentUserId(select.value);
+      // history / Bewertungen gehoeren dem User -> Seiten mit User-Daten neu laden
+      if (!['/create', '/ingredients'].includes(window.location.pathname)) window.location.reload();
+    });
   }
 
   if (document.readyState === 'loading') {

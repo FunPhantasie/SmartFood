@@ -5,6 +5,8 @@ import math
 
 from Tools import YamlEditor as yr
 
+# history und default_ratings gehoeren EINEM User (server_data/user_data/user_<id>.yaml) - der Server
+# laedt nur die des gewaehlten Users nach data["history"] / data["default_ratings"].
 # Pro Rezept gibt es GENAU EINEN history-Eintrag (Key: recipe_id). taste_rating/repeat_rating/
 # effort_rating/prep_minutes/cook_minutes/dates sind darin je ein rollierendes Array - beim
 # naechsten Eintrag faellt bei allen gemeinsam der aelteste Wert raus (siehe _push_rotating).
@@ -135,6 +137,50 @@ def has_cooked(data: dict, recipe_id: int) -> bool:
     return bool(entry and entry.get("last_date"))
 
 
+def is_new(data: dict, recipe_id: int) -> bool:
+    """Neu = nie gekocht und nicht vorab bewertet (default_ratings.yaml) - wie der 'neue' Pool in ProposeLogic."""
+    return not has_cooked(data, recipe_id) and all(v is None for v in yr.default_rating(data, recipe_id).values())
+
+
+def is_rated(data: dict, recipe_id: int) -> bool:
+    """Hat der User dieses Rezept schon bewertet - vorab (default_ratings) oder echt (taste_rating in der history)?"""
+    entry = _find_history_entry(data, recipe_id) or {}
+    return any(v is not None for v in entry.get("taste_rating") or []) or         any(v is not None for v in yr.default_rating(data, recipe_id).values())
+
+
+def set_default_rating(data: dict, recipe_id: int, taste_rating=None, effort_rating=None,
+                       repeat_rating=None) -> Optional[dict]:
+    """Vorab-Bewertung setzen (Entwicklerseite). Werte 0-10 oder None; alle None -> Eintrag entfernt.
+    Rueckgabe: der Eintrag (None, wenn entfernt)."""
+    recipe = _find_recipe(data, recipe_id)
+    values = {"taste_rating": taste_rating, "effort_rating": effort_rating, "repeat_rating": repeat_rating}
+    lo, hi = RATING_SCALE
+    for key, value in values.items():
+        if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float)) or not lo <= value <= hi):
+            raise ValueError(f"{key} must be {lo}-{hi} or null")
+    rows = [d for d in data.get("default_ratings", []) if d.get("recipe_id") != recipe_id]
+    entry = None
+    if any(v is not None for v in values.values()):
+        entry = {"recipe_id": recipe_id, "name": recipe.get("name"), **values}
+        rows.append(entry)
+    data["default_ratings"] = rows
+    return entry
+
+
+def merge_histories(histories: list[list[dict]]) -> list[dict]:
+    """history mehrerer User zu einem Eintrag pro Rezept (fuers Kochbuch: Schnitt ueber alle User).
+    Arrays werden aneinandergehaengt, last_date = das spaeteste."""
+    merged: dict = {}
+    for history in histories:
+        for h in history:
+            m = merged.setdefault(h.get("recipe_id"), {"recipe_id": h.get("recipe_id")})
+            for key in ("dates", *RATING_KEYS):
+                m.setdefault(key, []).extend(h.get(key) or [])
+            if h.get("last_date") and h["last_date"] > (m.get("last_date") or ""):
+                m["last_date"] = h["last_date"]
+    return list(merged.values())
+
+
 def last_actual_times(data: dict, recipe_id: int) -> dict:
     """Letzter gemessener Zeiten-Eintrag dieses Rezepts (Ende der rollierenden Arrays), zum
     Vorbefuellen des Bewertungsformulars - falls das Rezept schonmal mit Zeiten bewertet wurde."""
@@ -156,17 +202,19 @@ def _ceil_avg(values: list) -> Optional[float]:
 
 def default_ratings(data: dict, recipe_id: int) -> dict:
     """Durchschnitt der letzten Bewertungen dieses Rezepts (aufgerundet auf ganze Sterne),
-    zum Vorbefuellen der Bewertungsseite. Ohne jede history: neutraler Default (Mitte 5 auf
-    den 0-10 Skalen). Die *_avg Werte sind die ungerundeten Mittelwerte, fuer eine
+    zum Vorbefuellen der Bewertungsseite. Ohne Bewertung in der history: Vorab-Bewertung aus
+    default_ratings.yaml, sonst neutraler Default (Mitte 5 auf den 0-10 Skalen). Die *_avg Werte sind die ungerundeten Mittelwerte, fuer eine
     optionale Halb-Stern-Anzeige."""
     entry = _find_history_entry(data, recipe_id)
     taste_avg = _ceil_avg(entry.get("taste_rating", []) if entry else [])
     repeat_avg = _ceil_avg(entry.get("repeat_rating", []) if entry else [])
     effort_avg = _ceil_avg(entry.get("effort_rating", []) if entry else [])
+    ahead = yr.default_rating(data, recipe_id)
+    fallback = lambda key: NEUTRAL_RATING if ahead[key] is None else math.ceil(ahead[key])
     return {
-        "taste_rating": math.ceil(taste_avg) if taste_avg is not None else NEUTRAL_RATING,
-        "repeat_rating": math.ceil(repeat_avg) if repeat_avg is not None else NEUTRAL_RATING,
-        "effort_rating": math.ceil(effort_avg) if effort_avg is not None else NEUTRAL_RATING,
+        "taste_rating": math.ceil(taste_avg) if taste_avg is not None else fallback("taste_rating"),
+        "repeat_rating": math.ceil(repeat_avg) if repeat_avg is not None else fallback("repeat_rating"),
+        "effort_rating": math.ceil(effort_avg) if effort_avg is not None else fallback("effort_rating"),
         "taste_rating_avg": taste_avg,
         "repeat_rating_avg": repeat_avg,
         "effort_rating_avg": effort_avg,

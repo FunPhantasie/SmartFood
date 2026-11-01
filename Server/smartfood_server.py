@@ -8,15 +8,19 @@ APP_DIR = Path(__file__).parent.resolve()
 DATA_DIR = APP_DIR / "server_data"
 DATA_DIR.mkdir(exist_ok=True)
 
+# gemeinsame Daten (fuer alle User)
 FILES = {
     "ingredients": DATA_DIR / "ingredients.yaml",
     "recipes": DATA_DIR / "recipes.yaml",
     "recipe_ingredients": DATA_DIR / "recipe_ingredients.yaml",
-    "history": DATA_DIR / "history.yaml",
     "wishlist": DATA_DIR / "wishlist.yaml",
     "blacklist": DATA_DIR / "blacklist.yaml",
     "users": DATA_DIR / "users.yaml",
 }
+# pro User: user_data/user_<id>.yaml mit history + default_ratings (YamlEditor.USER_KEYS)
+USER_DIR = DATA_DIR / "user_data"
+
+
 def _ensure_files():
     """
     Teste ob die Datein Existieren ansonsten erstelle Blanks.
@@ -27,7 +31,26 @@ def _ensure_files():
             with p.open("w", encoding="utf-8") as f:
                 yaml.safe_dump({ key: [] }, f, sort_keys=False, allow_unicode=True)
 
-def load_all():
+
+def _user_id(raw):
+    """user_id aus Request -> als String, wenn es den User in users.yaml gibt, sonst None
+    (der Wert landet im Dateinamen - also nur bekannte IDs)."""
+    if raw in (None, ""):
+        return None
+    doc = yr.load_yaml(FILES["users"]) if FILES["users"].exists() else {}
+    known = {str(u.get("user_id")) for u in doc.get("users") or []}
+    return str(raw) if str(raw) in known else None
+
+
+def _require_user(raw):
+    user = _user_id(raw)
+    if user is None:
+        raise ValueError("user required (Bitte oben einen User waehlen)")
+    return user
+
+
+def load_all(user_id=None):
+    """Gemeinsame Daten + history / default_ratings des Users (ohne gueltigen User: beide leer)."""
     _ensure_files()
     data = {}
     for key, p in FILES.items():
@@ -35,17 +58,25 @@ def load_all():
         # doc.get(key, []) faellt nur bei fehlendem Key auf [] zurueck - eine leere YAML-Liste
         # wird aber je nach Editor auch als "key:" (also null) statt "key: []" gespeichert.
         data[key] = doc.get(key) or []
+    user = _user_id(user_id)
+    data.update(yr.load_user_file(yr.user_file(USER_DIR, user)) if user else {k: [] for k in yr.USER_KEYS})
     return data
 
-def save_all(data):
+
+def save_all(data, user_id=None):
     """Schreibt nur die Collections, die in data enthalten sind - creation.html / ingredients.html
-    schicken z.B. kein wishlist/blacklist mit, die sollen dabei nicht geleert werden."""
+    schicken z.B. kein wishlist/blacklist mit, die sollen dabei nicht geleert werden.
+    history / default_ratings landen nur mit gueltigem User in dessen Datei."""
     _ensure_files()
     if isinstance(data.get("ingredients"), list):   # jede Zutat im gleichen Format speichern
         data["ingredients"] = [yr.normalize_ingredient(i) for i in data["ingredients"]]
     for key, p in FILES.items():
         if key in data:
             yr.update_yaml(p, key, data[key])
+    user = _user_id(user_id)
+    if user and any(k in data for k in yr.USER_KEYS):
+        path = yr.user_file(USER_DIR, user)
+        yr.save_user_file(path, {**yr.load_user_file(path), **{k: data[k] for k in yr.USER_KEYS if k in data}})
 
 
 def _find_recipe(data, recipe_id):
@@ -92,6 +123,10 @@ def ingredients_page():
 def rating_page():
     return send_from_directory(str(APP_DIR), "rating.html")
 
+@app.get("/dev")
+def dev_page():
+    return send_from_directory(str(APP_DIR), "dev.html")
+
 @app.get("/api/ping")
 def api_ping():
     return jsonify({"ok": True})
@@ -108,27 +143,29 @@ def api_get_users():
 @app.post("/api/dismiss")
 def ditch_prop():
     """'Nicht interessiert'-Button beim Vorschlag: senkt den Wiederholungswunsch (repeat_rating=0)
-    fuer dieses Rezept per neuem history-Eintrag (siehe RatingLogic.log_dismissed)."""
+    fuer dieses Rezept in der history des Users (siehe RatingLogic.log_dismissed). Braucht einen User."""
     try:
         payload = request.get_json(force=True) or {}
         recipe_id = payload.get("recipe_id")
         if recipe_id is None:
             return jsonify({"error": "recipe_id required"}), 400
 
-        data = load_all()
+        user = _require_user(payload.get("user_id"))
+        data = load_all(user)
         entry = rl.log_dismissed(data, int(recipe_id))
-        save_all(data)
+        save_all(data, user)
 
         return jsonify({"ok": True, "history_entry": entry})
     except ValueError as e:
-        return jsonify({"error": str(e)}), 404
+        return jsonify({"error": str(e)}), 404 if "not found" in str(e) else 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500 # 500Intern Error
 
 @app.get("/api/all")
 def api_get_all():
+    """Alle gemeinsamen Daten; mit ?user=<id> auch history / default_ratings dieses Users."""
     try:
-        return jsonify(load_all())
+        return jsonify(load_all(request.args.get("user")))
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -146,8 +183,12 @@ NO_PROPOSALS_MESSAGE = "Keine passenden Rezepte gefunden - Rezepte durchsuchen o
 
 
 def _proposal_response(data, picks, key, t):
-    """Vorschlaege fuers Frontend: is_new = noch nie gekocht, message nur wenn die Liste leer ist."""
-    out = {key: [pl.recipe_to_frontend(r, is_new=not rl.has_cooked(data, r["recipe_id"])) for r in picks],
+    """Vorschlaege fuers Frontend: is_new = noch nie gekocht, message nur wenn die Liste leer ist.
+    picks aus ProposeLogic.propose_detailed: source (Herkunft aus der Ziehung), score, replaced (Name)."""
+    names = {r.get("recipe_id"): r.get("name") for r in data.get("recipes", [])}
+    out = {key: [{**pl.recipe_to_frontend(p["recipe"], is_new=rl.is_new(data, p["recipe"]["recipe_id"])),
+                  "source": p["source"], "score": round(p["score"], 2), "wishlist": p["wishlist"],
+                  "replaced": names.get(p["replaced"])} for p in picks],
            "t": t}
     if not picks:
         out["message"] = NO_PROPOSALS_MESSAGE
@@ -160,10 +201,11 @@ def get_default_recipes():
     Optional: ?t=<1-10> Zufall (Softmax-Temperatur), ?pool=new nur nie gekochte Rezepte,
     ?allergies=lactose,gluten (YamlEditor.ALLERGENS)."""
     try:
-        data = load_all()
+        user = _user_id(request.args.get("user"))
+        data = load_all(user)
         t = pl.clamp_t(request.args.get("t", type=float))
         allergies = [a for a in request.args.get("allergies", "").split(",") if a]
-        picks = pl.propose(data, user_id=request.args.get("user") or None, t=t,
+        picks = pl.propose_detailed(data, user_id=user, t=t,
                            pool=request.args.get("pool", "all"), allergies=allergies)
         return jsonify(_proposal_response(data, picks, "main_dish", t))
     except Exception as e:
@@ -178,11 +220,12 @@ def propose_meal():
     try:
         payload = request.get_json(force=True) or {}
 
-        data = load_all()
+        user = _user_id(payload.get("user_id"))
+        data = load_all(user)
         t = pl.clamp_t(payload.get("t"))
-        picks = pl.propose(
+        picks = pl.propose_detailed(
             data,
-            user_id=payload.get("user_id") or None,
+            user_id=user,
             meal_type=payload.get("meal_type", "main_dish"),
             diet=payload.get("diet", "any"),
             include=payload.get("include") or [],
@@ -213,7 +256,8 @@ def api_recipe_suggest():
 
 @app.get("/api/recipe/<int:recipe_id>")
 def api_get_recipe(recipe_id):
-    data = load_all()
+    user = _user_id(request.args.get("user"))
+    data = load_all(user)
     recipes = data.get("recipes", [])
     recipe = _find_recipe(data, recipe_id)
     if recipe is None:
@@ -232,7 +276,6 @@ def api_get_recipe(recipe_id):
         and (r.get("recipe_id") == main_id or r.get("variant_of") == main_id)
     ]
 
-    user = request.args.get("user")
     return jsonify({
         "recipe": recipe,
         "ingredients": _recipe_ingredients(data, recipe_id),
@@ -289,13 +332,14 @@ def api_history_cooked():
         if recipe_id is None:
             return jsonify({"error": "recipe_id required"}), 400
 
-        data = load_all()
-        entry = rl.log_cooked(data, int(recipe_id), payload.get("user_id"))
-        save_all(data)
+        user = _require_user(payload.get("user_id"))
+        data = load_all(user)
+        entry = rl.log_cooked(data, int(recipe_id), user)
+        save_all(data, user)
 
         return jsonify({"ok": True, "history_entry": entry})
     except ValueError as e:
-        return jsonify({"error": str(e)}), 404
+        return jsonify({"error": str(e)}), 404 if "not found" in str(e) else 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -303,9 +347,9 @@ def api_history_cooked():
 @app.get("/api/rating/<int:recipe_id>")
 def api_rating_get(recipe_id):
     """Daten fuer die Bewertungsseite: Rezept + Zutaten + zuletzt gemessene Zeiten,
-    damit das Formular sinnvoll vorbefuellt werden kann."""
+    damit das Formular sinnvoll vorbefuellt werden kann. ?user=<id> -> Werte dieses Users."""
     try:
-        data = load_all()
+        data = load_all(request.args.get("user"))
         recipe = _find_recipe(data, recipe_id)
         if recipe is None:
             return jsonify({"error": "recipe not found"}), 404
@@ -330,11 +374,12 @@ def api_rating_post():
         if recipe_id is None:
             return jsonify({"error": "recipe_id required"}), 400
 
-        data = load_all()
+        user = _require_user(payload.get("user_id"))
+        data = load_all(user)
         result = rl.rate_recipe(
             data,
             int(recipe_id),
-            payload.get("user_id"),
+            user,
             actual_prep=payload.get("actual_prep"),
             actual_cook=payload.get("actual_cook"),
             taste_rating=payload.get("taste_rating"),
@@ -344,7 +389,7 @@ def api_rating_post():
             save_as_variant=bool(payload.get("save_as_variant")),
             variant_name=payload.get("variant_name"),
         )
-        save_all(data)
+        save_all(data, user)
 
         return jsonify({
             "ok": True,
@@ -354,6 +399,51 @@ def api_rating_post():
         })
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.get("/api/dev/ratings")
+def api_dev_ratings():
+    """Entwicklerseite: alle Rezepte mit Status fuer den User - rated (vorab oder echt bewertet),
+    die Vorab-Bewertung und ob es schon eine echte Bewertung in der history gibt."""
+    try:
+        user = _require_user(request.args.get("user"))
+        data = load_all(user)
+        out = []
+        for r in data.get("recipes", []):
+            rid = r.get("recipe_id")
+            entry = next((h for h in data["history"] if h.get("recipe_id") == rid), {})
+            out.append({
+                "recipe_id": rid, "name": r.get("name"), "recipe_type": r.get("recipe_type"),
+                "veg_type": r.get("veg_type"), "rated": rl.is_rated(data, rid),
+                "history_rated": any(v is not None for v in entry.get("taste_rating") or []),
+                "default_rating": yr.default_rating(data, rid),
+            })
+        return jsonify({"recipes": out})
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.post("/api/dev/rating")
+def api_dev_rating():
+    """Vorab-Bewertung setzen: {user_id, recipe_id, taste_rating, effort_rating, repeat_rating} (0-10 / null,
+    alle null = entfernen). Setzt KEIN Kochdatum (anders als /api/rating)."""
+    try:
+        payload = request.get_json(force=True) or {}
+        recipe_id = payload.get("recipe_id")
+        if recipe_id is None:
+            return jsonify({"error": "recipe_id required"}), 400
+        user = _require_user(payload.get("user_id"))
+        data = load_all(user)
+        entry = rl.set_default_rating(data, int(recipe_id), payload.get("taste_rating"),
+                                      payload.get("effort_rating"), payload.get("repeat_rating"))
+        save_all({"default_ratings": data["default_ratings"]}, user)
+        return jsonify({"ok": True, "default_rating": entry})
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404 if "not found" in str(e) else 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

@@ -28,6 +28,17 @@ ALLERGENS = ("lactose", "gluten")  # Zutat hat <allergen>_free: true / false / n
 # Fleischsorte einer Fleisch-Zutat (null = zaehlt nicht als Fleischsorte, z.B. Bruehe). Das Rezept
 # speichert daraus meat_types - beim Bearbeiten aus den Zutaten befuellt, beim Daempfen vom Rezept gelesen.
 MEAT_TYPES = ("beef", "pork", "poultry", "lamb", "game", "fish", "other")   # fish zaehlt wie eine Fleischsorte
+# Pro User eine Datei server_data/user_data/user_<id>.yaml mit seiner history und seinen Vorab-Bewertungen
+# (default_ratings: 0-10, null = keine - gilt, solange die history fuer diesen Wert noch keine Bewertung hat;
+# gepflegt auf der Entwicklerseite /dev). Die Logik sieht davon nur data["history"] / data["default_ratings"].
+USER_KEYS = ("history", "default_ratings")
+DEFAULT_RATING_KEYS = ("taste_rating", "effort_rating", "repeat_rating")
+DEFAULT_RATING_SCALE = (0, 10)
+USER_FILE_HEADER = """# Daten EINES Users (Dateiname = user_id aus users.yaml), vom Server geschrieben.
+# history:         pro Rezept ein Eintrag - Kochdaten, Bewertungen, Zeiten (siehe RatingLogic)
+# default_ratings: Vorab-Bewertung fuer Gerichte, die man kennt, aber noch nicht ueber die App gekocht hat
+#                  (taste / effort / repeat 0-10, Entwicklerseite /dev). name nur zur Orientierung.
+"""
 # Zutat (normal) | Grundzutat (Wasser, Mehl, Zucker, Staerke ...) | Gewuerz (Sojasauce, Pfeffer, Salz ...)
 INGREDIENT_CATEGORIES = ("ingredient", "basic", "spice")
 NUTRITION_KEYS = ("kcal", "protein", "carbs", "fat")   # jeweils pro `unit` DER ZUTAT (nicht pro Rezept-Einheit)
@@ -100,6 +111,13 @@ def main_ingredients(value) -> list:
     if value is None or value == NOT_SPECIFIC:
         return []
     return [v for v in value if v is not None] if isinstance(value, list) else [value]
+
+
+def default_rating(data: dict, recipe_id) -> dict:
+    """Vorab-Bewertung eines Rezepts aus default_ratings.yaml: {taste_rating, effort_rating, repeat_rating},
+    nicht gesetzte Werte = None."""
+    entry = next((d for d in data.get("default_ratings", []) if d.get("recipe_id") == recipe_id), {})
+    return {k: entry.get(k) for k in DEFAULT_RATING_KEYS}
 
 
 def meat_types_of(data: dict, ingredient_ids) -> list[str]:
@@ -232,6 +250,17 @@ def data_problems(data: dict) -> list[str]:
                 problems.append(f"recipe {rid}: {field} {value!r} is not an ingredient_id")
             elif (rid, value) not in links:
                 problems.append(f"recipe {rid}: {field} {value} is not in its ingredient list")
+
+    recipe_ids = {r.get("recipe_id") for r in data.get("recipes", [])}
+    lo, hi = DEFAULT_RATING_SCALE
+    for d in data.get("default_ratings", []):
+        rid = d.get("recipe_id")
+        if rid not in recipe_ids:
+            problems.append(f"default_ratings: recipe {rid!r} does not exist")
+        for k in DEFAULT_RATING_KEYS:
+            v = d.get(k)
+            if v is not None and (isinstance(v, bool) or not isinstance(v, (int, float)) or not lo <= v <= hi):
+                problems.append(f"default_ratings: recipe {rid}: {k} must be {lo}-{hi} or null")
     return problems
 
 
@@ -255,6 +284,24 @@ def load_yaml(path: Path) -> dict:
 def save_yaml(path, data):
     with open(path, "w", encoding="utf-8") as f:
         yaml.safe_dump(data, f, sort_keys=False, allow_unicode=True)
+
+def user_file(user_dir: Path, user_id) -> Path:
+    """Datei mit history + default_ratings eines Users (user_dir = server_data/user_data)."""
+    return Path(user_dir) / f"user_{user_id}.yaml"
+
+
+def load_user_file(path: Path) -> dict:
+    """{history, default_ratings} eines Users - fehlt die Datei (neuer User), beides leer."""
+    doc = load_yaml(path) if Path(path).exists() else {}
+    return {key: doc.get(key) or [] for key in USER_KEYS}
+
+
+def save_user_file(path: Path, data: dict) -> None:
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(USER_FILE_HEADER)
+        yaml.safe_dump({key: data.get(key) or [] for key in USER_KEYS}, f, sort_keys=False, allow_unicode=True)
+
 
 def update_yaml(path, key,val):
     with open(path, "w", encoding="utf-8") as f:

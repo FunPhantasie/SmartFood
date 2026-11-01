@@ -14,6 +14,7 @@ import random
 import sys
 import tempfile
 from collections import Counter
+from contextlib import contextmanager
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -126,6 +127,8 @@ def example_data():
         "history": [],
         "wishlist": [{"recipe_id": 10, "user_id": "u1"}],
         "blacklist": [{"recipe_id": 11, "user_id": "u1"}, {"recipe_id": 6, "user_id": "u2"}],
+        "users": [{"user_id": "u1", "name": "One"}, {"user_id": "u2", "name": "Two"}],
+        "default_ratings": [],      # history + default_ratings = the data of user u1
     }
     for rid, (taste, effort, repeat, every, last_ago) in history.items():
         e = entry(repeat, every, last_ago, count=3)
@@ -186,8 +189,9 @@ def server_calls():
         def today(cls):
             return TODAY
 
-    load_all, real_date = srv.load_all, pl.date
-    srv.load_all, pl.date = example_data, FixedDate
+    load_all, user_id, real_date = srv.load_all, srv._user_id, pl.date
+    srv.load_all, pl.date = (lambda user_id=None: example_data()), FixedDate
+    srv._user_id = lambda raw: str(raw) if raw else None      # example users instead of users.yaml
     try:
         client = srv.app.test_client()
         get = client.get("/api/proposals?user=u1").get_json()
@@ -195,11 +199,11 @@ def server_calls():
                                                   "include": [], "exclude": ["tomato"], "count": 10}).get_json()
         new = client.get("/api/proposals?user=u1&pool=new&t=99").get_json()
         empty = client.post("/api/proposals", json={"meal_type": "snack", "user_id": "u1"}).get_json()
-        srv.load_all = gluten_data
+        srv.load_all = lambda user_id=None: gluten_data()
         gluten = client.get("/api/proposals?user=u1&allergies=gluten").get_json()
         gluten_post = client.post("/api/proposals", json={"user_id": "u1", "allergies": ["gluten"]}).get_json()
     finally:
-        srv.load_all, pl.date = load_all, real_date
+        srv.load_all, srv._user_id, pl.date = load_all, user_id, real_date
     return get, post, new, empty, (gluten, gluten_post)
 
 
@@ -210,19 +214,27 @@ def gluten_data():
     return data
 
 
-def with_temp_server(data, calls):
-    """Runs calls(client) against a server that reads / writes temp copies of `data` - the real
-    server_data is never written. Returns (result of calls, data saved afterwards)."""
+@contextmanager
+def temp_server():
+    """Server module reading / writing a temp folder - the real server_data is never written."""
     from Server import smartfood_server as srv
-    files = srv.FILES
+    files, user_dir = srv.FILES, srv.USER_DIR
     with tempfile.TemporaryDirectory() as tmp:
         srv.FILES = {k: Path(tmp) / p.name for k, p in files.items()}
+        srv.USER_DIR = Path(tmp) / "user_data"
         try:
-            srv.save_all(data)
-            result = calls(srv.app.test_client())
-            return result, srv.load_all()
+            yield srv
         finally:
-            srv.FILES = files
+            srv.FILES, srv.USER_DIR = files, user_dir
+
+
+def with_temp_server(data, calls):
+    """Runs calls(client) against a temp server with `data` (history = user u1's file).
+    Returns (result of calls, data of u1 saved afterwards)."""
+    with temp_server() as srv:
+        srv.save_all(data, "u1")
+        result = calls(srv.app.test_client())
+        return result, srv.load_all("u1")
 
 
 def blacklist_endpoint():
@@ -241,18 +253,38 @@ def blacklist_endpoint():
 
 def save_keeps_missing_keys():
     """POST /api/all without wishlist (like creation.html / ingredients.html) must not empty
-    wishlist.yaml. Runs on temp copies - the real server_data is never written."""
-    import tempfile
-    from Server import smartfood_server as srv
-    files = srv.FILES
-    with tempfile.TemporaryDirectory() as tmp:
-        srv.FILES = {k: Path(tmp) / p.name for k, p in files.items()}
-        try:
-            srv.save_all({"wishlist": [{"recipe_id": 1, "user_id": "u1"}], "recipes": []})
-            srv.app.test_client().post("/api/all", json={"recipes": [], "ingredients": []})
-            return srv.load_all()["wishlist"] == [{"recipe_id": 1, "user_id": "u1"}]
-        finally:
-            srv.FILES = files
+    wishlist.yaml, and without history not the user's file."""
+    with temp_server() as srv:
+        srv.save_all({**example_data(), "wishlist": [{"recipe_id": 1, "user_id": "u1"}]}, "u1")
+        srv.app.test_client().post("/api/all", json={"recipes": [], "ingredients": []})
+        after = srv.load_all("u1")
+        return after["wishlist"] == [{"recipe_id": 1, "user_id": "u1"}] and after["history"] == example_data()["history"]
+
+
+def per_user_files():
+    """history + default ratings live in user_data/user_<id>.yaml: u1 and u2 don't see each other's data."""
+    def calls(c):
+        post = lambda url, **body: c.post(url, json=body)
+        full = dict(taste_rating=9, repeat_rating=5, effort_rating=2, actual_prep=10, actual_cook=20)
+        return {
+            "rate_u2": post("/api/rating", recipe_id=5, user_id="u2", **full).status_code,
+            "rate_none": post("/api/rating", recipe_id=5, **full).status_code,
+            "rate_unknown": post("/api/rating", recipe_id=5, user_id="../x", **full).status_code,
+            "cooked_none": post("/api/history/cooked", recipe_id=5).status_code,
+            "dismiss_none": post("/api/dismiss", recipe_id=5).status_code,
+            "ahead_u2": post("/api/dev/rating", recipe_id=9, user_id="u2", taste_rating=8, effort_rating=3).get_json(),
+            "ahead_bad": post("/api/dev/rating", recipe_id=9, user_id="u2", taste_rating=11).status_code,
+            "dev_u2": c.get("/api/dev/ratings?user=u2").get_json(),
+            "dev_none": c.get("/api/dev/ratings").status_code,
+            "page_u1": c.get("/api/recipe/1?user=u1").get_json()["has_cooked"],
+            "page_u2": c.get("/api/recipe/1?user=u2").get_json()["has_cooked"],
+        }
+    with temp_server() as srv:
+        srv.save_all(example_data(), "u1")
+        out = calls(srv.app.test_client())
+        out["u1"], out["u2"], out["none"] = srv.load_all("u1"), srv.load_all("u2"), srv.load_all()
+        out["files"] = sorted(p.name for p in srv.USER_DIR.iterdir())
+        return out
 
 
 def rating_rejected(**kw) -> bool:
@@ -279,7 +311,8 @@ def real_data():
     """The real Server/server_data/*.yaml (read only). Checks on it must hold for ANY data,
     so they keep working when recipes are added."""
     from Server import smartfood_server as srv
-    return srv.load_all()
+    users = srv.load_all()["users"]
+    return srv.load_all(users[0]["user_id"] if users else None)     # history of the first user
 
 
 def real_propose_ok(data, runs=50):
@@ -421,6 +454,15 @@ def sanity_checks():
         {"ingredient_id": 10, "name": "Salmon", "veg_type": "fish", "meat_type": "fish"})],
             "recipe_ingredients": data["recipe_ingredients"] + [{"recipe_id": 2, "ingredient_id": 10}]}
     rd = real_data()
+    ahead = example_data()                                     # 9 never cooked, rated ahead in the admin file
+    ahead["default_ratings"] = [{"recipe_id": 9, "taste_rating": 9, "effort_rating": 2, "repeat_rating": None}]
+    ds_ahead, main_ahead, new_ahead = pools(ahead)
+    users = per_user_files()
+    detailed = [pl.propose_detailed(data, user_id="u1", today=TODAY, k=k, rng=random.Random(seed))
+                for seed in range(300) for k in (5, 8)]
+    same_as_propose = [r["recipe_id"] for r in pl.propose(data, user_id="u1", today=TODAY, rng=random.Random(7))] ==         [p["recipe"]["recipe_id"] for p in pl.propose_detailed(data, user_id="u1", today=TODAY, rng=random.Random(7))]
+    _, main_ids, new_ids = pools()
+    u2_dev = {r["recipe_id"]: r for r in users["dev_u2"]["recipes"]}
     not_specific = dict(data["recipes"][0], main_ingredient=yr.NOT_SPECIFIC)
     shift_nb = lambda r, m: m * math.exp(-(r - (5 + math.log(1 - 0.9) / 0.3)) * 0.3) + m * 0.9 - m   # notebook form
     empty_app = pl.app_stats({"history": []}, TODAY)
@@ -587,6 +629,52 @@ def sanity_checks():
         ("rating: complete rating accepted", not rating_rejected()),
         ("rating: no history -> prefill 5 / 5 / 5", [rl.default_ratings(data, 9)[k] for k in
                                                      ("taste_rating", "repeat_rating", "effort_rating")] == [5, 5, 5]),
+        ("default ratings: never cooked + rated ahead -> its taste / effort, known (main pool, not new)",
+         (ds_ahead[9]["reward"]["taste"], ds_ahead[9]["reward"]["effort"]) == (9, 2)
+         and 9 in main_ahead and 9 not in new_ahead and not rl.is_new(ahead, 9) and rl.is_new(data, 9)),
+        ("default ratings: history wins, unset value -> neutral 5",
+         pl.rating({"taste_rating": [3]}, "taste_rating", {"taste_rating": 9}) == 3
+         and pl.rating(None, "taste_rating", {"taste_rating": 9}) == 9
+         and pl.rating(None, "repeat_rating", {"repeat_rating": None}) == pl.NEUTRAL_RATING),
+        ("default ratings: rating page prefill 9 / 5 / 2", [rl.default_ratings(ahead, 9)[k] for k in
+                                                           ("taste_rating", "repeat_rating", "effort_rating")] == [9, 5, 2]),
+        ("source: propose_detailed draws exactly like propose", same_as_propose),
+        ("source: cycle / fill from the main / new pool, swaps name the replaced recipe",
+         all((p["source"] == "cycle" and p["recipe"]["recipe_id"] in main_ids and p["replaced"] is None)
+             or (p["source"] in ("fill", "swap_new") and p["recipe"]["recipe_id"] in new_ids)
+             or p["source"] == "swap_main"
+             for run in detailed for p in run)
+         and all(p["replaced"] is not None for run in detailed for p in run if p["source"].startswith("swap"))),
+        ("source: all of cycle / fill / swap occur (k=8 > main pool -> fill)",
+         {"cycle", "fill", "swap_new"} <= {p["source"] for run in detailed for p in run}),
+        ("source: wishlist recipe is never swapped",
+         not any(p["source"].startswith("swap") and p["replaced"] == 10 for run in detailed for p in run)),
+        ("source: 'Neue Rezepte' -> new_pool",
+         {p["source"] for p in pl.propose_detailed(data, user_id="u1", today=TODAY, pool="new")} == {"new_pool"}),
+        ("server: proposals carry source + score",
+         all(r["source"] in pl.__dict__.values() and isinstance(r["score"], float) for r in srv_get["main_dish"])),
+        ("users: history + ratings ahead in one file per user, u1 and u2 separate",
+         users["files"] == ["user_u1.yaml", "user_u2.yaml"]
+         and users["u1"]["history"] == example_data()["history"] and users["u1"]["default_ratings"] == []
+         and [h["recipe_id"] for h in users["u2"]["history"]] == [5]
+         and [d["recipe_id"] for d in users["u2"]["default_ratings"]] == [9]
+         and users["none"]["history"] == [] == users["none"]["default_ratings"]),
+        ("users: has_cooked per user (recipe 1 cooked by u1 only)", users["page_u1"] and not users["page_u2"]),
+        ("users: rating / cooked / dismiss / dev without (known) user -> 400",
+         (users["rate_u2"], users["rate_none"], users["rate_unknown"], users["cooked_none"], users["dismiss_none"],
+          users["dev_none"], users["ahead_bad"]) == (200, 400, 400, 400, 400, 400, 400)),
+        ("dev page: rating ahead saved, list marks rated (ahead + real), unrated stays open",
+         users["ahead_u2"]["default_rating"]["taste_rating"] == 8
+         and u2_dev[9]["rated"] and u2_dev[5]["rated"] and u2_dev[5]["history_rated"] and not u2_dev[6]["rated"]),
+        ("dev page: all values null -> rating ahead removed",
+         (lambda d: rl.set_default_rating(d, 9) is None and d["default_ratings"] == [])(
+             {**example_data(), "default_ratings": [{"recipe_id": 9, "taste_rating": 7}]})),
+        ("cookbook: histories of all users merged per recipe",
+         (lambda m: m[0]["taste_rating"] == [3, 9] and m[0]["last_date"] == "2026-02-01")(rl.merge_histories(
+             [[{"recipe_id": 1, "taste_rating": [3], "last_date": "2026-01-01"}],
+              [{"recipe_id": 1, "taste_rating": [9], "last_date": "2026-02-01"}]]))),
+        ("default ratings: unknown recipe / value out of 0-10 found",
+         len(yr.data_problems({**data, "default_ratings": [{"recipe_id": 999}, {"recipe_id": 9, "taste_rating": 11}]})) == 2),
         ("cookbook PDF: ratings from history, else recipe defaults (N.R. = not rated)",
          "Geschmack 8,0/10 •" in cookbook and "Geschmack 5,0/10 (N.R.)" in cookbook),
         ("cookbook PDF: no reward / times cooked / last date", not any(
