@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartFood – Dev: Scores</title>
+  <style>
+    body{ font-family: system-ui, sans-serif; background:#0b0f17; color:#e9eefc; margin:0; padding:24px; }
+    h1{ margin:0 0 6px; font-size:22px; }
+    .muted{ color:#a7b4d6; font-size:13px; }
+    .bar{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:12px 0 14px; }
+    .bar select{ background:#121a2a; color:#e9eefc; border:1px solid #2a3a58; border-radius:8px; padding:6px 10px; }
+    .bar label{ display:inline-flex; align-items:center; gap:6px; font-size:13px; }
+    .btn{ border-radius:10px; padding:7px 12px; background:#1a2436; color:#e9eefc; border:1px solid #2a3a58; cursor:pointer; }
+    .box{ background:#121a2a; border-radius:12px; padding:12px 14px; margin-bottom:12px; font-size:13px; line-height:1.55; max-width:1200px; }
+    .box.starter{ border:1px solid rgba(122,162,255,.45); }
+    details.box summary{ cursor:pointer; font-weight:700; }
+    .legend{ display:grid; grid-template-columns: max-content 1fr; gap:4px 14px; margin-top:8px; }
+    .legend b{ white-space:nowrap; }
+    code{ background:#0b1220; border-radius:6px; padding:1px 5px; }
+    .wrap{ overflow-x:auto; }
+    table{ border-collapse:collapse; font-size:13px; width:100%; }
+    th, td{ text-align:right; padding:6px 8px; border-bottom:1px solid #1d2840; white-space:nowrap; }
+    th{ color:#a7b4d6; font-weight:600; background:#0b0f17; }
+    thead tr.cols th{ cursor:pointer; user-select:none; position:sticky; top:0; }
+    thead tr.groups th{ text-align:center; font-size:11px; letter-spacing:.4px; text-transform:uppercase; border-bottom:none; }
+    th.l, td.l{ text-align:left; }
+    /* Score-Spalten markiert */
+    th.score, td.score{ background:rgba(34,211,238,.07); }
+    thead tr.groups th.score{ color:#22d3ee; }
+    td.score.total{ font-weight:800; color:#e9eefc; background:rgba(34,211,238,.14); }
+    td.name{ white-space:normal; min-width:240px; }
+    td.name a{ color:#e9eefc; text-decoration:none; }
+    td.name a:hover{ text-decoration:underline; }
+    tr.excluded td{ color:#5c6f96; }
+    tr.excluded td.name a{ color:#7d8db3; }
+    tr.excluded td.score{ background:rgba(92,111,150,.06); }
+    .pill{ font-size:11px; font-weight:700; border-radius:999px; padding:1px 7px; border:1px solid; }
+    .pill.main{ color:#4cd4a6; border-color:rgba(76,212,166,.45); }
+    .pill.new{ color:#7aa2ff; border-color:rgba(122,162,255,.45); }
+    .why{ color:#ff9b9b; }
+    .jump{ display:flex; gap:8px; flex-wrap:wrap; margin:0 0 12px; }
+    .jump a{ color:#22d3ee; font-size:13px; text-decoration:none; border:1px solid #2a3a58; border-radius:999px; padding:3px 10px; }
+    details.group{ margin-bottom:16px; max-width:none; }
+    details.group > summary{ font-size:16px; font-weight:800; margin-bottom:6px; }
+    details.group .gsum{ font-weight:400; color:#a7b4d6; font-size:13px; margin:4px 0 10px; }
+    .rules{ color:#a7b4d6; font-size:12px; white-space:normal; text-align:left; min-width:180px; }
+  </style>
+</head>
+<body>
+<script src="/static/nav.js"></script>
+
+<h1>Dev: Scores</h1>
+<div class="muted">Alle Rezepte mit ihren Scores – ohne Ziehung, nur die Platzierung. Gleiche Rechnung wie beim Vorschlagen (heute).</div>
+
+<div class="bar">
+  <span id="sf-user-slot" style="display:inline-flex; align-items:center; gap:6px;"></span>
+  <label><input type="checkbox" id="showExcluded" checked> ausgeschlossene zeigen</label>
+  <button class="btn" type="button" id="btnDev">Default-Bewertung</button>
+  <button class="btn" type="button" id="btnHome">Zur Startseite</button>
+</div>
+
+<div class="box starter" id="starterBox" hidden></div>
+<div class="box" id="summary"></div>
+<div class="jump" id="jump"></div>
+
+<details class="box">
+  <summary>Legende – was bedeuten die Spalten?</summary>
+  <div class="legend">
+    <b>total_score</b><span><code>(date_score + reward_score + Wunschliste) × damp_mult + damp_offset + Wunschliste / 5</code>
+      – danach wird sortiert. Je höher, desto wahrscheinlicher wird das Rezept gezogen.
+      „Median“: nie gekocht und keine Zeiten hinterlegt → bekommt den Median der anderen.</span>
+    <b>date_score</b><span>Wie „fällig“ das Rezept ist (0–10). Nie gekocht = 5. Sonst nach Tagen seit dem letzten Kochen;
+      ab 3 Kochdaten zählt zusätzlich dein eigener Rhythmus.</span>
+    <b>reward_score</b><span>Wie lohnend das Rezept ist (0–10): aus Geschmack, Aufwand und Gesamtzeit.
+      Fehlende Bewertung → Default-Bewertung, sonst 5.</span>
+    <b>damp_mult / damp_offset</b><span>Dämpfung: Faktor und Zu-/Abschlag aus den Regeln (z.B. gleiche Fleischsorte wie zuletzt,
+      Saison +3). Welche Regel gegriffen hat, steht hinten unter „Dämpfungsregeln“.</span>
+    <b>Wunschliste</b><span>+10 im total_score, wenn das Rezept auf deiner Wunschliste steht.</span>
+    <b>Pool</b><span><span class="pill main">Haupt</span> wird zuerst gezogen (gekocht, default bewertet, Wunschliste – in der Startphase alle).
+      <span class="pill new">Neu</span> nie gekocht – kommt nur über Auffüllen / Tauschen.</span>
+    <b>Grau</b><span>Ausgeschlossen durch einen harten Filter – wird gerade <i>nie</i> vorgeschlagen. Der Grund steht in „Ausgeschlossen“.</span>
+    <b>Default</b><span>✓ = du hast das Rezept auf der Seite „Default-Bewertung“ bewertet (ohne es über die App zu kochen).</span>
+    <b>Saison</b><span><code>summer</code> = Empfehlung (+3 im Sommer, sonst trotzdem möglich) ·
+      <code>only_summer</code> = außerhalb des Sommers ausgeschlossen · <code>all</code> = ganzjährig (+3 immer).</span>
+  </div>
+</details>
+
+<div id="groups"></div>
+
+<script>
+const TYPE_LABEL = { main_dish: "Hauptgerichte", side_dish: "Beilagen", sweet: "Nachspeisen", snack: "Snacks",
+                     dip: "Dips", wuerzung: "Gewürzmischungen" };
+const THEAD = `
+  <thead>
+    <tr class="groups">
+      <th colspan="2"></th>
+      <th class="score" colspan="6">Scores</th>
+      <th colspan="2">Status</th>
+      <th colspan="8">Eingaben</th>
+    </tr>
+    <tr class="cols">
+      <th data-k="rank">Platz</th>
+      <th class="l" data-k="name">Rezept</th>
+      <th class="score" data-k="total">total_score</th>
+      <th class="score" data-k="date_score">date_score</th>
+      <th class="score" data-k="reward_score">reward_score</th>
+      <th class="score" data-k="damp_mult">damp_mult</th>
+      <th class="score" data-k="damp_offset">damp_offset</th>
+      <th class="score" data-k="wishlist">Wunschliste</th>
+      <th class="l" data-k="pool">Pool</th>
+      <th class="l" data-k="excluded">Ausgeschlossen</th>
+      <th data-k="dist_last">Tage seit gekocht</th>
+      <th data-k="n_dates">x gekocht</th>
+      <th data-k="taste">Geschmack</th>
+      <th data-k="effort">Aufwand</th>
+      <th data-k="minutes">Minuten</th>
+      <th class="l" data-k="season">Saison</th>
+      <th class="l" data-k="rated_ahead">Default</th>
+      <th class="l">Dämpfungsregeln</th>
+    </tr>
+  </thead>`;
+const userId = window.SmartFoodUser.get();
+let data = null;
+let sortKey = null, sortDir = 1;       // null = Reihenfolge vom Server (Platz, dann ausgeschlossene)
+const closed = new Set();              // zugeklappte Gruppen bleiben beim Neu-Zeichnen zu
+
+const fmt = (v, d = 2) => v === null || v === undefined ? "–" : (typeof v === "number" ? v.toFixed(d).replace(/\.?0+$/, "") : v);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function summary(){
+  let text = "Pro Gerichttyp eine Tabelle. Sie zeigt nur Rezepte dieses Typs: oben die erlaubten nach Platz, "
+    + "darunter grau die, die dazugehören, aber gerade aus einem anderen Grund nicht vorgeschlagen werden "
+    + "(z.B. über 60 min, Saison, Blacklist, gerade gekocht).";
+  if(!data.user) text += " <br>Kein User gewählt → keine history, alle Rezepte gelten als nie gekocht.";
+  document.getElementById("summary").innerHTML = text;
+
+  const starter = document.getElementById("starterBox");
+  starter.hidden = !data.starter_phase;
+  starter.innerHTML = `<b>Startphase:</b> erst ${data.cooked_count} von ${data.starter_limit} Rezepten gekocht → `
+    + `alle erlaubten Rezepte sind im Haupt-Pool und werden gleich behandelt (nach total_score gezogen, kein Auffüllen). `
+    + `Ab ${data.starter_limit + 1} gekochten Rezepten werden bekannte Gerichte zuerst gezogen.`;
+
+  document.getElementById("jump").innerHTML = data.groups.map(g =>
+    `<a href="#g-${g.meal_type}">${esc(TYPE_LABEL[g.meal_type] || g.meal_type)} (${g.rows.length})</a>`).join("");
+}
+
+function groupSummary(g){
+  const k = data.proposal_count;
+  const allowed = g.rows.filter(r => !r.excluded.length).length;
+  let text = `<b>${allowed}</b> erlaubt (<b>${g.main_pool}</b> Haupt-Pool, <b>${g.new_pool}</b> neu) · `
+    + `<b>${g.rows.length - allowed}</b> ausgeschlossen. `;
+  if(data.starter_phase) text += `Gezogen werden ${k} aus allen erlaubten nach total_score.`;
+  else if(g.main_pool >= k) text += `Gezogen werden ${k} aus dem Haupt-Pool, danach evtl. ein Tausch gegen ein neues.`;
+  else text += `Haupt-Pool hat weniger als ${k} → alle ${g.main_pool} kommen rein (Zyklus), der Rest wird aus den neuen aufgefüllt.`;
+  return text;
+}
+
+function rowHtml(r){
+  return `
+    <tr class="${r.excluded.length ? "excluded" : ""}">
+      <td>${r.rank ?? "–"}</td>
+      <td class="l name"><a href="${window.SmartFoodUser.decorate(`/recipe?id=${r.recipe_id}`)}" target="_blank">${esc(r.name)}</a></td>
+      <td class="score total" title="${r.total_is_median ? "nie gekocht und keine Zeiten → Median der anderen" : ""}">${fmt(r.total)}${r.total_is_median ? " (Median)" : ""}</td>
+      <td class="score">${fmt(r.date_score)}</td>
+      <td class="score">${fmt(r.reward_score)}</td>
+      <td class="score">× ${fmt(r.damp_mult)}</td>
+      <td class="score">${r.damp_offset > 0 ? "+" : ""}${fmt(r.damp_offset)}</td>
+      <td class="score">${r.wishlist ? "+10" : "–"}</td>
+      <td class="l"><span class="pill ${r.pool}">${r.pool === "main" ? "Haupt" : "Neu"}</span></td>
+      <td class="l why">${esc(r.excluded.join(", "))}</td>
+      <td>${r.dist_last ?? "nie"}</td>
+      <td>${r.n_dates}</td>
+      <td>${fmt(r.taste, 1)}</td>
+      <td>${fmt(r.effort, 1)}</td>
+      <td>${r.minutes ?? "–"}</td>
+      <td class="l">${esc(r.season)}</td>
+      <td class="l">${r.rated_ahead ? "✓" : ""}</td>
+      <td class="rules">${esc(r.damp_rules.join(", "))}</td>
+    </tr>`;
+}
+
+function sorted(rows){
+  if(!sortKey) return rows;
+  const val = r => sortKey === "excluded" ? r.excluded.join(", ") : r[sortKey];
+  return [...rows].sort((a, b) => {
+    const x = val(a), y = val(b);
+    if(x === y) return 0;
+    if(x === null || x === undefined) return 1;
+    if(y === null || y === undefined) return -1;
+    return (x < y ? -1 : 1) * sortDir;
+  });
+}
+
+function render(){
+  const showExcluded = document.getElementById("showExcluded").checked;
+  const wrap = document.getElementById("groups");
+  wrap.innerHTML = data.groups.map(g => {
+    const rows = sorted(g.rows.filter(r => showExcluded || !r.excluded.length));
+    const body = rows.map(rowHtml).join("") || '<tr><td class="l" colspan="18">keine</td></tr>';
+    return `
+      <details class="box group" id="g-${g.meal_type}" data-type="${g.meal_type}" ${closed.has(g.meal_type) ? "" : "open"}>
+        <summary>${esc(TYPE_LABEL[g.meal_type] || g.meal_type)} <span class="muted">(${g.rows.length})</span></summary>
+        <div class="gsum">${groupSummary(g)}</div>
+        <div class="wrap"><table>${THEAD}<tbody>${body}</tbody></table></div>
+      </details>`;
+  }).join("");
+  wrap.querySelectorAll("details.group").forEach(d => d.addEventListener("toggle", () => {
+    if(d.open) closed.delete(d.dataset.type); else closed.add(d.dataset.type);
+  }));
+  wrap.querySelectorAll("th[data-k]").forEach(th => th.onclick = () => {
+    const k = th.dataset.k;
+    if(sortKey === k) sortDir = -sortDir; else { sortKey = k; sortDir = ["name", "pool", "excluded", "rank", "season"].includes(k) ? 1 : -1; }
+    render();
+  });
+}
+
+async function load(){
+  const qs = new URLSearchParams();
+  if(userId) qs.set("user", userId);
+  const allergies = JSON.parse(localStorage.getItem("smartfood_allergies") || "[]");   // wie auf der Startseite
+  if(allergies.length) qs.set("allergies", allergies.join(","));
+  const res = await fetch("/api/dev/scores?" + qs);
+  const out = await res.json();
+  if(!res.ok){ document.getElementById("summary").textContent = "Fehler: " + (out.error || res.status); return; }
+  data = out;
+  summary();
+  render();
+}
+
+document.getElementById("showExcluded").onchange = render;
+document.getElementById("btnHome").onclick = () => { location.href = window.SmartFoodUser.decorate("/"); };
+document.getElementById("btnDev").onclick = () => { location.href = window.SmartFoodUser.decorate("/dev"); };
+load();
+</script>
+</body>
+</html>
