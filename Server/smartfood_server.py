@@ -1,7 +1,8 @@
 import yaml
 from pathlib import Path
-from flask import Flask, send_from_directory, request, jsonify
+from flask import Flask, send_from_directory, send_file, request, jsonify
 from Tools import YamlEditor as yr
+from Tools import RecipeImages as ri
 from Tools import RatingLogic as rl
 from Tools import ProposeLogic as pl
 APP_DIR = Path(__file__).parent.resolve()
@@ -19,6 +20,8 @@ FILES = {
 }
 # pro User: user_data/user_<id>.yaml mit history + default_ratings (YamlEditor.USER_KEYS)
 USER_DIR = DATA_DIR / "user_data"
+# Rezeptbilder (Tools/RecipeImages.py): images/recipes/<id>_full.webp + <id>_thumb.webp
+IMAGE_DIR = DATA_DIR / "images"
 
 
 def _ensure_files():
@@ -96,6 +99,7 @@ def _recipe_ingredients(data, recipe_id):
             "ingredient_id": ri.get("ingredient_id"),
             "name": ing.get("name"),
             "veg_type": ing.get("veg_type"),
+            "category": ing.get("category") or "ingredient",   # ingredient | basic | spice (wie im Kochbuch-PDF)
             "quantity": ri.get("quantity"),
             "unit": ri.get("unit"),
         })
@@ -103,6 +107,7 @@ def _recipe_ingredients(data, recipe_id):
 
 
 app = Flask(__name__, static_folder=str(APP_DIR), static_url_path="/static")
+app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024    # Upload: Handyfotos bis 25 MB (gespeichert wird verkleinert)
 
 @app.get("/")
 def index():
@@ -118,6 +123,10 @@ def recipe_page():
 @app.get("/ingredients")
 def ingredients_page():
     return send_from_directory(str(APP_DIR), "ingredients.html")
+
+@app.get("/wishlist")
+def wishlist_page():
+    return send_from_directory(str(APP_DIR), "wishlist.html")
 
 @app.get("/rating")
 def rating_page():
@@ -191,7 +200,7 @@ def _proposal_response(data, picks, key, t):
     picks aus ProposeLogic.propose_detailed: source (Herkunft aus der Ziehung), score, replaced (Name)."""
     names = {r.get("recipe_id"): r.get("name") for r in data.get("recipes", [])}
     out = {key: [{**pl.recipe_to_frontend(p["recipe"], is_new=rl.is_new(data, p["recipe"]["recipe_id"])),
-                  "source": p["source"], "score": round(p["score"], 2), "wishlist": p["wishlist"],
+                  "source": p["source"], "score": round(p["score"], 2),
                   "replaced": names.get(p["replaced"])} for p in picks],
            "t": t,
            # Startphase (ProposeLogic.is_starter_phase) -> Hinweis auf der Startseite
@@ -290,6 +299,7 @@ def api_get_recipe(recipe_id):
         "wishlisted": rl.is_wishlisted(data, recipe_id, user),
         "blacklisted": bool(user) and rl.is_blacklisted(data, recipe_id, user),
         "has_cooked": rl.has_cooked(data, recipe_id),
+        "has_image": ri.has_image(recipe_id, IMAGE_DIR),
     })
 
 
@@ -312,6 +322,55 @@ def _toggle_user_list(toggle):
                         "blacklisted": rl.is_blacklisted(data, int(recipe_id), user_id)})
     except ValueError as e:
         return jsonify({"error": str(e)}), 404 if "not found" in str(e) else 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.get("/api/wishlist")
+def api_wishlist():
+    """Wunschliste-Seite: Rezepte auf der Wunschliste des Users (neueste zuerst) + Einkaufsliste ohne Grundzutaten."""
+    try:
+        user = _require_user(request.args.get("user"))
+        data = load_all(user)
+        entries = [w for w in data.get("wishlist", []) if str(w.get("user_id")) == user]
+        entries.sort(key=lambda w: w.get("date") or "", reverse=True)
+        recipes = []
+        for w in entries:
+            r = _find_recipe(data, w.get("recipe_id"))
+            if r is None:
+                continue
+            recipes.append({"recipe_id": r["recipe_id"], "name": r.get("name"), "recipe_type": r.get("recipe_type"),
+                            "veg_type": r.get("veg_type"), "minutes": pl.recipe_minutes(r), "added": w.get("date"),
+                            "has_image": ri.has_image(r["recipe_id"], IMAGE_DIR)})
+        return jsonify({"recipes": recipes,
+                        "shopping_list": yr.shopping_list(data, [r["recipe_id"] for r in recipes])})
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.post("/api/wishlist/set")
+def api_wishlist_set():
+    """Wunschliste-Seite: {recipe_id, user_id, on: true|false} - setzt den Zustand (kein Toggle, damit
+    'Rueckgaengig' nach einem Doppelklick nicht wieder entfernt)."""
+    try:
+        payload = request.get_json(force=True) or {}
+        recipe_id = payload.get("recipe_id")
+        if recipe_id is None:
+            return jsonify({"error": "recipe_id required"}), 400
+        user = _require_user(payload.get("user_id"))
+        data = load_all(user)
+        if _find_recipe(data, int(recipe_id)) is None:
+            return jsonify({"error": "recipe not found"}), 404
+        if payload.get("on"):
+            rl.add_wishlist(data, int(recipe_id), user)
+        else:
+            rl.remove_wishlist(data, int(recipe_id), user)
+        save_all({"wishlist": data["wishlist"], "blacklist": data["blacklist"]})
+        return jsonify({"ok": True, "wishlisted": rl.is_wishlisted(data, int(recipe_id), user)})
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -432,6 +491,42 @@ def api_dev_ratings():
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# ---------------- Rezeptbilder ----------------
+@app.get("/img/recipe/<int:recipe_id>/<size>")
+def recipe_image(recipe_id, size):
+    """Bild eines Rezepts (size = full | thumb), sonst das Standardbild. Der Browser fragt jedes Mal kurz nach
+    (ETag) - nach einem neuen Upload sieht man also sofort das neue Bild, sonst kommt 304 ohne Daten."""
+    try:
+        path = ri.image_file(recipe_id, size, IMAGE_DIR)
+    except ValueError:
+        return jsonify({"error": "size must be full or thumb"}), 400
+    if path is None:
+        return jsonify({"error": "no image"}), 404
+    return send_file(path, mimetype="image/webp", max_age=0, conditional=True)
+
+
+@app.post("/api/recipe/<int:recipe_id>/image")
+def api_recipe_image_upload(recipe_id):
+    """Bild hochladen (multipart, Feld 'image'): wird auf 4:3 zugeschnitten und als WebP gespeichert."""
+    data = load_all()
+    if _find_recipe(data, recipe_id) is None:
+        return jsonify({"error": "recipe not found"}), 404
+    file = request.files.get("image")
+    if file is None:
+        return jsonify({"error": "image required"}), 400
+    try:
+        sizes = ri.save_recipe_image(recipe_id, file.read(), IMAGE_DIR)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    return jsonify({"ok": True, "sizes": sizes})
+
+
+@app.delete("/api/recipe/<int:recipe_id>/image")
+def api_recipe_image_delete(recipe_id):
+    """Eigenes Bild entfernen -> wieder das Standardbild."""
+    return jsonify({"ok": True, "removed": ri.delete_recipe_image(recipe_id, IMAGE_DIR)})
 
 
 @app.get("/api/dev/scores")

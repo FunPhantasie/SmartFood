@@ -198,6 +198,12 @@
       padding:12px 12px 10px;
       position:relative;
     }
+    /* Karte mit Bild (thumb 4:3, /img/recipe/<id>/thumb) */
+    .card.withimg{ display:grid; grid-template-columns: 104px 1fr; gap:12px; align-items:center; padding:8px 12px 8px 8px; cursor:pointer; }
+    .card.withimg img{ width:104px; height:78px; object-fit:cover; border-radius:10px; display:block; background:#0b1220; }
+    .card.withimg.small{ grid-template-columns: 72px 1fr; }
+    .card.withimg.small img{ width:72px; height:54px; border-radius:8px; }
+    .card .txt{ min-width:0; }
     .card .title{
       font-weight:750;
       font-size:13px;
@@ -296,6 +302,7 @@
         <div class="button-row">
         <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/create')">Create Recipe</button>
         <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/ingredients')">Ingredients</button>
+        <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/wishlist')">⭐ Wunschliste</button>
         <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/dev')">Dev: Default-Bewertung</button>
         <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/dev/scores')">Dev: Scores</button>
         <button class="btn good" id="btnAddRecipe" style="display:none;" >🛒 Aktuelle Auswahl laden</button>
@@ -612,7 +619,7 @@ function edit(recipe){
 }
 // Herkunft aus der Ziehung (ProposeLogic.SOURCE_*): [Text, CSS-Klasse, Erklaerung]
 const SOURCE_INFO = {
-  cycle:     ["Zyklus", "", "Normal aus dem Haupt-Pool gezogen (gekocht, default bewertet oder Wunschliste – in der Startphase bis 10 gekochte Rezepte: alle)"],
+  cycle:     ["Zyklus", "", "Normal aus dem Haupt-Pool gezogen (gekocht oder default bewertet – in der Startphase bis 10 gekochte Rezepte: alle)"],
   fill:      ["Aufgefüllt", "fill", "Zu wenige bekannte Rezepte – mit einem neuen Rezept aufgefüllt"],
   swap_new:  ["Getauscht", "swap", "Beim Tauschen durch ein neues Rezept ersetzt"],
   swap_main: ["Getauscht", "swap", "Beim Tauschen ersetzt (kein neues Rezept frei)"],
@@ -622,16 +629,17 @@ function sourceBadge(recipe){
   const info = SOURCE_INFO[recipe.source];
   if(!info) return "";
   let tip = info[2] + (recipe.replaced ? ` – statt „${recipe.replaced}“` : "");
-  if(recipe.wishlist) tip += " · steht auf der Wunschliste";
   if(typeof recipe.score === "number") tip += ` · Score ${recipe.score}`;
-  const label = info[0] + (recipe.wishlist ? " · Wunschliste" : "");
+  const label = info[0];
   return `<span class="badge src ${info[1]}" title="${tip.replace(/"/g, "&quot;")}">${label}</span>`;
 }
 
 function cardEl(recipe, onClose){
   const div = document.createElement("div");
-  div.className = "card";
+  div.className = "card withimg";
   div.innerHTML = `
+    <img src="/img/recipe/${encodeURIComponent(recipe.id)}/thumb" alt="" loading="lazy">
+    <div class="txt">
     <div class="closebtn" title="Gerade nicht (Wiederholungswunsch sinkt)">×</div>
     <p class="title">${recipe.name}${recipe.is_new ? '<span class="badge">Neu</span>' : ''}${sourceBadge(recipe)}</p>
     <div class="meta">
@@ -640,6 +648,7 @@ function cardEl(recipe, onClose){
       <span>~<b>${recipe.cook_t+recipe.prep_t ?? "?"}</b> min</span>
       ${typeof recipe.score === "number" ? `<span>Score <b>${recipe.score}</b></span>` : ""}
       ${recipe.replaced ? `<span>getauscht statt: <b>${recipe.replaced}</b></span>` : ""}
+    </div>
     </div>
   `;
   // Klick auf die Karte -> Detailseite
@@ -889,8 +898,13 @@ function runSearch(){
 
   for(const { r } of hits.slice(0, SEARCH_LIMIT)){
     const div = document.createElement("div");
-    div.className = "card";
-    div.style.cursor = "pointer";
+    div.className = "card withimg small";
+    const img = document.createElement("img");
+    img.src = `/img/recipe/${r.recipe_id}/thumb`;
+    img.alt = "";
+    img.loading = "lazy";
+    const txt = document.createElement("div");
+    txt.className = "txt";
     const title = document.createElement("p");
     title.className = "title";
     title.style.marginRight = "0";
@@ -901,7 +915,8 @@ function runSearch(){
     meta.innerHTML = `<span><b>${prettyMealType(r.recipe_type)}</b></span>
       <span>Typ: <b>${r.veg_type ?? "?"}</b></span>
       <span>~<b>${minutes || "?"}</b> min</span>`;
-    div.append(title, meta);
+    txt.append(title, meta);
+    div.append(img, txt);
     div.addEventListener("click", () => edit({ id: r.recipe_id }));
     out.appendChild(div);
   }

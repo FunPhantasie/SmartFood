@@ -67,7 +67,7 @@
 <details class="box">
   <summary>Legende – was bedeuten die Spalten?</summary>
   <div class="legend">
-    <b>total_score</b><span><code>(date_score + reward_score + Wunschliste) × damp_mult + damp_offset + Wunschliste / 5</code>
+    <b>total_score</b><span><code>(date_score + reward_score) × damp_mult + damp_offset</code>
       – danach wird sortiert. Je höher, desto wahrscheinlicher wird das Rezept gezogen.
       „Median“: nie gekocht und keine Zeiten hinterlegt → bekommt den Median der anderen.</span>
     <b>date_score</b><span>Wie „fällig“ das Rezept ist (0–10). Nie gekocht = 5. Sonst nach Tagen seit dem letzten Kochen;
@@ -76,8 +76,7 @@
       Fehlende Bewertung → Default-Bewertung, sonst 5.</span>
     <b>damp_mult / damp_offset</b><span>Dämpfung: Faktor und Zu-/Abschlag aus den Regeln (z.B. gleiche Fleischsorte wie zuletzt,
       Saison +3). Welche Regel gegriffen hat, steht hinten unter „Dämpfungsregeln“.</span>
-    <b>Wunschliste</b><span>+10 im total_score, wenn das Rezept auf deiner Wunschliste steht.</span>
-    <b>Pool</b><span><span class="pill main">Haupt</span> wird zuerst gezogen (gekocht, default bewertet, Wunschliste – in der Startphase alle).
+    <b>Pool</b><span><span class="pill main">Haupt</span> wird zuerst gezogen (gekocht oder default bewertet – in der Startphase alle).
       <span class="pill new">Neu</span> nie gekocht – kommt nur über Auffüllen / Tauschen.</span>
     <b>Grau</b><span>Ausgeschlossen durch einen harten Filter – wird gerade <i>nie</i> vorgeschlagen. Der Grund steht in „Ausgeschlossen“.</span>
     <b>Default</b><span>✓ = du hast das Rezept auf der Seite „Default-Bewertung“ bewertet (ohne es über die App zu kochen).</span>
@@ -95,7 +94,7 @@ const THEAD = `
   <thead>
     <tr class="groups">
       <th colspan="2"></th>
-      <th class="score" colspan="6">Scores</th>
+      <th class="score" colspan="5">Scores</th>
       <th colspan="2">Status</th>
       <th colspan="8">Eingaben</th>
     </tr>
@@ -107,7 +106,6 @@ const THEAD = `
       <th class="score" data-k="reward_score">reward_score</th>
       <th class="score" data-k="damp_mult">damp_mult</th>
       <th class="score" data-k="damp_offset">damp_offset</th>
-      <th class="score" data-k="wishlist">Wunschliste</th>
       <th class="l" data-k="pool">Pool</th>
       <th class="l" data-k="excluded">Ausgeschlossen</th>
       <th data-k="dist_last">Tage seit gekocht</th>
@@ -166,7 +164,6 @@ function rowHtml(r){
       <td class="score">${fmt(r.reward_score)}</td>
       <td class="score">× ${fmt(r.damp_mult)}</td>
       <td class="score">${r.damp_offset > 0 ? "+" : ""}${fmt(r.damp_offset)}</td>
-      <td class="score">${r.wishlist ? "+10" : "–"}</td>
       <td class="l"><span class="pill ${r.pool}">${r.pool === "main" ? "Haupt" : "Neu"}</span></td>
       <td class="l why">${esc(r.excluded.join(", "))}</td>
       <td>${r.dist_last ?? "nie"}</td>
@@ -197,7 +194,7 @@ function render(){
   const wrap = document.getElementById("groups");
   wrap.innerHTML = data.groups.map(g => {
     const rows = sorted(g.rows.filter(r => showExcluded || !r.excluded.length));
-    const body = rows.map(rowHtml).join("") || '<tr><td class="l" colspan="18">keine</td></tr>';
+    const body = rows.map(rowHtml).join("") || '<tr><td class="l" colspan="17">keine</td></tr>';
     return `
       <details class="box group" id="g-${g.meal_type}" data-type="${g.meal_type}" ${closed.has(g.meal_type) ? "" : "open"}>
         <summary>${esc(TYPE_LABEL[g.meal_type] || g.meal_type)} <span class="muted">(${g.rows.length})</span></summary>

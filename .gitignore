@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 .venv/
 .ipynb_checkpoints/
+
+# Standardbild wird aus Bilder/images.jpg erzeugt (Tools/RecipeImages.py)
+Server/server_data/images/default_*.webp

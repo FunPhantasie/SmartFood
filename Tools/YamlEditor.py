@@ -162,6 +162,35 @@ def _choice(ing: dict, reason: str) -> dict:
     return {"ingredient_id": ing.get("ingredient_id"), "name": ing.get("name"), "reason": reason}
 
 
+def shopping_list(data: dict, recipe_ids) -> list[dict]:
+    """Einkaufsliste fuer die Wunschliste-Seite: alle Zutaten der Rezepte ohne Grundzutaten (category basic),
+    gleiche Zutat + gleiche Einheit zusammengezaehlt. Rueckgabe sortiert (Zutaten vor Gewuerzen, dann Name):
+    [{ingredient_id, name, category, amounts: [{quantity, unit}], recipes: [Namen]}]."""
+    ingredients = {i.get("ingredient_id"): i for i in data.get("ingredients", [])}
+    names = {r.get("recipe_id"): r.get("name") for r in data.get("recipes", [])}
+    wanted = list(dict.fromkeys(recipe_ids))
+    items: dict = {}
+    for ri in data.get("recipe_ingredients", []):
+        ing = ingredients.get(ri.get("ingredient_id"))
+        if ri.get("recipe_id") not in wanted or ing is None or ing.get("category") == "basic":
+            continue
+        item = items.setdefault(ing["ingredient_id"], {"ingredient_id": ing["ingredient_id"], "name": ing.get("name"),
+                                                        "category": ing.get("category") or "ingredient",
+                                                        "amounts": {}, "recipes": []})
+        unit = ri.get("unit") or ing.get("unit") or ""
+        if ri.get("quantity") is not None:
+            item["amounts"][unit] = item["amounts"].get(unit, 0) + ri["quantity"]
+        else:
+            item["amounts"].setdefault(unit, None)
+        if names.get(ri["recipe_id"]) not in item["recipes"]:
+            item["recipes"].append(names.get(ri["recipe_id"]))
+    out = []
+    for item in items.values():
+        item["amounts"] = [{"quantity": round(q, 2) if q is not None else None, "unit": u} for u, q in item["amounts"].items()]
+        out.append(item)
+    return sorted(out, key=lambda i: (i["category"] == "spice", _norm(i["name"])))
+
+
 def suggest_main_and_side(data: dict, name: str, items: list[dict]) -> dict:
     """Vorschlag fuer Hauptzutat und Beilage eines Rezepts aus Name + Zutatenliste.
     items: [{ingredient_id, quantity, unit}]. Rueckgabe {"main_ingredient": {...} | None, "side_dish": ...,

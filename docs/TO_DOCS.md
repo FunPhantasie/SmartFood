@@ -2,16 +2,18 @@ What's still open (2026-11-02)
 
 Logic, server and UI are complete: proposals (GET + POST /api/proposals), several main ingredients, meat types
 (fish counts as a meat type), blacklist (recipe page + list on the home page), two-stage season,
-developer page /dev/scores (ranking),, allergy filter + recipe search on the home page,
+developer page /dev/scores (ranking), wishlist page /wishlist (shopping list),
+recipe images (upload on the recipe page, Tools/RecipeImages.py), allergy filter + recipe search on the home page,
 history + default ratings per user (Server/server_data/user_data/user_<id>.yaml), developer page /dev for default ratings.
-Test: python tests/test_propose_plan.py -> 155/155 (also checks the real server_data, so it keeps working when recipes are added).
+Test: python tests/test_propose_plan.py -> 162/162 (also checks the real server_data, so it keeps working when recipes are added).
 All notebooks in docs/Testing run (notebook == backend).
 
 Next: rate the dishes you know on /dev (per user), try the whole flow in the browser and use the app normally
 (cook, rate, dismiss). Rate on the rating page only what you really cooked that day - it sets today as cooking date.
 
 Data:
-0. Season: all 72 recipes are still 'all' - set summer / only_summer etc. in the recipe form for seasonal dishes.
+0. Images: no recipe has its own picture yet - upload on the recipe page or `python Tools/RecipeImages.py import <folder>`.
+0. Season: almost all recipes are still "all" - set summer / only_summer etc. in the recipe form for seasonal dishes.
 1. Recipes without main_ingredient or origin are allowed. 59 recipes have no side_dish - check over time which really have none.
 2. gluten_free / lactose_free are filled for all ingredients. Product-dependent ones (broths, Brühwürfel, Reiswein, Miso,
    Worcestersauce, Streuwürze, Toastbrot, Burgerbrötchen) are set to "contains" - correct them in the form if your product is free.

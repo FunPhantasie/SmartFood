@@ -23,16 +23,16 @@ This file is only the **overview**: what happens in which order and where it is 
 | **date_score**, `remove` | history (`dates`, `last_date`, `repeat_rating`) + app usage | [date_score.ipynb](Testing/date_score.ipynb) | ✅ 🧪 |
 | **reward_score** | history (`taste_rating`, `effort_rating`) + recipe times | [reward_score.ipynb](Testing/reward_score.ipynb) | ✅ 🧪 |
 | **damping** (`mult`, `offset`) | similarity to the last 3 meals (last_supper) | [damping.ipynb](Testing/damping.ipynb) | ✅ 🧪 |
-| **total score** | all of the above + wishlist | [total_score.ipynb](Testing/total_score.ipynb) | ✅ 🧪 |
+| **total score** | all of the above (no wishlist) | [total_score.ipynb](Testing/total_score.ipynb) | ✅ 🧪 |
 
 ## 3. Hard filter – `hard_filter()` ✅ 🧪
 Notebook: none (rules only, checked in the backend test). A recipe is **removed** if:
 
 | Condition | Note |
 |---|---|
-| `remove == True` from date_score (cooked ≤ 5 days ago) | the **wishlist overrides** this |
+| `remove == True` from date_score (cooked ≤ 5 days ago) | |
 | it is a variant or the original of a last_supper recipe | via recipe field `variant_of` |
-| on the blacklist | `blacklist.yaml` of the user + optional extra set – wins over the wishlist |
+| on the blacklist | `blacklist.yaml` of the user + optional extra set |
 | wrong `recipe_type` / `veg_type` | diet: vegetarian also allows vegan, nonvegan = not vegan |
 | `cook_minutes` or `prep_minutes` > 60 | same-day cooking; exactly 60 is ok |
 | `season = only_<season>` and today is another season | e.g. `only_summer` (watermelon salad) never in winter; plain `summer` is only a recommendation (+3, see damping) |
@@ -46,7 +46,7 @@ Every check with its reason (`exclusion_reasons`, e.g. "Typ snack (gesucht: main
 ## 4. Two pools ✅ 🧪
 | Pool | Recipes |
 |---|---|
-| **main** | cooked at least once, default rated (developer page `/dev`), or on the wishlist – all per user |
+| **main** | cooked at least once or default rated (developer page `/dev`) – per user |
 | **new** | never cooked and not default rated – score with `date_score = 5` + reward from the recipe's times and midpoint ratings; no times → **median score** |
 
 **Starter phase** (`STARTER_COOKED_LIMIT = 10`, `is_starter_phase`, user 2026-11-01): as long as the user has cooked
@@ -60,7 +60,7 @@ draws only never-cooked recipes. From the 11th cooked recipe on the two pools wo
 1. softmax draw of 5 from the **main** pool (no recipe together with its variant), `T` = 4, user can set 1–10
    (starter phase: the main pool = every allowed recipe, see 4.)
 2. fewer than 5 → fill up from the **new** pool
-3. swapping: in 20 % of all lists one recipe is replaced, new recipes first (never a wishlist recipe)
+3. swapping: in 20 % of all lists one recipe is replaced, new recipes first
 4. nothing left → message: browse recipes or reroll with more randomness (`T + 1`)
 5. every proposal remembers where it came from (`propose_detailed`, `SOURCE_*`): `cycle` (main pool), `fill`
    (filled up from the new pool), `swap_new` / `swap_main` (swapped in, with the replaced recipe), `new_pool` (button)
@@ -68,24 +68,53 @@ draws only never-cooked recipes. From the 11th cooked recipe on the two pools wo
 ## 6. Website ([Server/home_find.html](../Server/home_find.html)) ✅ 🟠
 - 5 proposals + buffer for dismissing; new recipes are marked **Neu**
 - badge with the source: **Zyklus** / **Aufgefüllt** / **Getauscht** (+ "getauscht statt …") / **Neue Rezepte**,
-  plus **Wunschliste** and the total score (tooltip explains it)
+  plus the total score (tooltip explains it)
 - button **"Neue Rezepte (nie gekocht)"** → only the new pool
 - filter **"Zufall (T)"** 1–10
 - filter **"Unverträglichkeiten"** (Laktosefrei / Glutenfrei) – remembered in the browser, sent with every request
 - include / exclude suggest the real ingredient names; meal types = the `recipe_type` values of the data
 - panel **"Rezept suchen"**: every word must be in the recipe name or one of its ingredients (umlauts ignored),
   name hits first, max. 30 – click → recipe page. Reads `/api/all`, no extra endpoint
+- cards and search results show the recipe thumbnail (see "Recipe images")
 - card button: **×** = not now (`repeat_rating` 0). Blacklist only on the recipe page (with confirmation);
   panel **"Meine Blacklist"** on the home page lists the user's blacklist with "Entfernen"
 - developer page **`/dev/scores`** (`ProposeLogic.ranking_by_type`, `GET /api/dev/scores?user=&allergies=`):
   one table per recipe type (main dishes, side dishes, desserts, snacks, dips, spice mixes – `RANKING_TYPE_ORDER`),
   each only with recipes of that type, ranked by total score – no draw. Greyed out: recipes of that type that are
   excluded for another reason (60 min, season, blacklist, just cooked); other types are not listed there. Columns: scores first (total_score, date_score, reward_score, damp_mult,
-  damp_offset, wishlist – marked), then status (pool, exclusion reason), then the inputs (days since cooked, times cooked,
+  damp_offset – marked), then status (pool, exclusion reason), then the inputs (days since cooked, times cooked,
   taste, effort, minutes, season, default rated, damping rules). Excluded recipes grey at the end. Legend on the page.
 - starter phase shown as a hint above the proposals and on `/dev/scores`
 - Server: `GET /api/proposals?user=<id>&t=<1-10>&pool=all|new&allergies=lactose,gluten`, `POST /api/proposals` with
   `meal_type, diet, include, exclude, allergies, user_id, count, t, pool`. Empty result → `message`.
+
+## 6b. Wishlist page ([Server/wishlist.html](../Server/wishlist.html), `/wishlist`) ✅ 🧪
+The wishlist is a **plan / shopping list only** – it has no influence on score, pool, hard filter or swapping (2026-11-02).
+- left: the user's wishlist recipes (newest first) with thumbnail, "Zum Rezept" and "Entfernen"
+- right: shopping list of all their ingredients **without basic ingredients** (`category: basic`), same ingredient +
+  unit summed, spices / sauces in their own group, tick-off remembered in the browser (`YamlEditor.shopping_list`)
+- "Entfernen" remembers the **last removed recipe** (browser) → "Wiederherstellen" puts it back
+- `GET /api/wishlist?user=`, `POST /api/wishlist/set {recipe_id, user_id, on}` (sets, no toggle – a double click on
+  "Wiederherstellen" can't remove it again). Recipe page: "Auf die Wunschliste" (toggle). Cooking / rating removes it.
+
+## 6c. Recipe page ([Server/recipe.html](../Server/recipe.html)) ✅ 🟠
+Built like the cookbook PDF: photo (4:3) next to type, title, pills (diet, cuisine, season, method) and the times;
+below the ingredients split into **Zutaten / Grundzutaten / Gewürze & Saucen** (quantity right-aligned, unit, name;
+main ingredient **bold** + "Hauptzutat", side dish marked) next to the instructions as numbered steps (a long paragraph
+is split at sentence ends – not after "ca.", "Min." … – and grouped into steps of 2–3 sentences).
+
+## 6d. Recipe images (`Tools/RecipeImages.py`) ✅ 🧪
+- stored per recipe in `server_data/images/recipes/`: `<id>_full.webp` (1200×900, recipe page) and `<id>_thumb.webp`
+  (480×360, cards / lists). The original is **not** kept.
+- always cut to **4:3** in the middle (same height everywhere, nothing distorted), turned by the EXIF orientation
+  (phone photos), transparent PNG on white, **never enlarged** (a small picture stays small, the browser scales it)
+- **WebP** quality 72 / 70: a typical photo ≈ 60–120 KB + 15–25 KB → 150 recipes ≈ 15–20 MB
+- no own picture → default from `Bilder/images.jpg` (converted the same way to `images/default_<size>.webp`,
+  regenerated when the jpg changes, not in git)
+- upload on the recipe page (hover the photo: "Bild ändern" / "Bild entfernen"): `POST /api/recipe/<id>/image`
+  (multipart `image`, max. 25 MB), `DELETE /api/recipe/<id>/image`; shown via `GET /img/recipe/<id>/full|thumb`
+  (ETag – a new upload is visible at once, otherwise 304)
+- many at once: `python Tools/RecipeImages.py import <folder>` with files named `<recipe_id>.jpg/.png/.webp`
 
 ## 7. Rating UI ([Server/rating.html](../Server/rating.html)) ✅ 🧪
 Taste, Wdh (repeat) and effort all **0–10**, prefilled with the mean (otherwise the default rating, otherwise 5).
@@ -167,7 +196,8 @@ Per recipe there is exactly **one** history entry. The arrays inside rotate (max
 
 `server_data/blacklist.yaml`, same structure as `wishlist.yaml`: `recipe_id, user_id, date`.
 Read by `propose()` (`user_blacklist`). Added / removed with `POST /api/blacklist/toggle {recipe_id, user_id}`
-(user required): button **🚫** on the proposal cards and **"Nicht mehr vorschlagen"** on the recipe page (also undo).
+(user required): **"Nicht mehr vorschlagen"** on the recipe page (with confirmation, also undo), list with
+"Entfernen" on the home page.
 A recipe is on at most one of wishlist / blacklist per user – adding it to one removes it from the other.
 
 ## Per-user data – `server_data/user_data/user_<id>.yaml` ✅ 🧪
@@ -220,7 +250,7 @@ See git history for details.
 9. ~~**II.1 factor with ≤ 1 date**~~ → ≤ 2 dates → `amp = 1`.
 10. ❓ **II.3:** is the negative offset too strong? (tune in [Testing/damping.ipynb](Testing/damping.ipynb))
 11. ~~**II.3 type of meat**~~ → recipe field `meat_types`, filled from the ingredients' `meat_type` when the recipe is edited (user, 2026-11-01).
-12. ~~**III wishlist damped?**~~ → wishlist 10 is damped, but `wishlist_score/5` (+2) is added undamped after damping.
+12. ~~**III wishlist damped?**~~ → obsolete: the wishlist has no influence on proposals any more (user, 2026-11-02).
 13. ~~**Edge cases**~~ → decided in the "Edge Cases" table at the end of each notebook (2026-10-22).
 14. ~~**Main pool almost empty for new users**~~ → starter phase: ≤ 10 different recipes cooked → everything is the main pool (user, 2026-11-01).
 
@@ -256,3 +286,4 @@ See git history for details.
 - 2026-11-01 – Starter phase (VIII.14): at most `STARTER_COOKED_LIMIT = 10` different recipes cooked → every allowed recipe is in the main pool (no filling up, "Neue Rezepte" unchanged). Shown on `/dev/scores`. Backend test 148/148.
 - 2026-11-02 – Two-stage season: `summer` = recommendation, `only_summer` = hard filter outside the season. Exclusion reasons name the mismatch (type / diet / season), `filter_recipes` removed (now in `exclusion_reasons`). `/dev/scores` reordered (scores first, legend), starter phase hint on the home page. Backend test 153/153.
 - 2026-11-02 – `/dev/scores` grouped by recipe type (`ranking_by_type`). "Vorab" renamed to "Default" in the UI. Backend test 155/155.
+- 2026-11-02 – Wishlist removed from the proposal logic (no bonus, no override of `remove`, no swap protection, not the main pool) – own page `/wishlist` with shopping list (without basic ingredients) and undo of the last removal. Recipe page redesigned like the cookbook PDF. Recipe images (`Tools/RecipeImages.py`): 4:3 WebP in two sizes, default image, upload on the recipe page, thumbnails on the home page. Backend test 162/162.

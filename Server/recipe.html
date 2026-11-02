@@ -2,138 +2,266 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Rezept</title>
   <style>
-    body{
-      font-family: system-ui, sans-serif;
-      background:#0b0f17;
-      color:#e9eefc;
-      margin:0;
-      padding:24px;
-    }
-    h1{ margin-top:0 }
-    .meta{ color:#a7b4d6; margin-bottom:16px }
-    .block{
-      background:#121a2a;
-      border-radius:12px;
-      padding:16px;
-      margin-bottom:16px;
-    }
-    .ing-layout{
-      display:flex;
-      gap:16px;
-      align-items:flex-start;
-    }
-    .img-placeholder{
-      flex:0 0 22%;
-      max-width:22%;
-      aspect-ratio: 1 / 1;
-      background:#151f33;
-      border:2px dashed #2a3a58;
-      border-radius:12px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:#5c6f96;
-      font-size:12px;
-      text-align:center;
-      padding:6px;
-    }
-    .ing-grid{
-      flex:1 1 auto;
-      min-width:0;
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap:10px;
-      align-content:start;
-    }
-    @media (max-width: 480px){
-      .ing-layout{ flex-direction: column-reverse; }
-      .img-placeholder{ flex:0 0 auto; max-width:35%; align-self:flex-end; }
-    }
-    .ing-item{
-      background:#1a2436;
-      border-radius:8px;
-      padding:10px 12px;
-      font-size:14px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .actions{
-      display:flex;
-      gap:10px;
-      margin-top:16px;
-    }
-    .actions{ flex-wrap:wrap; }
-    .btn{
-      border-radius:10px;
-      padding:10px 16px;
-      border:none;
-      background:#22d3ee;
-      color:#0f172a;
-      font-weight:700;
-      cursor:pointer;
-    }
+    :root{ --bg:#0b0f17; --card:#121a2a; --card2:#0f1626; --line:#1d2840; --text:#e9eefc; --muted:#a7b4d6;
+           --faint:#7d8db3; --accent:#22d3ee; --ok:#4cd4a6; --radius:16px; }
+    *{ box-sizing:border-box; }
+    body{ font-family: system-ui, sans-serif; margin:0; color:var(--text);
+          background: radial-gradient(900px 500px at 30% 0%, #172141 0%, var(--bg) 55%) fixed; }
+    .page{ max-width:1100px; margin:0 auto; padding:18px 22px 40px; }
+
+    /* Kopfzeile */
+    .topbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+    .topbar .spacer{ flex:1; }
+    .btn{ border-radius:10px; padding:9px 14px; border:1px solid transparent; background:var(--accent); color:#0f172a;
+          font-weight:700; cursor:pointer; font-size:13px; }
     .btn:disabled{ opacity:.55; cursor:default; }
-    .btn.secondary{ background:#1a2436; color:#e9eefc; border:1px solid #2a3a58; }
-    .btn.muted{ background:#151f33; color:#a7b4d6; border:1px dashed #2a3a58; cursor:pointer; }
-    .btn.muted.active{ background:#22d3ee; color:#0f172a; border-style:solid; font-weight:700; }
-    .variant-picker{
-      display:none;
-      margin-bottom:16px;
-      align-items:center;
-      gap:8px;
-    }
-    .variant-picker label{ color:#a7b4d6; font-size:14px; }
-    .variant-picker select{
-      background:#121a2a;
-      color:#e9eefc;
-      border:1px solid #2a3a58;
-      border-radius:8px;
-      padding:6px 10px;
-    }
+    .btn.secondary{ background:#1a2436; color:var(--text); border-color:#2a3a58; }
+    .btn.muted{ background:#151f33; color:var(--muted); border:1px dashed #2a3a58; }
+    .btn.muted.active{ background:var(--accent); color:#0f172a; border-style:solid; }
+    .btn.small{ padding:6px 10px; font-size:12px; }
+
+    /* Kopfbereich: Bild + Titel */
+    .hero{ display:grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap:26px; align-items:start; }
+    @media (max-width: 820px){ .hero{ grid-template-columns: 1fr; } }
+    .photo{ position:relative; border-radius:var(--radius); overflow:hidden; background:var(--card2);
+            box-shadow: 0 14px 40px rgba(0,0,0,.4); aspect-ratio: 4 / 3; }
+    .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .photo .tools{ position:absolute; right:10px; bottom:10px; display:flex; gap:6px; opacity:.0; transition:opacity .15s; }
+    .photo:hover .tools, .photo .tools:focus-within{ opacity:1; }
+    @media (hover: none){ .photo .tools{ opacity:1; } }
+    .photo .tools .btn{ background:rgba(11,15,23,.78); color:var(--text); border:1px solid rgba(255,255,255,.18); backdrop-filter: blur(6px); }
+    .eyebrow{ color:var(--accent); font-size:12px; font-weight:800; letter-spacing:.8px; text-transform:uppercase; margin-bottom:6px; }
+    h1{ margin:0 0 12px; font-size:30px; line-height:1.15; letter-spacing:-.3px; }
+    .pills{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+    .pill{ font-size:12px; color:var(--muted); border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04);
+           padding:4px 10px; border-radius:999px; }
+    .stats{ display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:16px; }
+    .stat{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 12px; }
+    .stat .v{ font-size:20px; font-weight:800; font-variant-numeric: tabular-nums; }
+    .stat .v small{ font-size:12px; font-weight:600; color:var(--muted); margin-left:2px; }
+    .stat .l{ font-size:11px; color:var(--faint); text-transform:uppercase; letter-spacing:.5px; margin-top:2px; }
+    .actions{ display:flex; gap:8px; flex-wrap:wrap; }
+    .variant-picker{ display:none; align-items:center; gap:8px; margin-top:14px; }
+    .variant-picker label{ color:var(--muted); font-size:13px; }
+    .variant-picker select{ background:var(--card); color:var(--text); border:1px solid #2a3a58; border-radius:8px; padding:6px 10px; }
+
+    /* Inhalt: Zutaten + Zubereitung (wie im Kochbuch-PDF) */
+    .content{ display:grid; grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.4fr); gap:26px; margin-top:30px; align-items:start; }
+    @media (max-width: 820px){ .content{ grid-template-columns: 1fr; } }
+    .panel{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px; }
+    .panel h2{ margin:0 0 4px; font-size:13px; letter-spacing:.8px; text-transform:uppercase; color:var(--accent); }
+    .ing-group + .ing-group{ margin-top:16px; }
+    .ing-group h3{ margin:0 0 6px; font-size:12px; color:var(--faint); font-weight:700; letter-spacing:.4px; text-transform:uppercase; }
+    .ing-table{ width:100%; border-collapse:collapse; }
+    .ing-table td{ padding:7px 0; border-bottom:1px solid var(--line); font-size:14.5px; vertical-align:baseline; }
+    .ing-table tr:last-child td{ border-bottom:none; }
+    .ing-table td.qty{ width:1%; white-space:nowrap; text-align:right; padding-right:6px; font-variant-numeric: tabular-nums; font-weight:600; }
+    .ing-table td.unit{ width:1%; white-space:nowrap; color:var(--muted); padding-right:14px; }
+    .ing-table td.name b{ font-weight:800; }
+    .tag{ font-size:10px; font-weight:700; color:var(--ok); border:1px solid rgba(76,212,166,.45); border-radius:999px;
+          padding:0 6px; margin-left:6px; vertical-align:middle; }
+    .tag.side{ color:#fbbf24; border-color:rgba(251,191,36,.45); }
+    .steps{ margin:8px 0 0; padding:0; list-style:none; counter-reset: step; }
+    .steps li{ counter-increment: step; position:relative; padding:0 0 14px 40px; line-height:1.65; font-size:15px; }
+    .steps li::before{ content: counter(step); position:absolute; left:0; top:1px; width:26px; height:26px; border-radius:50%;
+                       background:rgba(34,211,238,.14); color:var(--accent); font-size:12px; font-weight:800;
+                       display:grid; place-items:center; }
+    .instructions-plain{ line-height:1.7; font-size:15px; white-space:pre-line; margin:8px 0 0; }
+    .empty{ color:var(--faint); font-size:14px; padding:6px 0; }
   </style>
 </head>
 <body>
 <script src="/static/nav.js"></script>
 
-<div class="actions" style="margin-bottom:16px;">
-  <button class="btn secondary" id="btnHome">🏠 Home</button>
-  <button class="btn" id="btnEdit">Rezept ändern</button>
-  <button class="btn secondary" id="btnCurrentPick">🛒 Als aktuelle Auswahl merken</button>
-</div>
-
-<h1 id="title">Rezept</h1>
-<div class="meta" id="meta"></div>
-<div style="margin-bottom:16px;"><span id="sf-user-slot" style="display:inline-flex; align-items:center; gap:6px;"></span></div>
-
-<div class="variant-picker" id="variantPicker">
-  <label for="variantSelect">Varianten:</label>
-  <select id="variantSelect"></select>
-</div>
-
-<div class="block">
-  <h3>Zutaten</h3>
-  <div class="ing-layout">
-    <div class="ing-grid" id="ingredients"></div>
-    <div class="img-placeholder" id="imgPlaceholder">🖼️ Kein Bild</div>
+<div class="page">
+  <div class="topbar">
+    <button class="btn secondary" id="btnHome">🏠 Home</button>
+    <button class="btn secondary" id="btnWishlist">⭐ Wunschliste</button>
+    <span id="sf-user-slot" style="display:inline-flex; align-items:center; gap:6px;"></span>
+    <span class="spacer"></span>
+    <button class="btn secondary" id="btnCurrentPick">🛒 Als aktuelle Auswahl merken</button>
+    <button class="btn secondary" id="btnEdit">✏️ Rezept ändern</button>
   </div>
-  <h3>Zubereitung</h3>
-  <p id="instructions"></p>
-</div>
 
-<div class="actions">
-  <button class="btn secondary" id="btnCooked">✓ Einmal gekocht</button>
-  <button class="btn" id="btnRate">⭐ Gekocht &amp; bewerten</button>
-  <button class="btn muted" id="btnUpcoming">Auf demnächst setzen</button>
-  <button class="btn muted" id="btnBlacklist">🚫 Nicht mehr vorschlagen</button>
+  <section class="hero">
+    <div class="photo">
+      <img id="photo" alt="">
+      <div class="tools">
+        <label class="btn small" for="photoInput">📷 Bild ändern</label>
+        <button class="btn small" id="btnPhotoRemove" hidden>Bild entfernen</button>
+        <input type="file" id="photoInput" accept="image/*" hidden>
+      </div>
+    </div>
+    <div>
+      <div class="eyebrow" id="eyebrow"></div>
+      <h1 id="title">Rezept</h1>
+      <div class="pills" id="meta"></div>
+      <div class="stats" id="stats"></div>
+      <div class="actions">
+        <button class="btn" id="btnRate">⭐ Gekocht &amp; bewerten</button>
+        <button class="btn secondary" id="btnCooked">✓ Einmal gekocht</button>
+        <button class="btn muted" id="btnUpcoming">Auf die Wunschliste</button>
+        <button class="btn muted" id="btnBlacklist">🚫 Nicht mehr vorschlagen</button>
+      </div>
+      <div class="variant-picker" id="variantPicker">
+        <label for="variantSelect">Varianten:</label>
+        <select id="variantSelect"></select>
+      </div>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="panel">
+      <h2>Zutaten</h2>
+      <div id="ingredients"></div>
+    </div>
+    <div class="panel">
+      <h2>Zubereitung</h2>
+      <div id="instructions"></div>
+    </div>
+  </section>
 </div>
 
 <script>
+const TYPE_LABEL = { main_dish: "Hauptgericht", side_dish: "Beilage", sweet: "Nachspeise", snack: "Snack",
+                     dip: "Dip", wuerzung: "Gewürzmischung" };
+const VEG_LABEL = { vegan: "Vegan", vegetarian: "Vegetarisch", fish: "Fisch", meat: "Fleisch" };
+const ORIGIN_LABEL = { asian: "Asiatisch", oriental: "Orientalisch", mexican: "Mexikanisch", indian: "Indisch",
+                       italian: "Italienisch", "home-style": "Hausmannskost", mediterranean: "Mediterran", american: "Amerikanisch" };
+const SEASON_LABEL = { all: "Ganzjährig", always: "Ganzjährig", spring: "Frühling", summer: "Sommer", autumn: "Herbst",
+                       winter: "Winter", only_spring: "Nur Frühling", only_summer: "Nur Sommer", only_autumn: "Nur Herbst",
+                       only_winter: "Nur Winter" };
+const METHOD_LABEL = { oven: "Ofen", pan: "Pfanne", pot: "Topf", grill: "Grill", raw: "Roh", steam: "Dampf", microwave: "Mikrowelle" };
+// Gruppen wie im Kochbuch-PDF (generate_cookbook_PDF): Zutaten / Grundzutaten / Gewuerze
+const GROUPS = [["ingredient", "Zutaten"], ["basic", "Grundzutaten"], ["spice", "Gewürze & Saucen"]];
+const FRACTIONS = { 0.25: "¼", 0.5: "½", 0.75: "¾", 0.33: "⅓", 0.67: "⅔" };
+
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function fmtQty(q){
+  if(q === null || q === undefined || q === "") return "";
+  const n = Number(q);
+  if(!Number.isFinite(n)) return esc(q);
+  const whole = Math.floor(n), frac = Math.round((n - whole) * 100) / 100;
+  if(FRACTIONS[frac]) return (whole ? whole : "") + FRACTIONS[frac];
+  return n.toLocaleString("de-DE", { maximumFractionDigits: 2 });
+}
+function mainIds(recipe){
+  const m = recipe.main_ingredient;
+  if(m === null || m === undefined || m === "not specific") return new Set();
+  return new Set((Array.isArray(m) ? m : [m]).map(Number));
+}
 function getRecipeId(){
-  const p = new URLSearchParams(window.location.search);
-  return p.get("id");
+  return new URLSearchParams(window.location.search).get("id");
+}
+
+function renderIngredients(recipe, ingredients){
+  const box = document.getElementById("ingredients");
+  if(!ingredients.length){ box.innerHTML = '<div class="empty">Keine Zutaten hinterlegt</div>'; return; }
+  const mains = mainIds(recipe), side = Number(recipe.side_dish);
+  box.innerHTML = GROUPS.map(([cat, title]) => {
+    const items = ingredients.filter(i => (i.category || "ingredient") === cat);
+    if(!items.length) return "";
+    return `<div class="ing-group">
+      ${GROUPS.filter(([c]) => ingredients.some(i => (i.category || "ingredient") === c)).length > 1 ? `<h3>${title}</h3>` : ""}
+      <table class="ing-table">${items.map(i => {
+        const isMain = mains.has(Number(i.ingredient_id)), isSide = Number(i.ingredient_id) === side;
+        const name = isMain ? `<b>${esc(i.name)}</b><span class="tag">Hauptzutat</span>`
+                            : esc(i.name) + (isSide ? '<span class="tag side">Beilage</span>' : "");
+        return `<tr><td class="qty">${fmtQty(i.quantity)}</td><td class="unit">${esc(i.unit ?? "")}</td><td class="name">${name}</td></tr>`;
+      }).join("")}</table>
+    </div>`;
+  }).join("");
+}
+
+const ABBREVIATIONS = new Set(["ca", "z.b", "zb", "min", "std", "evtl", "ggf", "bzw", "tl", "el", "gr", "kg", "ml",
+                               "usw", "etc", "inkl", "max", "mind", "pkg", "stk", "d.h", "u.a", "o.ä", "vgl"]);
+function splitSentences(text){
+  const out = [];
+  let start = 0;
+  const re = /[.!?]\s+(?=[A-ZÄÖÜ])/g;
+  let m;
+  while((m = re.exec(text))){
+    const before = text.slice(start, m.index).split(/\s+/).pop().toLowerCase();
+    if(ABBREVIATIONS.has(before) || /^\d+$/.test(before)) continue;      // "ca. 5", "Min. ruehren", "1. Schritt"
+    out.push(text.slice(start, m.index + 1).trim());
+    start = m.index + m[0].length;
+  }
+  out.push(text.slice(start).trim());
+  return out.filter(Boolean);
+}
+function groupSentences(sentences, maxLen = 260){
+  const steps = [];
+  for(const s of sentences){
+    const last = steps[steps.length - 1];
+    if(last && last.length + s.length + 1 <= maxLen) steps[steps.length - 1] = last + " " + s;
+    else steps.push(s);
+  }
+  return steps;
+}
+
+function renderInstructions(text){
+  const box = document.getElementById("instructions");
+  text = (text || "").trim();
+  if(!text){ box.innerHTML = '<div class="empty">—</div>'; return; }
+  // Zeilen / nummerierte Schritte im Text -> je ein Schritt. Ein langer Absatz wird an Satzenden geteilt
+  // (nicht nach Abkuerzungen wie "ca." / "Min.") und zu Schritten von 2-3 Saetzen zusammengefasst.
+  let parts = text.split(/\n+|(?:^|\s)(?=\d+[.)]\s)/).map(s => s.replace(/^\d+[.)]\s*/, "").trim()).filter(Boolean);
+  if(parts.length === 1) parts = groupSentences(splitSentences(text));
+  box.innerHTML = parts.length > 1
+    ? `<ol class="steps">${parts.map(l => `<li>${esc(l)}</li>`).join("")}</ol>`
+    : `<p class="instructions-plain">${esc(text)}</p>`;
+}
+
+function renderHeader(recipe){
+  document.title = recipe.name + " – SmartFood";
+  document.getElementById("title").textContent = recipe.name;
+  document.getElementById("eyebrow").textContent = TYPE_LABEL[recipe.recipe_type] || recipe.recipe_type || "";
+  const origins = Array.isArray(recipe.origin) ? recipe.origin : (recipe.origin ? [recipe.origin] : []);
+  const pills = [
+    VEG_LABEL[recipe.veg_type] || recipe.veg_type,
+    ...origins.map(o => ORIGIN_LABEL[o] || o),
+    SEASON_LABEL[recipe.season || "all"] || recipe.season,
+    METHOD_LABEL[recipe.cooking_method] || recipe.cooking_method,
+  ].filter(Boolean);
+  document.getElementById("meta").innerHTML = pills.map(p => `<span class="pill">${esc(p)}</span>`).join("");
+  const prep = recipe.prep_minutes ?? 0, cook = recipe.cook_minutes ?? 0;
+  document.getElementById("stats").innerHTML = [[prep, "Vorbereitung"], [cook, "Kochzeit"], [prep + cook, "Gesamt"]]
+    .map(([v, l]) => `<div class="stat"><div class="v">${v}<small>min</small></div><div class="l">${l}</div></div>`).join("");
+}
+
+function setupPhoto(id, hasImage){
+  const img = document.getElementById("photo");
+  const remove = document.getElementById("btnPhotoRemove");
+  const input = document.getElementById("photoInput");
+  const show = bust => { img.src = `/img/recipe/${id}/full` + (bust ? `?t=${Date.now()}` : ""); };
+  show(false);
+  remove.hidden = !hasImage;
+  input.onchange = async () => {
+    const file = input.files[0];
+    if(!file) return;
+    const form = new FormData();
+    form.append("image", file);
+    try{
+      const res = await fetch(`/api/recipe/${id}/image`, { method: "POST", body: form });
+      const out = await res.json();
+      if(!res.ok) throw new Error(out.error || ("HTTP " + res.status));
+      show(true);
+      remove.hidden = false;
+    }catch(e){
+      alert("Bild konnte nicht gespeichert werden: " + e.message);
+    }finally{
+      input.value = "";
+    }
+  };
+  remove.onclick = async () => {
+    if(!confirm("Eigenes Bild entfernen? (Dann wird das Standardbild gezeigt)")) return;
+    await fetch(`/api/recipe/${id}/image`, { method: "DELETE" });
+    show(true);
+    remove.hidden = true;
+  };
 }
 
 async function loadRecipe(){
@@ -142,16 +270,19 @@ async function loadRecipe(){
     document.body.innerHTML = "❌ Keine Rezept-ID angegeben";
     return;
   }
+  let recipe = null;
 
   document.getElementById("btnEdit").onclick = () => {
     location.href = window.SmartFoodUser.decorate(`/create?id=${encodeURIComponent(id)}`);
   };
-
   document.getElementById("btnHome").onclick = () => {
     location.href = window.SmartFoodUser.decorate("/");
   };
+  document.getElementById("btnWishlist").onclick = () => {
+    location.href = window.SmartFoodUser.decorate("/wishlist");
+  };
 
-  // "Einmal gekocht": schneller Log-Eintrag - speichert nur user_id + Datum in history,
+  // "Einmal gekocht": schneller Log-Eintrag - speichert nur das Datum in der history des Users,
   // ohne Bewertungsformular. Fuer die ausfuehrliche Bewertung siehe btnRate -> /rating.
   // Beim allerersten Mal (dieser User hat das Rezept noch nie gekocht/bewertet) fehlen
   // noch Referenzzeiten - dann fuehrt der Klick stattdessen direkt zur Bewertungsseite.
@@ -180,8 +311,7 @@ async function loadRecipe(){
     }
   };
 
-  const btnRate = document.getElementById("btnRate");
-  btnRate.onclick = () => {
+  document.getElementById("btnRate").onclick = () => {
     location.href = window.SmartFoodUser.decorate(`/rating?id=${encodeURIComponent(id)}`);
   };
 
@@ -193,8 +323,7 @@ async function loadRecipe(){
   function isCurrentPick(){
     const raw = localStorage.getItem(CURRENT_PICK_KEY);
     if (!raw) return false;
-    const data = JSON.parse(raw);
-    return data.id === String(id);
+    return JSON.parse(raw).id === String(id);
   }
   function refreshCurrentPickButton(){
     btnCurrentPick.textContent = isCurrentPick() ? "✓ Aktuelle Auswahl (entfernen)" : "🛒 Als aktuelle Auswahl merken";
@@ -203,17 +332,13 @@ async function loadRecipe(){
     if(isCurrentPick()){
       localStorage.removeItem(CURRENT_PICK_KEY);
     }else{
-      const data = {
-      id: String(id),
-      name: recipe?.name ?? ""
-    };
-      localStorage.setItem(CURRENT_PICK_KEY, JSON.stringify(data));
+      localStorage.setItem(CURRENT_PICK_KEY, JSON.stringify({ id: String(id), name: recipe?.name ?? "" }));
     }
     refreshCurrentPickButton();
   };
   refreshCurrentPickButton();
 
-  // "Auf demnaechst setzen" (wishlist.yaml) und "Nicht mehr vorschlagen" (blacklist.yaml):
+  // Wunschliste (eigene Seite /wishlist) und "Nicht mehr vorschlagen" (blacklist.yaml):
   // user-abhaengige Listen. Ein Rezept steht nie auf beiden - der Server nimmt es beim
   // Hinzufuegen von der anderen Liste und schickt deshalb beide Zustaende zurueck.
   const userId = window.SmartFoodUser.get();
@@ -221,7 +346,7 @@ async function loadRecipe(){
   const btnBlacklist = document.getElementById("btnBlacklist");
   function refreshListButtons(state){
     btnUpcoming.classList.toggle("active", !!state.wishlisted);
-    btnUpcoming.textContent = state.wishlisted ? "✓ Auf der Wunschliste" : "Auf demnächst setzen";
+    btnUpcoming.textContent = state.wishlisted ? "✓ Auf der Wunschliste" : "Auf die Wunschliste";
     btnBlacklist.classList.toggle("active", !!state.blacklisted);
     btnBlacklist.textContent = state.blacklisted ? "🚫 Wird nicht mehr vorgeschlagen (rückgängig)" : "🚫 Nicht mehr vorschlagen";
   }
@@ -242,7 +367,10 @@ async function loadRecipe(){
       btn.disabled = false;
     }
   }
-  btnUpcoming.onclick = () => toggleList("/api/wishlist/toggle", btnUpcoming);
+  btnUpcoming.onclick = () => {
+    if(!window.SmartFoodUser.get()){ alert("Bitte oben zuerst einen User wählen."); return; }
+    toggleList("/api/wishlist/toggle", btnUpcoming);
+  };
   btnBlacklist.onclick = () => {
     if(!window.SmartFoodUser.get()){ alert("Bitte oben zuerst einen User wählen."); return; }
     const adding = !btnBlacklist.classList.contains("active");
@@ -255,10 +383,8 @@ async function loadRecipe(){
     document.body.innerHTML = "❌ Rezept nicht gefunden";
     return;
   }
-
   const data = await r.json();
-  const recipe = data.recipe;
-  const ingredients = data.ingredients || [];
+  recipe = data.recipe;
   refreshListButtons(data);
 
   hasCooked = !!data.has_cooked;
@@ -266,9 +392,10 @@ async function loadRecipe(){
     btnCooked.title = "Erstes Mal - führt zur Bewertung, damit Zeiten erfasst werden";
   }
 
-  document.getElementById("title").textContent = recipe.name;
-  document.getElementById("meta").textContent =
-    `${recipe.veg_type} · Vorbereitung: ${recipe.prep_minutes ?? 0} min · Kochzeit: ${recipe.cook_minutes ?? 0} min`;
+  renderHeader(recipe);
+  setupPhoto(id, !!data.has_image);
+  renderIngredients(recipe, data.ingredients || []);
+  renderInstructions(recipe.instructions);
 
   // Varianten-Liste: nur anzeigen, wenn es welche gibt. Auswahl navigiert auf
   // /recipe?id=<id> -> neuer Seitenaufruf -> neuer fetch("/api/recipe/<id>") oben.
@@ -278,31 +405,14 @@ async function loadRecipe(){
   if(variants.length > 0){
     picker.style.display = "flex";
     variantSelect.innerHTML =
-      `<option value="">${recipe.name} (aktuell)</option>` +
-      variants.map(v => `<option value="${v.recipe_id}">${v.name}</option>`).join("");
+      `<option value="">${esc(recipe.name)} (aktuell)</option>` +
+      variants.map(v => `<option value="${v.recipe_id}">${esc(v.name)}</option>`).join("");
     variantSelect.value = "";
     variantSelect.onchange = () => {
       if(variantSelect.value){
         location.href = window.SmartFoodUser.decorate(`/recipe?id=${encodeURIComponent(variantSelect.value)}`);
       }
     };
-  }
-
-  document.getElementById("instructions").textContent =
-    recipe.instructions || "—";
-
-  const grid = document.getElementById("ingredients");
-  grid.innerHTML = "";
-
-  if(ingredients.length === 0){
-    grid.innerHTML = "<div>Keine Zutaten hinterlegt</div>";
-  }else{
-    ingredients.forEach(i => {
-      const div = document.createElement("div");
-      div.className = "ing-item";
-      div.textContent = `${i.quantity ?? ""} ${i.unit ?? ""} ${i.name ?? ""}`.replace(/\s+/g, " ").trim();
-      grid.appendChild(div);
-    });
   }
 }
 

@@ -140,7 +140,7 @@ def example_data():
 EXPECTED_NEVER = {1: "cooked yesterday (remove)", 2: "cooked 2 days ago (remove)",
                   3: "variant of last_supper", 8: "prep 70 min (same day)",
                   11: "blacklisted", 12: "dessert (wrong type)"}
-NEW_RECIPES = {6, 9}   # allowed + never cooked + not on the wishlist -> pool of new recipes
+NEW_RECIPES = {6, 9, 10}   # allowed + never cooked -> pool of new recipes (wishlist doesn't matter)
 
 
 def run_propose(runs=3000, seed=1, **kw):
@@ -229,14 +229,15 @@ def starter_limit(n):
 def temp_server():
     """Server module reading / writing a temp folder - the real server_data is never written."""
     from Server import smartfood_server as srv
-    files, user_dir = srv.FILES, srv.USER_DIR
+    files, user_dir, image_dir = srv.FILES, srv.USER_DIR, srv.IMAGE_DIR
     with tempfile.TemporaryDirectory() as tmp:
         srv.FILES = {k: Path(tmp) / p.name for k, p in files.items()}
         srv.USER_DIR = Path(tmp) / "user_data"
+        srv.IMAGE_DIR = Path(tmp) / "images"
         try:
             yield srv
         finally:
-            srv.FILES, srv.USER_DIR = files, user_dir
+            srv.FILES, srv.USER_DIR, srv.IMAGE_DIR = files, user_dir, image_dir
 
 
 def with_temp_server(data, calls):
@@ -296,6 +297,54 @@ def per_user_files():
         out["u1"], out["u2"], out["none"] = srv.load_all("u1"), srv.load_all("u2"), srv.load_all()
         out["files"] = sorted(p.name for p in srv.USER_DIR.iterdir())
         return out
+
+
+def image_bytes(size, fmt="JPEG", mode="RGB") -> bytes:
+    """Test picture (gradient, like a photo it compresses) in the given size / format."""
+    import io
+    from PIL import Image
+    w, h = size
+    im = Image.linear_gradient("L").resize((w, h)).convert(mode)
+    buf = io.BytesIO()
+    im.save(buf, fmt)
+    return buf.getvalue()
+
+
+def images_and_wishlist():
+    """Recipe images (upload / default / delete) and the wishlist page API on a temp server."""
+    import io
+    from PIL import Image
+    data = example_data()
+    for ri_ in data["recipe_ingredients"]:                      # quantities for the shopping list
+        ri_["quantity"], ri_["unit"] = 100, "g"
+    data["wishlist"] = [{"recipe_id": 7, "user_id": "u1", "date": "2026-11-01"},
+                        {"recipe_id": 2, "user_id": "u1", "date": "2026-11-02"},
+                        {"recipe_id": 10, "user_id": "u1", "date": "2026-10-01"}]
+
+    def calls(c):
+        size = lambda resp: Image.open(io.BytesIO(resp.data)).size
+        out = {"default_thumb": size(c.get("/img/recipe/1/thumb")), "default_type": c.get("/img/recipe/1/full").mimetype,
+               "bad_size": c.get("/img/recipe/1/huge").status_code,
+               "upload": c.post("/api/recipe/1/image", data={"image": (io.BytesIO(image_bytes((4000, 2000))), "a.jpg")},
+                                content_type="multipart/form-data").get_json(),
+               "upload_bad": c.post("/api/recipe/1/image", data={"image": (io.BytesIO(b"no image"), "a.jpg")},
+                                    content_type="multipart/form-data").status_code,
+               "upload_404": c.post("/api/recipe/999/image", data={"image": (io.BytesIO(image_bytes((40, 30))), "a.jpg")},
+                                    content_type="multipart/form-data").status_code}
+        out["full"], out["thumb"] = size(c.get("/img/recipe/1/full")), size(c.get("/img/recipe/1/thumb"))
+        out["has_image"] = c.get("/api/recipe/1?user=u1").get_json()["has_image"]
+        out["delete"] = c.delete("/api/recipe/1/image").get_json()["removed"]
+        out["after_delete"] = size(c.get("/img/recipe/1/thumb")) == out["default_thumb"]
+        out["wish"] = c.get("/api/wishlist?user=u1").get_json()
+        out["wish_none"] = c.get("/api/wishlist").status_code
+        out["remove"] = c.post("/api/wishlist/set", json={"recipe_id": 2, "user_id": "u1", "on": False}).get_json()
+        out["undo"] = c.post("/api/wishlist/set", json={"recipe_id": 2, "user_id": "u1", "on": True}).get_json()
+        out["undo_twice"] = c.post("/api/wishlist/set", json={"recipe_id": 2, "user_id": "u1", "on": True}).get_json()
+        out["pages"] = [c.get(p).status_code for p in ("/wishlist", "/recipe", "/dev/scores")]
+        return out
+    out, saved = with_temp_server(data, calls)
+    out["saved_wishlist"] = [w["recipe_id"] for w in saved["wishlist"] if w["user_id"] == "u1"]
+    return out
 
 
 def rating_rejected(**kw) -> bool:
@@ -487,6 +536,12 @@ def sanity_checks():
         next(r for r in seasonal["recipes"] if r["recipe_id"] == rid)["season"] = season
     season_rank = {r["recipe_id"]: r for r in pl.ranking(seasonal, user_id="u1", today=TODAY)}
     by_type = pl.ranking_by_type(data, user_id="u1", today=TODAY)
+    img = images_and_wishlist()
+    from Tools import RecipeImages as ri
+    import io
+    from PIL import Image
+    small = {k: Image.open(io.BytesIO(v)).size for k, v in ri.render(image_bytes((300, 400), "PNG", "RGBA")).items()}
+    shop = {i["name"]: i for i in img["wish"]["shopping_list"]}
     rank_regular = pl.ranking(data, user_id="u1", today=TODAY)          # starter phase, like by_type
     many["history"] = [{"recipe_id": i, "last_date": "2026-01-01", "dates": ["2026-01-01"]} for i in range(100, 111)]
     u2_dev = {r["recipe_id"]: r for r in users["dev_u2"]["recipes"]}
@@ -590,10 +645,7 @@ def sanity_checks():
          raises(lambda: pl.recipe_features(dict(data["recipes"][0], main_ingredient=6), data))),
         ("damp: main not in ingredients.yaml -> error",
          raises(lambda: pl.recipe_features(dict(data["recipes"][0], main_ingredient=99), data))),
-        ("score: wishlist always raises the score",
-         all(ts(5, 5, mu, o, True) > ts(5, 5, mu, o, False) for mu in (1, 0.5, 0.2, 0.13) for o in (3, 0, -12))),
-        ("score: undamped wishlist part survives full damping",
-         ts(0, 0, 0.13, 0, True) - ts(0, 0, 0.13, 0, False) >= pl.WISHLIST_SCORE / pl.WISHLIST_UNDAMPED),
+        ("score: (date + reward) * mult + offset, no wishlist part", ts(5, 5, 0.5, 3) == 8 and ts(6, 2, 1, -3) == 5),
         ("draw: softmax probabilities sum to 1", abs(sum(first_draw) - 1) < 1e-9),
         ("draw: negative score still drawable (p > 0)", first_draw[-1] > 0),
         ("draw: higher score -> higher probability", all(a >= b for a, b in zip(first_draw, first_draw[1:]))),
@@ -601,14 +653,14 @@ def sanity_checks():
         ("draw: T default 4, clamped to [1, 10]",
          pl.clamp_t(None) == 4 and pl.clamp_t(0) == 1 and pl.clamp_t(99) == 10),
         ("swap: P(>=1 swap in 5) = 1 - SWAP_P5", abs((1 - p ** pl.PROPOSAL_COUNT) - (1 - pl.SWAP_P5)) < 1e-9),
-        ("pools: never cooked -> new pool, cooked + wishlist -> main pool",
-         set(new_pool) == NEW_RECIPES and set(main_pool) == {4, 5, 7, 10}),
+        ("pools: never cooked -> new pool (also on the wishlist), cooked -> main pool",
+         set(new_pool) == NEW_RECIPES and set(main_pool) == {4, 5, 7}),
         ("pools: never cooked without times -> median score",
          nt_new[9] == pl.statistics.median(nt_scores) and nt_ds[9]["score"] is None),
-        ("pools: wishlist overrides remove", 5 in allowed(wish_today) and 5 not in allowed(no_wish)),
+        ("pools: wishlist no longer overrides remove", 5 not in allowed(wish_today) and 5 not in allowed(no_wish)),
         ("app: last_supper = recipes cooked <= 4 days ago", pl.last_supper(data, TODAY) == [1, 2]),
         ("app: butter chicken damped by chicken + rice", {"same meat -3", "side -3"} <= set(ds[4]["damp_rules"])),
-        ("app: wishlist recipe flagged", ds[10]["wishlist"] and not ds[9]["wishlist"]),
+        ("app: no wishlist in the scoring dataset", all("wishlist" not in d for d in ds.values())),
         ("app: hard-filtered recipes never proposed", all(hits[i] == 0 for i in EXPECTED_NEVER)),
         ("app: never two variants of one recipe in a list", max_same_root == 1),
         ("app: every allowed recipe can be proposed (new ones via fill / swap)",
@@ -634,7 +686,7 @@ def sanity_checks():
          sorted(r["recipe_id"] for r in k10) == allowed()),
         ("server: GET /api/proposals -> 5 allowed recipes, new ones flagged",
          len(srv_get["main_dish"]) == pl.PROPOSAL_COUNT and {r["id"] for r in srv_get["main_dish"]} <= set(allowed())
-         and all(r["is_new"] == (r["id"] in NEW_RECIPES | {10}) for r in srv_get["main_dish"])),   # 10: wishlist, never cooked
+         and all(r["is_new"] == (r["id"] in NEW_RECIPES) for r in srv_get["main_dish"])),
         ("server: POST vegan, exclude tomato -> only pumpkin risotto", [r["id"] for r in srv_post["recipes"]] == [10]),
         ("server: GET pool=new -> only new recipes, t clamped to 10",
          {r["id"] for r in srv_new["main_dish"]} == NEW_RECIPES and srv_new["t"] == 10),
@@ -674,6 +726,23 @@ def sanity_checks():
         ("season: season_parts + unknown value found",
          yr.season_parts("only_summer") == ("summer", True) and yr.season_parts(None) == (None, False)
          and len(yr.data_problems({**data, "recipes": [dict(data["recipes"][0], season="only_monsoon")]})) == 1),
+        ("images: no own image -> default (webp), unknown size 400",
+         img["default_type"] == "image/webp" and img["default_thumb"][0] <= 480 and img["bad_size"] == 400),
+        ("images: upload -> 4:3, full 1200x900 + thumb 480x360 (webp), recipe has_image",
+         img["full"] == (1200, 900) and img["thumb"] == (480, 360) and img["has_image"]
+         and set(img["upload"]["sizes"]) == {"full", "thumb"}),
+        ("images: not an image -> 400, unknown recipe -> 404", (img["upload_bad"], img["upload_404"]) == (400, 404)),
+        ("images: small picture is cropped to 4:3 but never enlarged", small == {"full": (300, 225), "thumb": (300, 225)}),
+        ("images: delete -> default again", img["delete"] and img["after_delete"]),
+        ("wishlist page: recipes newest first, needs a user",
+         [r["recipe_id"] for r in img["wish"]["recipes"]] == [2, 7, 10] and img["wish_none"] == 400),
+        ("wishlist page: shopping list without basic ingredients, same ingredient summed, spices last",
+         "Water" not in shop and shop["Pumpkin"]["amounts"] == [{"quantity": 200, "unit": "g"}]
+         and len(shop["Pumpkin"]["recipes"]) == 2 and list(shop)[-1] == "Salt"),
+        ("wishlist page: remove + undo ('set', not toggle - undo twice stays on the list)",
+         img["remove"]["wishlisted"] is False and img["undo"]["wishlisted"] and img["undo_twice"]["wishlisted"]
+         and sorted(img["saved_wishlist"]) == [2, 7, 10]),
+        ("pages: /wishlist, /recipe, /dev/scores served", img["pages"] == [200, 200, 200]),
         ("ranking by type: main_dish first, each group only its own type, no 'wrong type' rows",
          [g["meal_type"] for g in by_type] == ["main_dish", "dessert"]
          and all(r["recipe_type"] == g["meal_type"] and not any(e.startswith("Typ") for e in r["excluded"])
@@ -714,8 +783,6 @@ def sanity_checks():
          and all(p["replaced"] is not None for run in detailed for p in run if p["source"].startswith("swap"))),
         ("source: all of cycle / fill / swap occur (k=8 > main pool -> fill)",
          {"cycle", "fill", "swap_new"} <= {p["source"] for run in detailed for p in run}),
-        ("source: wishlist recipe is never swapped",
-         not any(p["source"].startswith("swap") and p["replaced"] == 10 for run in detailed for p in run)),
         ("source: 'Neue Rezepte' -> new_pool",
          {p["source"] for p in pl.propose_detailed(data, user_id="u1", today=TODAY, pool="new")} == {"new_pool"}),
         ("server: proposals carry source + score",
@@ -842,7 +909,7 @@ def main():
     print(f"\n=== Swap === p = {p:.4f}, swap prob per slot = {1 - p:.4f}, "
           f"P(>=1 swap in 5) = {1 - p ** pl.PROPOSAL_COUNT:.3f}")
 
-    print("\n=== Full pipeline pl.propose() on example data (3000 runs, blacklist = Liver, wishlist = Pumpkin risotto) ===")
+    print("\n=== Full pipeline pl.propose() on example data (3000 runs, blacklist = Liver) ===")
     data, by_id, hits, _ = run_propose()
     ds, main_pool, new_pool = pools(data)
     print(f"{'recipe':26} {'pool':>5} {'date':>5} {'rew':>5} {'mult':>5} {'off':>4} {'score':>6} {'in list':>8}  note")
