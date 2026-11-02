@@ -201,7 +201,7 @@
     .card .title{
       font-weight:750;
       font-size:13px;
-      margin:0 70px 6px 0;
+      margin:0 40px 6px 0;
     }
     .card .meta{
       font-size:12px;
@@ -227,7 +227,14 @@
       border-color: rgba(255,107,107,.38);
       background: rgba(255,107,107,.12);
     }
-    .closebtn.blacklist{ right:44px; font-weight:400; font-size:13px; }
+    details.blpanel summary{ cursor:pointer; font-size:14px; font-weight:700; padding:14px; list-style:none; }
+    details.blpanel summary::-webkit-details-marker{ display:none; }
+    details.blpanel summary::before{ content:"▸ "; color:var(--muted); }
+    details.blpanel[open] summary::before{ content:"▾ "; }
+    .blrow{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0;
+            border-bottom:1px solid rgba(255,255,255,.06); font-size:13px; }
+    .blrow a{ color:var(--text); text-decoration:none; }
+    .blrow a:hover{ text-decoration:underline; }
     .checkrow{ display:flex; gap:16px; flex-wrap:wrap; }
     .checkrow label{ display:inline-flex; align-items:center; gap:6px; margin:0; font-size:13px; color:var(--text); }
 
@@ -289,7 +296,8 @@
         <div class="button-row">
         <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/create')">Create Recipe</button>
         <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/ingredients')">Ingredients</button>
-        <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/dev')">Dev: Vorab-Bewertung</button>
+        <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/dev')">Dev: Default-Bewertung</button>
+        <button class="btn" onclick="location.href=window.SmartFoodUser.decorate('/dev/scores')">Dev: Scores</button>
         <button class="btn good" id="btnAddRecipe" style="display:none;" >🛒 Aktuelle Auswahl laden</button>
         </div>
       </div>
@@ -399,6 +407,9 @@
             <h3 id="mainHeading">5 Main Gerichte</h3>
             <span class="muted" style="font-size:12px" id="mainCount"></span>
           </div>
+          <div class="muted" id="starterHint" hidden style="font-size:12px; margin:-4px 0 10px;
+               border:1px solid rgba(122,162,255,.35); background:rgba(122,162,255,.08); border-radius:10px; padding:8px 10px;">
+          </div>
           <div class="cards" id="mainCards"></div>
 
           <div class="empty" id="emptyState" hidden>
@@ -430,6 +441,19 @@
         <div class="cards" id="searchResults" style="margin-top:10px;"></div>
       </div>
     </section>
+
+    <!-- BLACKLIST (hinzufuegen nur auf der Rezeptseite) -->
+    <section class="panel" aria-label="blacklist" style="max-width:800px; width:100%;">
+      <details class="blpanel" id="blPanel">
+        <summary id="blSummary">Meine Blacklist</summary>
+        <div class="bd" style="padding-top:0;">
+          <div class="muted" style="font-size:12px; margin-bottom:6px;">
+            Diese Rezepte werden dir nie vorgeschlagen. Hinzufügen auf der Rezeptseite („Nicht mehr vorschlagen“).
+          </div>
+          <div id="blList"></div>
+        </div>
+      </details>
+    </section>
   </main>
 
 <script>
@@ -446,6 +470,7 @@ const state = {
   t: 4,            // Softmax-Temperatur (Zufall), 1-10 - Standard wie ProposeLogic.SOFTMAX_T
   pool: "all",     // "all" = normale Vorschlaege, "new" = nur nie gekochte Rezepte
   message: "",     // Hinweis vom Backend, wenn nichts gefunden wurde
+  starter: null,   // {phase, cooked, limit} - Startphase (ProposeLogic.is_starter_phase)
   allergies: JSON.parse(localStorage.getItem("smartfood_allergies") || "[]")   // ["lactose", "gluten"]
 };
 const T_MIN = 1, T_MAX = 10;
@@ -515,27 +540,6 @@ async function dismissSuggestion(recipe, context){
   }
 }
 
-// "Nie mehr vorschlagen": Rezept fuer den aktuellen User auf die Blacklist (blacklist.yaml).
-// Rueckgaengig ueber die Rezeptseite.
-async function blacklistRecipe(recipe){
-  const user_id = window.SmartFoodUser?.get();
-  if(!user_id){ alert("Bitte oben zuerst einen User wählen."); return false; }
-  if(!confirm(`„${recipe.name}“ nie mehr vorschlagen?\n(Rückgängig auf der Rezeptseite)`)) return false;
-  try{
-    const r = await fetch("/api/blacklist/toggle", {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({recipe_id: recipe.id, user_id})
-    });
-    const result = await r.json();
-    if(!r.ok) throw new Error(result.error || ("HTTP " + r.status));
-    return result.blacklisted;
-  }catch(e){
-    alert("Konnte nicht gespeichert werden: " + e.message);
-    return false;
-  }
-}
-
 async function fetchRecipes(filters = null){
   // Fetch recipes from backend - with or without filters
   // If filters provided: POST request
@@ -559,6 +563,7 @@ async function fetchRecipes(filters = null){
     if(!r.ok) throw new Error("fetch failed");
     const data = await r.json();
     state.message = data?.message || "";
+    state.starter = { phase: !!data?.starter_phase, cooked: data?.cooked_count ?? 0, limit: data?.starter_limit ?? 10 };
 
     // POST response expects {recipes: [...]}, GET response expects {main_dish: [...]}
     const recipes = filters ? data?.recipes : data?.main_dish;
@@ -607,7 +612,7 @@ function edit(recipe){
 }
 // Herkunft aus der Ziehung (ProposeLogic.SOURCE_*): [Text, CSS-Klasse, Erklaerung]
 const SOURCE_INFO = {
-  cycle:     ["Zyklus", "", "Normal gezogen aus den bekannten Rezepten (gekocht, vorab bewertet oder Wunschliste)"],
+  cycle:     ["Zyklus", "", "Normal aus dem Haupt-Pool gezogen (gekocht, default bewertet oder Wunschliste – in der Startphase bis 10 gekochte Rezepte: alle)"],
   fill:      ["Aufgefüllt", "fill", "Zu wenige bekannte Rezepte – mit einem neuen Rezept aufgefüllt"],
   swap_new:  ["Getauscht", "swap", "Beim Tauschen durch ein neues Rezept ersetzt"],
   swap_main: ["Getauscht", "swap", "Beim Tauschen ersetzt (kein neues Rezept frei)"],
@@ -623,11 +628,10 @@ function sourceBadge(recipe){
   return `<span class="badge src ${info[1]}" title="${tip.replace(/"/g, "&quot;")}">${label}</span>`;
 }
 
-function cardEl(recipe, onClose, onBlacklist){
+function cardEl(recipe, onClose){
   const div = document.createElement("div");
   div.className = "card";
   div.innerHTML = `
-    <div class="closebtn blacklist" title="Nie mehr vorschlagen">🚫</div>
     <div class="closebtn" title="Gerade nicht (Wiederholungswunsch sinkt)">×</div>
     <p class="title">${recipe.name}${recipe.is_new ? '<span class="badge">Neu</span>' : ''}${sourceBadge(recipe)}</p>
     <div class="meta">
@@ -642,13 +646,9 @@ function cardEl(recipe, onClose, onBlacklist){
   div.addEventListener("click", () => edit(recipe));
 
   // Klick auf X -> nur dismiss, nicht navigieren
-  div.querySelector(".closebtn:not(.blacklist)").addEventListener("click", (e) => {
+  div.querySelector(".closebtn").addEventListener("click", (e) => {
     e.stopPropagation();
     onClose();
-  });
-  div.querySelector(".closebtn.blacklist").addEventListener("click", (e) => {
-    e.stopPropagation();
-    onBlacklist();
   });
   return div;
 }
@@ -670,10 +670,17 @@ function renderSection(sectionKey){
     wrap.appendChild(cardEl(r, async ()=>{
       await dismissSuggestion(r, {mode:"defaults", section: sectionKey});
       removeCard(idx);
-    }, async ()=>{
-      if(await blacklistRecipe(r)) removeCard(idx);
     }));
   });
+
+  // Startphase: alle Rezepte im Haupt-Pool (gilt nicht fuer "Neue Rezepte")
+  const hint = document.getElementById("starterHint");
+  hint.hidden = !(state.starter?.phase && state.pool !== "new");
+  if(!hint.hidden){
+    hint.innerHTML = `<b>Startphase:</b> erst ${state.starter.cooked} von ${state.starter.limit} Rezepten gekocht – `
+      + `alle Rezepte werden gleich behandelt und nach Score gezogen (kein Auffüllen mit neuen Rezepten). `
+      + `Ab ${state.starter.limit + 1} gekochten Rezepten kommen bekannte Gerichte zuerst.`;
+  }
 
   const countEl = document.getElementById(sectionKey==="main_dish" ? "mainCount" : "snackCount");
   countEl.textContent = `${cfg.shown.length}/${LIMIT_DEFAULTS[sectionKey]} shown · buffer ${cfg.buffer.length} · Zufall T=${state.t}`;
@@ -794,7 +801,56 @@ async function loadIngredientOptions(){
     document.getElementById("includeOptions").innerHTML = html;
     document.getElementById("excludeOptions").innerHTML = html;
     runSearch();
+    renderBlacklist();
   }catch(e){ /* offline ok */ }
+}
+
+// Blacklist des gewaehlten Users (blacklist.yaml aus /api/all) - Entfernen ueber /api/blacklist/toggle
+function renderBlacklist(){
+  const user = window.SmartFoodUser?.get();
+  const list = document.getElementById("blList");
+  const names = new Map((allData?.recipes || []).map(r => [r.recipe_id, r.name]));
+  const mine = user ? (allData?.blacklist || []).filter(b => String(b.user_id) === String(user)) : [];
+  document.getElementById("blSummary").textContent = user ? `Meine Blacklist (${mine.length})` : "Meine Blacklist";
+  list.innerHTML = "";
+  if(!user){ list.innerHTML = '<div class="muted" style="font-size:13px;">Bitte oben einen User wählen.</div>'; return; }
+  if(!mine.length){ list.innerHTML = '<div class="muted" style="font-size:13px;">Leer.</div>'; return; }
+  for(const b of mine){
+    const row = document.createElement("div");
+    row.className = "blrow";
+    const a = document.createElement("a");
+    a.href = window.SmartFoodUser.decorate(`/recipe?id=${encodeURIComponent(b.recipe_id)}`);
+    a.textContent = names.get(b.recipe_id) || `Rezept ${b.recipe_id}`;
+    const info = document.createElement("span");
+    info.className = "muted";
+    info.style.marginLeft = "8px";
+    info.textContent = b.date ? `seit ${b.date}` : "";
+    const left = document.createElement("span");
+    left.append(a, info);
+    const btn = document.createElement("button");
+    btn.className = "secondary";
+    btn.type = "button";
+    btn.textContent = "Entfernen";
+    btn.style.cssText = "font-size:12px; padding:5px 10px;";
+    btn.onclick = async () => {
+      btn.disabled = true;
+      try{
+        const r = await fetch("/api/blacklist/toggle", {
+          method: "POST", headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({recipe_id: b.recipe_id, user_id: user})
+        });
+        const out = await r.json();
+        if(!r.ok) throw new Error(out.error || ("HTTP " + r.status));
+        allData.blacklist = allData.blacklist.filter(x => x !== b);
+        renderBlacklist();
+      }catch(e){
+        btn.disabled = false;
+        alert("Konnte nicht entfernt werden: " + e.message);
+      }
+    };
+    row.append(left, btn);
+    list.appendChild(row);
+  }
 }
 
 /** -------------------------

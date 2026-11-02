@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SmartFood – Dev: Vorab-Bewertung</title>
+  <title>SmartFood – Dev: Default-Bewertung</title>
   <style>
     body{ font-family: system-ui, sans-serif; background:#0b0f17; color:#e9eefc; margin:0; padding:24px; }
     h1{ margin:0 0 6px; font-size:22px; }
@@ -40,7 +40,7 @@
 <body>
 <script src="/static/nav.js"></script>
 
-<h1>Dev: Vorab-Bewertung</h1>
+<h1>Dev: Default-Bewertung</h1>
 <div class="muted">
   Für Gerichte, die du kennst, aber noch nicht über die App gekocht hast. Setzt <b>kein</b> Kochdatum –
   gilt nur, bis es eine echte Bewertung gibt. Gespeichert pro User in <code>user_data/user_&lt;id&gt;.yaml</code>.
@@ -97,7 +97,7 @@ function buildScale(container, initial){
 function updateProgress(){
   const rated = recipes.filter(r => r.rated).length;
   document.getElementById("progressText").textContent =
-    `${rated} von ${recipes.length} Rezepten bewertet (vorab oder echt) · ${recipes.length - rated} offen`;
+    `${rated} von ${recipes.length} Rezepten bewertet (default oder echt) · ${recipes.length - rated} offen`;
   document.getElementById("progressBar").style.width = recipes.length ? `${100 * rated / recipes.length}%` : "0";
 }
 
@@ -112,12 +112,12 @@ function cardEl(r){
   a.textContent = r.name;
   title.appendChild(a);
   const ahead = Object.values(r.default_rating).some(v => v !== null);
-  if(ahead) title.insertAdjacentHTML("beforeend", '<span class="badge ahead">vorab bewertet</span>');
+  if(ahead) title.insertAdjacentHTML("beforeend", '<span class="badge ahead">default bewertet</span>');
   if(r.history_rated) title.insertAdjacentHTML("beforeend", '<span class="badge real">echt bewertet</span>');
   const meta = document.createElement("div");
   meta.className = "meta";
   meta.textContent = `${TYPE_LABEL[r.recipe_type] || r.recipe_type || "?"} · ${r.veg_type || "?"}`
-    + (r.history_rated ? " · hat schon echte Bewertungen – die zählen vor der Vorab-Bewertung" : "");
+    + (r.history_rated ? " · hat schon echte Bewertungen – die zählen vor der Default-Bewertung" : "");
   div.append(title, meta);
 
   const scales = {};
@@ -128,7 +128,7 @@ function cardEl(r){
     const sc = document.createElement("div");
     sc.className = "scale";
     sc.title = hint;
-    // Wiederholen startet neutral bei 5, sonst die gespeicherte Vorab-Bewertung
+    // Wiederholen startet neutral bei 5, sonst die gespeicherte Default-Bewertung
     const initial = r.default_rating[key] ?? (key === "repeat_rating" && !ahead ? 5 : null);
     scales[key] = buildScale(sc, initial);
     row.appendChild(sc);
@@ -141,7 +141,7 @@ function cardEl(r){
   const skip = Object.assign(document.createElement("button"), { className: "btn secondary", type: "button", textContent: "Überspringen" });
   actions.append(save, skip);
   if(ahead){
-    const del = Object.assign(document.createElement("button"), { className: "btn danger", type: "button", textContent: "Vorab-Bewertung löschen" });
+    const del = Object.assign(document.createElement("button"), { className: "btn danger", type: "button", textContent: "Default-Bewertung löschen" });
     del.onclick = () => send(r, { taste_rating: null, effort_rating: null, repeat_rating: null }, del);
     actions.appendChild(del);
   }

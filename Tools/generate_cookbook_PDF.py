@@ -42,7 +42,8 @@ SPEC_DE = {"soup": "Suppe", "stew": "Eintopf", "salad": "Salat", "casserole": "A
 SPEC_ORDER = ["soup", "stew", "salad", "pasta", "pan_dish", "casserole", "bowl", "sandwich", "baked", "sauce",
               "others"]
 SEASON_DE = {"all": "Ganzjährig", "always": "Ganzjährig", "spring": "Frühling", "summer": "Sommer",
-             "autumn": "Herbst", "winter": "Winter"}
+             "autumn": "Herbst", "winter": "Winter", "only_spring": "Nur Frühling", "only_summer": "Nur Sommer",
+             "only_autumn": "Nur Herbst", "only_winter": "Nur Winter"}
 VEG_DE = {"vegan": "Vegan", "vegetarian": "Vegetarisch", "meat": "Fleisch", "fish": "Fisch"}
 # Zutatenliste pro Rezept: (category, Ueberschrift, als Aufzaehlung? sonst kompakt in einer Zeile)
 INGREDIENT_BLOCKS = [("ingredient", "Zutaten", True), ("basic", "Grundzutaten", False), ("spice", "Gewürze", False)]

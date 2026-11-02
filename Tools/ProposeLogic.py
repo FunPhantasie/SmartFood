@@ -62,6 +62,7 @@ SOFTMAX_T = 4             # Softmax-Temperatur: klein = die Besten gewinnen fast
 SOFTMAX_T_RANGE = (1, 10) # vom User einstellbar (Reroll erhoeht T um 1)
 SWAP_P5 = 0.8             # P(kein Tausch bei 5 Vorschlaegen)
 PROPOSAL_COUNT = 5        # Anzahl Vorschlaege
+STARTER_COOKED_LIMIT = 10 # Startphase: hoechstens so viele verschiedene Rezepte gekocht -> alles ist Haupt-Pool
 
 
 def _mean(values) -> Optional[float]:
@@ -70,7 +71,7 @@ def _mean(values) -> Optional[float]:
 
 
 def rating(entry: Optional[dict], key: str, defaults: Optional[dict] = None) -> float:
-    """Mittel der history-Bewertungen; ohne -> Vorab-Bewertung (default_ratings.yaml); ohne -> NEUTRAL_RATING."""
+    """Mittel der history-Bewertungen; ohne -> Default-Bewertung (default_ratings.yaml); ohne -> NEUTRAL_RATING."""
     value = _mean((entry or {}).get(key))
     if value is None:
         value = (defaults or {}).get(key)
@@ -147,7 +148,7 @@ def calc_date_score(amp: float, dist_last: float, tau: float) -> float:
 def date_details(entry: Optional[dict], app: dict, today: Optional[date] = None,
                  defaults: Optional[dict] = None) -> dict:
     """date_score fuer EINEN history-Eintrag mit allen Zwischenwerten (fuer test_with_data).
-    defaults: Vorab-Bewertung des Rezepts (YamlEditor.default_rating) fuer fehlende repeat_ratings."""
+    defaults: Default-Bewertung des Rezepts (YamlEditor.default_rating) fuer fehlende repeat_ratings."""
     today = today or date.today()
     entry = entry or {}
     out = {"dist_last": None, "n_dates": 0, "mean": None, "std": None, "repeat": None,
@@ -199,7 +200,7 @@ def recipe_minutes(recipe: dict) -> Optional[float]:
 
 
 def reward_details(recipe: dict, entry: Optional[dict], defaults: Optional[dict] = None) -> dict:
-    """reward mit Zwischenwerten. Fehlende Bewertungen -> Vorab-Bewertung (defaults), sonst NEUTRAL_RATING.
+    """reward mit Zwischenwerten. Fehlende Bewertungen -> Default-Bewertung (defaults), sonst NEUTRAL_RATING.
     Nie gekochtes Rezept ohne Zeiten -> reward None (bekommt spaeter den Median-Score, siehe split_pools)."""
     entry = entry or {}
     taste, effort = rating(entry, "taste_rating", defaults), rating(entry, "effort_rating", defaults)
@@ -247,7 +248,7 @@ def recipe_features(recipe: dict, data: dict) -> dict:
     if recipe.get("sweet"):
         specs.add("sweet")
     return {
-        "season": recipe.get("season") or "all",
+        "season": yr.season_parts(recipe.get("season"))[0] or "all",   # only_summer -> summer (Bonus wie summer)
         "origins": set(origin if isinstance(origin, list) else [origin]),
         "method": recipe.get("cooking_method"),
         "specs": specs,
@@ -406,10 +407,22 @@ def swap_proposals(picks: list, new_pool: dict, main_pool: dict, root_of: dict,
     return out
 
 
-def split_pools(dataset: dict, candidates: list) -> tuple[dict, dict]:
-    """Teilt die erlaubten Rezepte in den Haupt-Pool (gekocht, vorab bewertet oder auf der Wunschliste)
-    und den Pool der neuen, nie gekochten Rezepte. Rezepte ohne berechenbaren Score (nie gekocht, keine
-    Zeiten) bekommen den Median aller berechneten Scores der Kandidaten.
+def cooked_count(data: dict) -> int:
+    """Wie viele verschiedene Rezepte der User schon gekocht hat (history-Eintrag mit last_date)."""
+    return sum(1 for h in data.get("history", []) if h.get("last_date"))
+
+
+def is_starter_phase(data: dict) -> bool:
+    """Startphase: hoechstens STARTER_COOKED_LIMIT verschiedene Rezepte gekocht -> es gibt (fuer die normale
+    Ziehung) keinen Pool der neuen Rezepte, alle erlaubten Rezepte sind im Haupt-Pool."""
+    return cooked_count(data) <= STARTER_COOKED_LIMIT
+
+
+def split_pools(dataset: dict, candidates: list, starter: bool = False) -> tuple[dict, dict]:
+    """Teilt die erlaubten Rezepte in den Haupt-Pool (gekocht, default bewertet oder auf der Wunschliste)
+    und den Pool der neuen, nie gekochten Rezepte. starter=True (Startphase, is_starter_phase): alles
+    in den Haupt-Pool. Rezepte ohne berechenbaren Score (nie gekocht, keine Zeiten) bekommen den Median
+    aller berechneten Scores der Kandidaten.
     Rueckgabe: ({recipe_id: score} Haupt-Pool, {recipe_id: score} neue Rezepte)."""
     computed = [dataset[i]["score"] for i in candidates if dataset[i]["score"] is not None]
     median = statistics.median(computed) if computed else calc_total_score(
@@ -418,7 +431,8 @@ def split_pools(dataset: dict, candidates: list) -> tuple[dict, dict]:
     for i in candidates:
         d = dataset[i]
         score = d["score"] if d["score"] is not None else median
-        (new if d["never_cooked"] and not d["wishlist"] and not d.get("rated_ahead") else main)[i] = score
+        is_new = d["never_cooked"] and not d["wishlist"] and not d.get("rated_ahead")
+        (new if is_new and not starter else main)[i] = score
     return main, new
 
 
@@ -452,6 +466,7 @@ def build_propose_dataset(data: dict, user_id=None, today: Optional[date] = None
         rw = reward_details(r, entry, defaults)
         mult, off, rules = calc_damping(recipe_features(r, data), ls, season_now)
         wish = user_id is not None and rl.is_wishlisted(data, rid, user_id)
+        season, only_season = yr.season_parts(r.get("season"))
         score = None if rw["reward_score"] is None else calc_total_score(
             d["date_score"], rw["reward_score"], mult, off, wish)
         dataset[rid] = {
@@ -461,7 +476,8 @@ def build_propose_dataset(data: dict, user_id=None, today: Optional[date] = None
             "ingredient_info": [ingredient_by_id[ri.get("ingredient_id")] for ri in ingredients_by_recipe.get(rid, [])
                                 if ri.get("ingredient_id") in ingredient_by_id],
             "never_cooked": not (entry or {}).get("last_date"),
-            "rated_ahead": any(v is not None for v in defaults.values()),   # Vorab-Bewertung -> bekannt
+            "rated_ahead": any(v is not None for v in defaults.values()),   # Default-Bewertung -> bekannt
+            "out_of_season": only_season and season != season_now,           # only_<saison> -> harter Filter
             "date": d,
             "reward": rw,
             "date_score": d["date_score"],
@@ -481,23 +497,89 @@ def hard_filter(dataset: dict, last_supper_ids: list, meal_type: str = "main_dis
                 include=(), exclude=(), allergies=()) -> list:
     """I.4 - recipe_ids, die nach allen harten Filtern uebrig bleiben. Die Wunschliste
     ueberstimmt remove aus date_score, die Blacklist gewinnt immer."""
+    reasons = exclusion_reasons(dataset, last_supper_ids, meal_type, diet, blacklist, include, exclude, allergies)
+    return [rid for rid, r in reasons.items() if not r]
+
+
+def exclusion_reasons(dataset: dict, last_supper_ids: list, meal_type: str = "main_dish",
+                      diet: str = "any", blacklist: Optional[set] = None,
+                      include=(), exclude=(), allergies=()) -> dict:
+    """Pro recipe_id die harten Filter, an denen es scheitert (leer = erlaubt) - fuer hard_filter und die
+    Score-Tabelle der Entwicklerseite."""
     blacklist = blacklist or set()
     ls_roots = {variant_root(dataset[i]["recipe"]) for i in last_supper_ids if i in dataset}
-    allowed = {r.get("recipe_id") for r in
-               filter_recipes([d["recipe"] for d in dataset.values()], meal_type=meal_type, diet=diet)}
-    return [
-        rid for rid, d in dataset.items()
-        if rid in allowed
-        and (not d["remove"] or d["wishlist"])
-        and variant_root(d["recipe"]) not in ls_roots
-        and rid not in blacklist
-        and not is_same_day(d["recipe"])
-        and ingredient_ok(d["ingredient_info"], include, exclude, allergies)
-    ]
+    out = {}
+    for rid, d in dataset.items():
+        r = d["recipe"]
+        checks = [
+            (r.get("recipe_type") != meal_type, f"Typ {r.get('recipe_type')} (gesucht: {meal_type})"),
+            (not diet_ok(r.get("veg_type"), diet), f"Ernaehrung {r.get('veg_type')} (gesucht: {diet})"),
+            (d.get("out_of_season", False), f"Saison: {r.get('season')}"),
+            (d["remove"] and not d["wishlist"], f"vor {d['date']['dist_last']} Tagen gekocht"),
+            (variant_root(d["recipe"]) in ls_roots, "letzte Mahlzeiten (Familie)"),
+            (rid in blacklist, "Blacklist"),
+            (is_same_day(d["recipe"]), f"ueber {SAME_DAY_LIMIT} min"),
+            (not ingredient_ok(d["ingredient_info"], include, exclude, allergies), "Zutaten / Allergie"),
+        ]
+        out[rid] = [reason for failed, reason in checks if failed]
+    return out
+
+
+def ranking(data: dict, user_id=None, today: Optional[date] = None, meal_type: str = "main_dish",
+            diet: str = "any", include=(), exclude=(), allergies=()) -> list[dict]:
+    """Score-Tabelle ohne Ziehung (Entwicklerseite): pro Rezept Teil-Scores, Pool, total (wie beim Ziehen,
+    fehlender Score = Median), Ausschlussgruende und Platz unter den erlaubten. Sortiert: erlaubte nach total,
+    dann die ausgeschlossenen."""
+    today = today or date.today()
+    dataset = build_propose_dataset(data, user_id, today)
+    reasons = exclusion_reasons(dataset, last_supper(data, today), meal_type, diet, user_blacklist(data, user_id),
+                                include, exclude, allergies)
+    candidates = [rid for rid, r in reasons.items() if not r]
+    starter = is_starter_phase(data)
+    main_pool, new_pool = split_pools(dataset, candidates, starter=starter)
+    pooled = {**main_pool, **new_pool}       # Scores wie beim Ziehen (fehlender Score = Median der Kandidaten)
+    rows = []
+    for rid, d in dataset.items():
+        known = starter or not d["never_cooked"] or d["wishlist"] or d["rated_ahead"]
+        total = pooled.get(rid, d["score"])   # ausgeschlossen ohne Score -> None
+        rows.append({
+            "recipe_id": rid, "name": d["recipe"].get("name"), "recipe_type": d["recipe"].get("recipe_type"),
+            "season": d["recipe"].get("season") or "all",
+            "pool": "main" if known else "new", "date_score": d["date_score"], "dist_last": d["date"]["dist_last"],
+            "n_dates": d["date"]["n_dates"], "reward_score": d["reward_score"], "taste": d["reward"]["taste"],
+            "effort": d["reward"]["effort"], "minutes": d["reward"]["minutes"], "damp_mult": d["damp_score_mult"],
+            "damp_offset": d["damp_score_offset"], "damp_rules": d["damp_rules"], "wishlist": d["wishlist"],
+            "rated_ahead": d["rated_ahead"], "total": total, "total_is_median": d["score"] is None and rid in pooled,
+            "excluded": reasons[rid], "rank": None,
+        })
+    allowed_rows = sorted((r for r in rows if not r["excluded"]), key=lambda r: -r["total"])
+    for i, r in enumerate(allowed_rows, 1):
+        r["rank"] = i
+    excluded = sorted((r for r in rows if r["excluded"]), key=lambda r: -(r["total"] if r["total"] is not None else -1e9))
+    return allowed_rows + excluded
+
+
+RANKING_TYPE_ORDER = ("main_dish", "side_dish", "sweet", "snack", "dip", "wuerzung")   # Gruppen auf /dev/scores
+
+
+def ranking_by_type(data: dict, user_id=None, today: Optional[date] = None, allergies=()) -> list[dict]:
+    """ranking() pro Gerichttyp (Entwicklerseite): je Gruppe nur die Rezepte DIESES Typs - erlaubte nach Platz,
+    dann die, die dazugehoeren, aber gerade aus einem anderen Grund ausgeschlossen sind (60 min, Saison, ...).
+    Reihenfolge RANKING_TYPE_ORDER, unbekannte Typen danach. Rueckgabe: [{meal_type, rows, main_pool, new_pool}]."""
+    types = {r.get("recipe_type") for r in data.get("recipes", []) if r.get("recipe_type")}
+    order = [t for t in RANKING_TYPE_ORDER if t in types] + sorted(types - set(RANKING_TYPE_ORDER))
+    groups = []
+    for meal_type in order:
+        rows = [r for r in ranking(data, user_id, today, meal_type, allergies=allergies) if r["recipe_type"] == meal_type]
+        allowed = [r for r in rows if not r["excluded"]]
+        groups.append({"meal_type": meal_type, "rows": rows,
+                       "main_pool": sum(r["pool"] == "main" for r in allowed),
+                       "new_pool": sum(r["pool"] == "new" for r in allowed)})
+    return groups
 
 
 # Herkunft eines Vorschlags (propose_detailed -> Abzeichen auf der Karte)
-SOURCE_CYCLE = "cycle"          # normal aus dem Haupt-Pool gezogen (gekocht / vorab bewertet / Wunschliste)
+SOURCE_CYCLE = "cycle"          # normal aus dem Haupt-Pool gezogen (gekocht / default bewertet / Wunschliste; Startphase: alle)
 SOURCE_FILL = "fill"            # Haupt-Pool zu klein -> mit einem neuen Rezept aufgefuellt
 SOURCE_SWAP_NEW = "swap_new"    # beim Tauschen durch ein neues Rezept ersetzt
 SOURCE_SWAP_MAIN = "swap_main"  # beim Tauschen ersetzt, kein neues frei -> aus dem Haupt-Pool
@@ -518,7 +600,8 @@ def propose_detailed(data: dict, user_id=None, today: Optional[date] = None, mea
     """Wie propose(), pro Vorschlag aber {recipe, source (SOURCE_*), score, wishlist, replaced}.
     replaced = recipe_id, die beim Tauschen ersetzt wurde (sonst None).
     pool="all": aus dem Haupt-Pool ziehen, zu wenige -> mit neuen Rezepten auffuellen, dann tauschen.
-    pool="new": nur aus den nie gekochten Rezepten ziehen ('Neue Rezepte'-Button).
+    In der Startphase (is_starter_phase) ist alles Haupt-Pool - kein Auffuellen, Tauschen nur innerhalb.
+    pool="new": nur aus den nie gekochten Rezepten ziehen ('Neue Rezepte'-Button, auch in der Startphase).
     blacklist kommt zusaetzlich zur blacklist.yaml des Users dazu."""
     today = today or date.today()
     t = clamp_t(t)
@@ -529,7 +612,8 @@ def propose_detailed(data: dict, user_id=None, today: Optional[date] = None, mea
     if not candidates:
         return []
     root_of = {rid: variant_root(dataset[rid]["recipe"]) for rid in candidates}
-    main_pool, new_pool = split_pools(dataset, candidates)
+    # 'Neue Rezepte'-Button: immer die nie gekochten. Normale Ziehung in der Startphase: alles Haupt-Pool.
+    main_pool, new_pool = split_pools(dataset, candidates, starter=pool != "new" and is_starter_phase(data))
     detail = lambda rid, source, replaced=None: {
         "recipe": dataset[rid]["recipe"], "source": source, "score": {**main_pool, **new_pool}[rid],
         "wishlist": dataset[rid]["wishlist"], "replaced": replaced}
@@ -575,10 +659,3 @@ def diet_ok(veg_type: Optional[str], diet: str) -> bool:
     if diet == "nonvegan":
         return veg_type != "vegan"
     return veg_type == diet
-
-
-def filter_recipes(recipes: list[dict], meal_type: str = "main_dish", diet: str = "any") -> list[dict]:
-    """Typ-/Diaet-Filter (Teil von hard_filter). Zutaten-Filter (include/exclude/Allergien)
-    brauchen die Zutaten und laufen deshalb in hard_filter ueber ingredient_ok.
-    Rueckgabe: rohe Rezept-Dicts (fuers Frontend danach recipe_to_frontend())."""
-    return [r for r in recipes if r.get("recipe_type") == meal_type and diet_ok(r.get("veg_type"), diet)]

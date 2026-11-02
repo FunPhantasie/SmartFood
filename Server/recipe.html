@@ -245,6 +245,8 @@ async function loadRecipe(){
   btnUpcoming.onclick = () => toggleList("/api/wishlist/toggle", btnUpcoming);
   btnBlacklist.onclick = () => {
     if(!window.SmartFoodUser.get()){ alert("Bitte oben zuerst einen User wählen."); return; }
+    const adding = !btnBlacklist.classList.contains("active");
+    if(adding && !confirm("Dieses Rezept nie mehr vorschlagen?\n(Wieder entfernen: hier oder auf der Startseite unter „Meine Blacklist“)")) return;
     toggleList("/api/blacklist/toggle", btnBlacklist);
   };
 

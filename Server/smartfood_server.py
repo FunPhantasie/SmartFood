@@ -127,6 +127,10 @@ def rating_page():
 def dev_page():
     return send_from_directory(str(APP_DIR), "dev.html")
 
+@app.get("/dev/scores")
+def dev_scores_page():
+    return send_from_directory(str(APP_DIR), "dev_scores.html")
+
 @app.get("/api/ping")
 def api_ping():
     return jsonify({"ok": True})
@@ -189,7 +193,10 @@ def _proposal_response(data, picks, key, t):
     out = {key: [{**pl.recipe_to_frontend(p["recipe"], is_new=rl.is_new(data, p["recipe"]["recipe_id"])),
                   "source": p["source"], "score": round(p["score"], 2), "wishlist": p["wishlist"],
                   "replaced": names.get(p["replaced"])} for p in picks],
-           "t": t}
+           "t": t,
+           # Startphase (ProposeLogic.is_starter_phase) -> Hinweis auf der Startseite
+           "starter_phase": pl.is_starter_phase(data), "cooked_count": pl.cooked_count(data),
+           "starter_limit": pl.STARTER_COOKED_LIMIT}
     if not picks:
         out["message"] = NO_PROPOSALS_MESSAGE
     return out
@@ -405,8 +412,8 @@ def api_rating_post():
 
 @app.get("/api/dev/ratings")
 def api_dev_ratings():
-    """Entwicklerseite: alle Rezepte mit Status fuer den User - rated (vorab oder echt bewertet),
-    die Vorab-Bewertung und ob es schon eine echte Bewertung in der history gibt."""
+    """Entwicklerseite: alle Rezepte mit Status fuer den User - rated (default oder echt bewertet),
+    die Default-Bewertung und ob es schon eine echte Bewertung in der history gibt."""
     try:
         user = _require_user(request.args.get("user"))
         data = load_all(user)
@@ -427,9 +434,24 @@ def api_dev_ratings():
         return jsonify({"error": str(e)}), 500
 
 
+@app.get("/api/dev/scores")
+def api_dev_scores():
+    """Score-Tabelle ohne Ziehung, gruppiert nach Gerichttyp (ProposeLogic.ranking_by_type):
+    ?user=<id>&allergies=lactose,gluten. Ohne User: alle Rezepte neu (keine history)."""
+    try:
+        user = _user_id(request.args.get("user"))
+        data = load_all(user)
+        allergies = [a for a in request.args.get("allergies", "").split(",") if a]
+        return jsonify({"groups": pl.ranking_by_type(data, user_id=user, allergies=allergies), "user": user,
+                        "proposal_count": pl.PROPOSAL_COUNT, "cooked_count": pl.cooked_count(data),
+                        "starter_limit": pl.STARTER_COOKED_LIMIT, "starter_phase": pl.is_starter_phase(data)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.post("/api/dev/rating")
 def api_dev_rating():
-    """Vorab-Bewertung setzen: {user_id, recipe_id, taste_rating, effort_rating, repeat_rating} (0-10 / null,
+    """Default-Bewertung setzen: {user_id, recipe_id, taste_rating, effort_rating, repeat_rating} (0-10 / null,
     alle null = entfernen). Setzt KEIN Kochdatum (anders als /api/rating)."""
     try:
         payload = request.get_json(force=True) or {}

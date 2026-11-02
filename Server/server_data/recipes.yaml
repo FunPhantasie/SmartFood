@@ -1177,6 +1177,7 @@ recipes:
   prep_minutes: 15
   recipe_id: 99
   recipe_spec: salad
+  season: only_summer
   recipe_type: side_dish
   side_dish: null
   sweet: false

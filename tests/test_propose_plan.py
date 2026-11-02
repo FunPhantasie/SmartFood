@@ -215,6 +215,17 @@ def gluten_data():
 
 
 @contextmanager
+def starter_limit(n):
+    """ProposeLogic.STARTER_COOKED_LIMIT temporarily = n (the example data has only a few cooked recipes,
+    so it is in the starter phase - n = -1 tests the regular phase with the new-recipe pool)."""
+    old, pl.STARTER_COOKED_LIMIT = pl.STARTER_COOKED_LIMIT, n
+    try:
+        yield
+    finally:
+        pl.STARTER_COOKED_LIMIT = old
+
+
+@contextmanager
 def temp_server():
     """Server module reading / writing a temp folder - the real server_data is never written."""
     from Server import smartfood_server as srv
@@ -458,10 +469,26 @@ def sanity_checks():
     ahead["default_ratings"] = [{"recipe_id": 9, "taste_rating": 9, "effort_rating": 2, "repeat_rating": None}]
     ds_ahead, main_ahead, new_ahead = pools(ahead)
     users = per_user_files()
-    detailed = [pl.propose_detailed(data, user_id="u1", today=TODAY, k=k, rng=random.Random(seed))
-                for seed in range(300) for k in (5, 8)]
-    same_as_propose = [r["recipe_id"] for r in pl.propose(data, user_id="u1", today=TODAY, rng=random.Random(7))] ==         [p["recipe"]["recipe_id"] for p in pl.propose_detailed(data, user_id="u1", today=TODAY, rng=random.Random(7))]
-    _, main_ids, new_ids = pools()
+    with starter_limit(-1):                                    # regular phase: main + new pool
+        detailed = [pl.propose_detailed(data, user_id="u1", today=TODAY, k=k, rng=random.Random(seed))
+                    for seed in range(300) for k in (5, 8)]
+        same_as_propose = [r["recipe_id"] for r in pl.propose(data, user_id="u1", today=TODAY, rng=random.Random(7))] ==             [p["recipe"]["recipe_id"] for p in pl.propose_detailed(data, user_id="u1", today=TODAY, rng=random.Random(7))]
+        ds_rank, main_ids, new_ids = pools()
+        rank = pl.ranking(data, user_id="u1", today=TODAY)
+        rank_allowed = [r for r in rank if not r["excluded"]]
+    starter_runs = [pl.propose_detailed(data, user_id="u1", today=TODAY, k=8, rng=random.Random(seed)) for seed in range(300)]
+    starter_new = pl.propose_detailed(data, user_id="u1", today=TODAY, pool="new", k=10)
+    starter_rank = [r for r in pl.ranking(data, user_id="u1", today=TODAY) if not r["excluded"]]
+    many = example_data()                                      # 11 different recipes cooked -> regular phase
+    now = pl.current_season(TODAY)
+    other = next(s for s in yr.SEASONS if s != now)
+    seasonal = example_data()                                  # 5 only out of season, 7 recommended out of season, 9 only now
+    for rid, season in ((5, f"only_{other}"), (7, other), (9, f"only_{now}")):
+        next(r for r in seasonal["recipes"] if r["recipe_id"] == rid)["season"] = season
+    season_rank = {r["recipe_id"]: r for r in pl.ranking(seasonal, user_id="u1", today=TODAY)}
+    by_type = pl.ranking_by_type(data, user_id="u1", today=TODAY)
+    rank_regular = pl.ranking(data, user_id="u1", today=TODAY)          # starter phase, like by_type
+    many["history"] = [{"recipe_id": i, "last_date": "2026-01-01", "dates": ["2026-01-01"]} for i in range(100, 111)]
     u2_dev = {r["recipe_id"]: r for r in users["dev_u2"]["recipes"]}
     not_specific = dict(data["recipes"][0], main_ingredient=yr.NOT_SPECIFIC)
     shift_nb = lambda r, m: m * math.exp(-(r - (5 + math.log(1 - 0.9) / 0.3)) * 0.3) + m * 0.9 - m   # notebook form
@@ -638,7 +665,47 @@ def sanity_checks():
          and pl.rating(None, "repeat_rating", {"repeat_rating": None}) == pl.NEUTRAL_RATING),
         ("default ratings: rating page prefill 9 / 5 / 2", [rl.default_ratings(ahead, 9)[k] for k in
                                                            ("taste_rating", "repeat_rating", "effort_rating")] == [9, 5, 2]),
+        ("season: only_<other season> -> excluded (hard filter), reason 'Saison'",
+         5 not in allowed(seasonal) and season_rank[5]["excluded"] == [f"Saison: only_{other}"]),
+        ("season: <other season> is only a recommendation -> allowed, no +3",
+         7 in allowed(seasonal) and "season +3" not in season_rank[7]["damp_rules"]),
+        ("season: only_<this season> -> allowed with +3 like <this season>",
+         9 in allowed(seasonal) and "season +3" in season_rank[9]["damp_rules"]),
+        ("season: season_parts + unknown value found",
+         yr.season_parts("only_summer") == ("summer", True) and yr.season_parts(None) == (None, False)
+         and len(yr.data_problems({**data, "recipes": [dict(data["recipes"][0], season="only_monsoon")]})) == 1),
+        ("ranking by type: main_dish first, each group only its own type, no 'wrong type' rows",
+         [g["meal_type"] for g in by_type] == ["main_dish", "dessert"]
+         and all(r["recipe_type"] == g["meal_type"] and not any(e.startswith("Typ") for e in r["excluded"])
+                 for g in by_type for r in g["rows"])
+         and sum(len(g["rows"]) for g in by_type) == len(data["recipes"])),
+        ("ranking by type: main_dish group = ranking(main_dish) without the other types",
+         [r["recipe_id"] for r in by_type[0]["rows"]]
+         == [r["recipe_id"] for r in rank_regular if r["recipe_type"] == "main_dish"]
+         and any(r["excluded"] for r in by_type[0]["rows"])),
+        ("ranking: type / diet reasons say what doesn't match",
+         any(r["excluded"][:1] == ["Typ dessert (gesucht: main_dish)"] for r in rank)
+         and any(e.startswith("Ernaehrung") for r in pl.ranking(data, user_id="u1", today=TODAY, diet="vegan")
+                 for e in r["excluded"])),
+        ("starter phase: <= 10 recipes cooked -> on, 11 -> off",
+         pl.cooked_count(data) <= pl.STARTER_COOKED_LIMIT == 10 and pl.is_starter_phase(data)
+         and pl.cooked_count(many) == 11 and not pl.is_starter_phase(many)),
+        ("starter phase: everything is the main pool -> only cycle (or swap inside it), never filled",
+         {p["source"] for run in starter_runs for p in run} <= {"cycle", "swap_main"}
+         and any(p["recipe"]["recipe_id"] in NEW_RECIPES for run in starter_runs for p in run)
+         and {r["pool"] for r in starter_rank} == {"main"}),
+        ("starter phase: 'Neue Rezepte' still only never cooked recipes",
+         {p["source"] for p in starter_new} == {"new_pool"} and {p["recipe"]["recipe_id"] for p in starter_new} == NEW_RECIPES),
         ("source: propose_detailed draws exactly like propose", same_as_propose),
+        ("ranking: allowed = hard_filter, ranked 1..n by total (= score used for drawing)",
+         sorted(r["recipe_id"] for r in rank_allowed) == allowed()
+         and [r["rank"] for r in rank_allowed] == list(range(1, len(rank_allowed) + 1))
+         and all(a["total"] >= b["total"] for a, b in zip(rank_allowed, rank_allowed[1:]))
+         and all(r["total"] == {**main_ids, **new_ids}[r["recipe_id"]] for r in rank_allowed)
+         and {r["recipe_id"] for r in rank_allowed if r["pool"] == "main"} == set(main_ids)),
+        ("ranking: excluded recipes listed after, with reasons (blacklist, type, ...)",
+         len(rank) == len(data["recipes"]) and all(r["rank"] is None and r["excluded"] for r in rank[len(rank_allowed):])
+         and "Blacklist" in next(r for r in rank if r["recipe_id"] == 11)["excluded"]),
         ("source: cycle / fill from the main / new pool, swaps name the replaced recipe",
          all((p["source"] == "cycle" and p["recipe"]["recipe_id"] in main_ids and p["replaced"] is None)
              or (p["source"] in ("fill", "swap_new") and p["recipe"]["recipe_id"] in new_ids)

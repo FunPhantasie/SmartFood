@@ -138,19 +138,19 @@ def has_cooked(data: dict, recipe_id: int) -> bool:
 
 
 def is_new(data: dict, recipe_id: int) -> bool:
-    """Neu = nie gekocht und nicht vorab bewertet (default_ratings.yaml) - wie der 'neue' Pool in ProposeLogic."""
+    """Neu = nie gekocht und nicht default bewertet (default_ratings.yaml) - wie der 'neue' Pool in ProposeLogic."""
     return not has_cooked(data, recipe_id) and all(v is None for v in yr.default_rating(data, recipe_id).values())
 
 
 def is_rated(data: dict, recipe_id: int) -> bool:
-    """Hat der User dieses Rezept schon bewertet - vorab (default_ratings) oder echt (taste_rating in der history)?"""
+    """Hat der User dieses Rezept schon bewertet - default (default_ratings) oder echt (taste_rating in der history)?"""
     entry = _find_history_entry(data, recipe_id) or {}
     return any(v is not None for v in entry.get("taste_rating") or []) or         any(v is not None for v in yr.default_rating(data, recipe_id).values())
 
 
 def set_default_rating(data: dict, recipe_id: int, taste_rating=None, effort_rating=None,
                        repeat_rating=None) -> Optional[dict]:
-    """Vorab-Bewertung setzen (Entwicklerseite). Werte 0-10 oder None; alle None -> Eintrag entfernt.
+    """Default-Bewertung setzen (Entwicklerseite). Werte 0-10 oder None; alle None -> Eintrag entfernt.
     Rueckgabe: der Eintrag (None, wenn entfernt)."""
     recipe = _find_recipe(data, recipe_id)
     values = {"taste_rating": taste_rating, "effort_rating": effort_rating, "repeat_rating": repeat_rating}
@@ -202,7 +202,7 @@ def _ceil_avg(values: list) -> Optional[float]:
 
 def default_ratings(data: dict, recipe_id: int) -> dict:
     """Durchschnitt der letzten Bewertungen dieses Rezepts (aufgerundet auf ganze Sterne),
-    zum Vorbefuellen der Bewertungsseite. Ohne Bewertung in der history: Vorab-Bewertung aus
+    zum Vorbefuellen der Bewertungsseite. Ohne Bewertung in der history: Default-Bewertung aus
     default_ratings.yaml, sonst neutraler Default (Mitte 5 auf den 0-10 Skalen). Die *_avg Werte sind die ungerundeten Mittelwerte, fuer eine
     optionale Halb-Stern-Anzeige."""
     entry = _find_history_entry(data, recipe_id)

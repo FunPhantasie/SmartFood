@@ -24,11 +24,15 @@ COOKING_METHODS = ("oven", "pan", "pot", "grill", "raw", "steam", "microwave")
 RECIPE_SPECS = ("soup", "stew", "salad", "pasta", "pan_dish", "casserole", "bowl", "sandwich", "baked", "sauce",
                 "others")   # gleiche Reihenfolge wie generate_cookbook_PDF.SPEC_ORDER
 NOT_SPECIFIC = "not specific"     # main_ingredient ohne bestimmte Hauptzutat
+# Saison zweistufig: "summer" = Empfehlung (Bonus in der Saison, sonst normal vorschlagbar),
+# "only_summer" = nur in der Saison vorschlagen (harter Filter). all / always / fehlt = ganzjaehrig.
+SEASONS = ("spring", "summer", "autumn", "winter")
+SEASON_VALUES = ("all", "always", *SEASONS, *(f"only_{s}" for s in SEASONS))
 ALLERGENS = ("lactose", "gluten")  # Zutat hat <allergen>_free: true / false / null (= unbekannt)
 # Fleischsorte einer Fleisch-Zutat (null = zaehlt nicht als Fleischsorte, z.B. Bruehe). Das Rezept
 # speichert daraus meat_types - beim Bearbeiten aus den Zutaten befuellt, beim Daempfen vom Rezept gelesen.
 MEAT_TYPES = ("beef", "pork", "poultry", "lamb", "game", "fish", "other")   # fish zaehlt wie eine Fleischsorte
-# Pro User eine Datei server_data/user_data/user_<id>.yaml mit seiner history und seinen Vorab-Bewertungen
+# Pro User eine Datei server_data/user_data/user_<id>.yaml mit seiner history und seinen Default-Bewertungen
 # (default_ratings: 0-10, null = keine - gilt, solange die history fuer diesen Wert noch keine Bewertung hat;
 # gepflegt auf der Entwicklerseite /dev). Die Logik sieht davon nur data["history"] / data["default_ratings"].
 USER_KEYS = ("history", "default_ratings")
@@ -36,7 +40,7 @@ DEFAULT_RATING_KEYS = ("taste_rating", "effort_rating", "repeat_rating")
 DEFAULT_RATING_SCALE = (0, 10)
 USER_FILE_HEADER = """# Daten EINES Users (Dateiname = user_id aus users.yaml), vom Server geschrieben.
 # history:         pro Rezept ein Eintrag - Kochdaten, Bewertungen, Zeiten (siehe RatingLogic)
-# default_ratings: Vorab-Bewertung fuer Gerichte, die man kennt, aber noch nicht ueber die App gekocht hat
+# default_ratings: Default-Bewertung fuer Gerichte, die man kennt, aber noch nicht ueber die App gekocht hat
 #                  (taste / effort / repeat 0-10, Entwicklerseite /dev). name nur zur Orientierung.
 """
 # Zutat (normal) | Grundzutat (Wasser, Mehl, Zucker, Staerke ...) | Gewuerz (Sojasauce, Pfeffer, Salz ...)
@@ -100,9 +104,17 @@ class Recipe:
     cooking_method: Optional[str] = None    # COOKING_METHODS
     recipe_spec: Optional[str] = None       # RECIPE_SPECS
     main_ingredient: Tuple[int, ...] = ()   # ingredient_ids der Hauptzutaten, () = keine (main_ingredients())
-    season: Optional[str] = None            # all, spring, summer, autumn, winter (fehlt = all)
+    season: Optional[str] = None            # SEASON_VALUES (fehlt = all)
     side_dish: Optional[int] = None         # ingredient_id der Beilage oder None (= keine Beilage)
     meat_types: Tuple[str, ...] = ()        # MEAT_TYPES
+
+
+def season_parts(value) -> tuple[Optional[str], bool]:
+    """Saisonfeld -> (Saison oder None = ganzjaehrig, nur in der Saison?). "only_summer" -> ("summer", True)."""
+    value = value or "all"
+    only = value.startswith("only_")
+    season = value[len("only_"):] if only else value
+    return (season if season in SEASONS else None), only
 
 
 def main_ingredients(value) -> list:
@@ -114,7 +126,7 @@ def main_ingredients(value) -> list:
 
 
 def default_rating(data: dict, recipe_id) -> dict:
-    """Vorab-Bewertung eines Rezepts aus default_ratings.yaml: {taste_rating, effort_rating, repeat_rating},
+    """Default-Bewertung eines Rezepts aus default_ratings.yaml: {taste_rating, effort_rating, repeat_rating},
     nicht gesetzte Werte = None."""
     entry = next((d for d in data.get("default_ratings", []) if d.get("recipe_id") == recipe_id), {})
     return {k: entry.get(k) for k in DEFAULT_RATING_KEYS}
@@ -236,6 +248,8 @@ def data_problems(data: dict) -> list[str]:
                 problems.append(f"recipe {rid}: unknown origin {o!r}")
         if r.get("cooking_method") not in (None, *COOKING_METHODS):
             problems.append(f"recipe {rid}: unknown cooking_method {r.get('cooking_method')!r}")
+        if r.get("season") not in (None, *SEASON_VALUES):
+            problems.append(f"recipe {rid}: unknown season {r.get('season')!r}")
         if r.get("recipe_spec") not in (None, *RECIPE_SPECS):
             problems.append(f"recipe {rid}: unknown recipe_spec {r.get('recipe_spec')!r}")
         if (r.get("prep_minutes") is None) != (r.get("cook_minutes") is None):

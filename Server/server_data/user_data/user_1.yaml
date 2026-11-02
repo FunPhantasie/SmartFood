@@ -1,6 +1,6 @@
 # Daten EINES Users (Dateiname = user_id aus users.yaml), vom Server geschrieben.
 # history:         pro Rezept ein Eintrag - Kochdaten, Bewertungen, Zeiten (siehe RatingLogic)
-# default_ratings: Vorab-Bewertung fuer Gerichte, die man kennt, aber noch nicht ueber die App gekocht hat
+# default_ratings: Default-Bewertung fuer Gerichte, die man kennt, aber noch nicht ueber die App gekocht hat
 #                  (taste / effort / repeat 0-10, Entwicklerseite /dev). name nur zur Orientierung.
 history:
 - cook_minutes:
@@ -17,4 +17,54 @@ history:
   - 5
   taste_rating:
   - 6
-default_ratings: []
+default_ratings:
+- recipe_id: 74
+  name: Spaghetti Bolognese mit Rinderhack und Gemuese
+  taste_rating: 9
+  effort_rating: 7
+  repeat_rating: 9
+- recipe_id: 110
+  name: Bandnudeln mit Lachs in Tomaten-Dill-Sahnesauce
+  taste_rating: 8
+  effort_rating: 6
+  repeat_rating: 5
+- recipe_id: 107
+  name: Gnocchi in Kaese-Schinken-Sahnesauce mit Knoblauch
+  taste_rating: 7
+  effort_rating: 5
+  repeat_rating: 5
+- recipe_id: 80
+  name: Flammkuchen-Broetchen mit Schmand, Gouda und Schinken
+  taste_rating: 7
+  effort_rating: 3
+  repeat_rating: 9
+- recipe_id: 68
+  name: Gefuellte Zucchini mit Hackfleischfuellung
+  taste_rating: 4
+  effort_rating: 6
+  repeat_rating: 3
+- recipe_id: 89
+  name: Ofenkaese-Spaetzle mit Sahne und roten Zwiebeln
+  taste_rating: 5
+  effort_rating: 6
+  repeat_rating: 4
+- recipe_id: 81
+  name: Cremige Kartoffel-Lauch-Suppe
+  taste_rating: 8
+  effort_rating: 6
+  repeat_rating: 4
+- recipe_id: 109
+  name: Bandnudeln mit frischem Spinat und Raeucherlachs in Rahmsauce
+  taste_rating: 9
+  effort_rating: 6
+  repeat_rating: 5
+- recipe_id: 104
+  name: Ueberbackene Tortilla-Chips mit Hackfleisch und Kaese
+  taste_rating: 9
+  effort_rating: 4
+  repeat_rating: 6
+- recipe_id: 99
+  name: Wassermelonen-Rucola-Salat mit Feta und Minze
+  taste_rating: 10
+  effort_rating: 5
+  repeat_rating: 4
