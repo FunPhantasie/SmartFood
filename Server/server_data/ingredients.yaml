@@ -2193,7 +2193,7 @@ ingredients:
   lactose_free: true
   gluten_free: true
   shelf_life_days: null
-  kcal: 2.0
+  kcal: 2
   protein: 0.2
   carbs: 0
   fat: 0.13
@@ -2515,7 +2515,7 @@ ingredients:
   lactose_free: false
   gluten_free: true
   shelf_life_days: null
-  kcal: 4.0
+  kcal: 4
   protein: 0.02
   carbs: 0.025
   fat: 0.42
@@ -2725,7 +2725,7 @@ ingredients:
   lactose_free: false
   gluten_free: true
   shelf_life_days: null
-  kcal: 1.0
+  kcal: 1
   protein: 0.12
   carbs: 0.03
   fat: 0.045

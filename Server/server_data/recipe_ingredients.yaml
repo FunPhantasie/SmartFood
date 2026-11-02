@@ -3,4259 +3,3411 @@ recipe_ingredients:
   ingredient_id: 299
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 52
   ingredient_id: 298
   quantity: 3
   unit: EL
-  optional: false
 - recipe_id: 52
   ingredient_id: 300
   quantity: 6
   unit: ''
-  optional: false
 - recipe_id: 52
   ingredient_id: 301
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 52
   ingredient_id: 302
   quantity: 3
   unit: EL
-  optional: false
 - recipe_id: 52
   ingredient_id: 34
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 52
   ingredient_id: 303
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 52
   ingredient_id: 164
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 52
   ingredient_id: 242
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 52
   ingredient_id: 306
   quantity: 20
   unit: g
-  optional: false
 - recipe_id: 52
   ingredient_id: 732
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 52
   ingredient_id: 775
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 52
   ingredient_id: 277
   quantity: 60
   unit: ml
-  optional: false
 - recipe_id: 52
   ingredient_id: 309
   quantity: 3
   unit: EL
-  optional: false
 - recipe_id: 52
   ingredient_id: 7
   quantity: 4
   unit: g
-  optional: false
 - recipe_id: 52
   ingredient_id: 310
   quantity: 1
   unit: Liter
-  optional: false
 - recipe_id: 52
   ingredient_id: 98
   quantity: 2
   unit: TL
-  optional: false
 - recipe_id: 52
   ingredient_id: 205
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 52
   ingredient_id: 313
   quantity: 1
   unit: Tasse
-  optional: false
 - recipe_id: 52
   ingredient_id: 78
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 52
   ingredient_id: 1350
   quantity: 1
   unit: Dose
-  optional: false
 - recipe_id: 52
   ingredient_id: 1351
   quantity: 2
   unit: TL
-  optional: false
 - recipe_id: 52
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 52
   ingredient_id: 1353
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 52
   ingredient_id: 1354
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 54
   ingredient_id: 1355
   quantity: 1200
   unit: g
-  optional: false
 - recipe_id: 54
   ingredient_id: 1356
   quantity: 4
   unit: ''
-  optional: false
 - recipe_id: 54
   ingredient_id: 1357
   quantity: 3
   unit: EL
-  optional: false
 - recipe_id: 54
   ingredient_id: 1358
   quantity: 4.5
   unit: TL
-  optional: false
 - recipe_id: 54
   ingredient_id: 310
   quantity: 2
   unit: Liter
-  optional: false
 - recipe_id: 54
   ingredient_id: 1351
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 54
   ingredient_id: 1352
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 54
   ingredient_id: 1359
   quantity: 0.6
   unit: Dose
-  optional: false
 - recipe_id: 54
   ingredient_id: 1360
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 54
   ingredient_id: 1361
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 54
   ingredient_id: 1362
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 54
   ingredient_id: 1363
   quantity: 700
   unit: g
-  optional: false
 - recipe_id: 54
   ingredient_id: 1364
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 54
   ingredient_id: 1365
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 55
   ingredient_id: 1366
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 55
   ingredient_id: 1357
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 55
   ingredient_id: 1367
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 55
   ingredient_id: 1368
   quantity: 3
   unit: EL
-  optional: false
 - recipe_id: 55
   ingredient_id: 1369
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 55
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 55
   ingredient_id: 1370
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 55
   ingredient_id: 1371
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 55
   ingredient_id: 1372
   quantity: 20
   unit: g
-  optional: true
 - recipe_id: 56
   ingredient_id: 1366
   quantity: 800
   unit: g
-  optional: false
 - recipe_id: 56
   ingredient_id: 1373
   quantity: 300
   unit: g
-  optional: false
 - recipe_id: 56
   ingredient_id: 1374
   quantity: 1
   unit: Dose
-  optional: false
 - recipe_id: 56
   ingredient_id: 1357
   quantity: 8
   unit: EL
-  optional: false
 - recipe_id: 56
   ingredient_id: 1368
   quantity: 4
   unit: EL
-  optional: false
 - recipe_id: 56
   ingredient_id: 1375
   quantity: 4
   unit: TL
-  optional: false
 - recipe_id: 56
   ingredient_id: 1367
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 56
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 56
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 57
   ingredient_id: 1376
   quantity: 3
   unit: Packung
-  optional: false
 - recipe_id: 57
   ingredient_id: 1377
   quantity: 400
   unit: g
-  optional: false
 - recipe_id: 57
   ingredient_id: 1378
   quantity: 5
   unit: ''
-  optional: false
 - recipe_id: 57
   ingredient_id: 1351
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 57
   ingredient_id: 1352
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 57
   ingredient_id: 1379
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 57
   ingredient_id: 1380
   quantity: 20
   unit: g
-  optional: false
 - recipe_id: 57
   ingredient_id: 1381
   quantity: 10
   unit: g
-  optional: false
 - recipe_id: 57
   ingredient_id: 1382
   quantity: 250
   unit: ml
-  optional: false
 - recipe_id: 57
   ingredient_id: 1383
   quantity: 120
   unit: g
-  optional: false
 - recipe_id: 57
   ingredient_id: 1384
   quantity: 250
   unit: g
-  optional: false
 - recipe_id: 58
   ingredient_id: 1363
   quantity: 1200
   unit: g
-  optional: false
 - recipe_id: 58
   ingredient_id: 1385
   quantity: 20
   unit: g
-  optional: false
 - recipe_id: 58
   ingredient_id: 1364
   quantity: 3
   unit: ''
-  optional: false
 - recipe_id: 58
   ingredient_id: 1378
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 58
   ingredient_id: 1390
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 58
   ingredient_id: 1386
   quantity: 2
   unit: TL
-  optional: false
 - recipe_id: 58
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 58
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 58
   ingredient_id: 1387
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 58
   ingredient_id: 1388
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 58
   ingredient_id: 1389
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 59
   ingredient_id: 1391
   quantity: 4
   unit: ''
-  optional: false
 - recipe_id: 59
   ingredient_id: 277
   quantity: 500
   unit: ml
-  optional: false
 - recipe_id: 59
   ingredient_id: 1351
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 59
   ingredient_id: 1380
   quantity: 20
   unit: g
-  optional: false
 - recipe_id: 59
   ingredient_id: 1369
   quantity: 0.33
   unit: EL
-  optional: false
 - recipe_id: 59
   ingredient_id: 1392
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 59
   ingredient_id: 1393
   quantity: 4
   unit: Scheibe
-  optional: false
 - recipe_id: 59
   ingredient_id: 1359
   quantity: 1
   unit: Dose
-  optional: false
 - recipe_id: 59
   ingredient_id: 1385
   quantity: 5
   unit: g
-  optional: false
 - recipe_id: 59
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 60
   ingredient_id: 1394
   quantity: 150
   unit: g
-  optional: false
 - recipe_id: 60
   ingredient_id: 1381
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 60
   ingredient_id: 1395
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 60
   ingredient_id: 1396
   quantity: 180
   unit: g
-  optional: false
 - recipe_id: 60
   ingredient_id: 1380
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 60
   ingredient_id: 205
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 60
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 60
   ingredient_id: 1397
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 60
   ingredient_id: 1358
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 60
   ingredient_id: 1398
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 60
   ingredient_id: 1399
   quantity: 15
   unit: ml
-  optional: false
 - recipe_id: 60
   ingredient_id: 1400
   quantity: 10
   unit: g
-  optional: false
 - recipe_id: 60
   ingredient_id: 1401
   quantity: 10
   unit: g
-  optional: false
 - recipe_id: 60
   ingredient_id: 1402
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 60
   ingredient_id: 1403
   quantity: 10
   unit: g
-  optional: false
 - recipe_id: 60
   ingredient_id: 1404
   quantity: 10
   unit: g
-  optional: false
 - recipe_id: 61
   ingredient_id: 1405
   quantity: 400
   unit: g
-  optional: false
 - recipe_id: 61
   ingredient_id: 1406
   quantity: 1
   unit: Packung
-  optional: false
 - recipe_id: 61
   ingredient_id: 1407
   quantity: 8
   unit: EL
-  optional: false
 - recipe_id: 61
   ingredient_id: 1351
   quantity: 3
   unit: TL
-  optional: false
 - recipe_id: 61
   ingredient_id: 1408
   quantity: 1
   unit: Bund
-  optional: false
 - recipe_id: 61
   ingredient_id: 277
   quantity: 230
   unit: ml
-  optional: false
 - recipe_id: 62
   ingredient_id: 1409
   quantity: 0.5
   unit: Wuerfel
-  optional: false
 - recipe_id: 62
   ingredient_id: 1382
   quantity: 125
   unit: ml
-  optional: false
 - recipe_id: 62
   ingredient_id: 277
   quantity: 105
   unit: ml
-  optional: false
 - recipe_id: 62
   ingredient_id: 7
   quantity: 0.5
   unit: g
-  optional: false
 - recipe_id: 62
   ingredient_id: 1381
   quantity: 320
   unit: g
-  optional: false
 - recipe_id: 62
   ingredient_id: 205
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 62
   ingredient_id: 1351
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 62
   ingredient_id: 1385
   quantity: 60
   unit: g
-  optional: false
 - recipe_id: 62
   ingredient_id: 1356
   quantity: 10
   unit: ''
-  optional: false
 - recipe_id: 62
   ingredient_id: 1410
   quantity: 50
   unit: g
-  optional: false
 - recipe_id: 62
   ingredient_id: 1352
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 62
   ingredient_id: 1402
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 62
   ingredient_id: 1397
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 62
   ingredient_id: 1411
   quantity: 300
   unit: g
-  optional: false
 - recipe_id: 63
   ingredient_id: 1407
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 63
   ingredient_id: 1378
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 63
   ingredient_id: 1359
   quantity: 1.25
   unit: Dose
-  optional: false
 - recipe_id: 63
   ingredient_id: 1412
   quantity: 15
   unit: Blatt
-  optional: false
 - recipe_id: 63
   ingredient_id: 1367
   quantity: 0.33
   unit: EL
-  optional: false
 - recipe_id: 63
   ingredient_id: 1352
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 63
   ingredient_id: 1351
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 63
   ingredient_id: 1413
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 63
   ingredient_id: 1414
   quantity: 400
   unit: g
-  optional: false
 - recipe_id: 63
   ingredient_id: 1369
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 63
   ingredient_id: 1399
   quantity: 50
   unit: ml
-  optional: false
 - recipe_id: 63
   ingredient_id: 1415
   quantity: 4
   unit: Blatt
-  optional: false
 - recipe_id: 63
   ingredient_id: 1416
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 63
   ingredient_id: 1383
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 63
   ingredient_id: 309
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 63
   ingredient_id: 1417
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 63
   ingredient_id: 1358
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 63
   ingredient_id: 277
   quantity: 230
   unit: ml
-  optional: false
 - recipe_id: 64
   ingredient_id: 1418
   quantity: 0.5
   unit: ''
-  optional: false
 - recipe_id: 64
   ingredient_id: 1419
   quantity: 125
   unit: g
-  optional: false
 - recipe_id: 64
   ingredient_id: 1420
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 64
   ingredient_id: 1381
   quantity: 1.5
   unit: g
-  optional: false
 - recipe_id: 64
   ingredient_id: 1357
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 64
   ingredient_id: 1356
   quantity: 0.5
   unit: ''
-  optional: false
 - recipe_id: 64
   ingredient_id: 277
   quantity: 50
   unit: ml
-  optional: false
 - recipe_id: 64
   ingredient_id: 1421
   quantity: 50
   unit: ml
-  optional: false
 - recipe_id: 64
   ingredient_id: 1422
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 64
   ingredient_id: 1423
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 64
   ingredient_id: 1369
   quantity: 0.33
   unit: EL
-  optional: false
 - recipe_id: 64
   ingredient_id: 1351
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 65
   ingredient_id: 1419
   quantity: 400
   unit: g
-  optional: false
 - recipe_id: 65
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 65
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 65
   ingredient_id: 1425
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 65
   ingredient_id: 1426
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 65
   ingredient_id: 1427
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 65
   ingredient_id: 1424
   quantity: 60
   unit: g
-  optional: false
 - recipe_id: 65
   ingredient_id: 205
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 65
   ingredient_id: 1428
   quantity: 4
   unit: EL
-  optional: false
 - recipe_id: 65
   ingredient_id: 1380
   quantity: 20
   unit: g
-  optional: false
 - recipe_id: 65
   ingredient_id: 1429
   quantity: 1
   unit: Packung
-  optional: false
 - recipe_id: 65
   ingredient_id: 277
   quantity: 250
   unit: ml
-  optional: false
 - recipe_id: 65
   ingredient_id: 1399
   quantity: 250
   unit: ml
-  optional: false
 - recipe_id: 65
   ingredient_id: 1430
   quantity: 25
   unit: g
-  optional: false
 - recipe_id: 66
   ingredient_id: 1431
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 66
   ingredient_id: 1378
   quantity: 4
   unit: ''
-  optional: false
 - recipe_id: 66
   ingredient_id: 1432
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 66
   ingredient_id: 1433
   quantity: 250
   unit: g
-  optional: false
 - recipe_id: 66
   ingredient_id: 1434
   quantity: 250
   unit: g
-  optional: false
 - recipe_id: 66
   ingredient_id: 1435
   quantity: 1
   unit: Bund
-  optional: false
 - recipe_id: 66
   ingredient_id: 1351
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 66
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 66
   ingredient_id: 1390
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 66
   ingredient_id: 1368
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 66
   ingredient_id: 1436
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 66
   ingredient_id: 1407
   quantity: 6
   unit: EL
-  optional: false
 - recipe_id: 66
   ingredient_id: 1437
   quantity: 1500
   unit: g
-  optional: false
 - recipe_id: 67
   ingredient_id: 1438
   quantity: 4
   unit: ''
-  optional: false
 - recipe_id: 67
   ingredient_id: 1356
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 67
   ingredient_id: 1439
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 67
   ingredient_id: 1392
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 67
   ingredient_id: 1440
   quantity: 125
   unit: g
-  optional: false
 - recipe_id: 67
   ingredient_id: 1396
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 67
   ingredient_id: 1441
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 68
   ingredient_id: 1438
   quantity: 4
   unit: ''
-  optional: false
 - recipe_id: 68
   ingredient_id: 1356
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 68
   ingredient_id: 1407
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 68
   ingredient_id: 1377
   quantity: 300
   unit: g
-  optional: false
 - recipe_id: 68
   ingredient_id: 205
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 68
   ingredient_id: 78
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 68
   ingredient_id: 1428
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 68
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 68
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 68
   ingredient_id: 1358
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 68
   ingredient_id: 1442
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 68
   ingredient_id: 310
   quantity: 0.125
   unit: Liter
-  optional: false
 - recipe_id: 68
   ingredient_id: 1443
   quantity: 125
   unit: ml
-  optional: false
 - recipe_id: 68
   ingredient_id: 1396
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 68
   ingredient_id: 1412
   quantity: 5
   unit: Blatt
-  optional: false
 - recipe_id: 69
   ingredient_id: 1438
   quantity: 4
   unit: ''
-  optional: false
 - recipe_id: 69
   ingredient_id: 1444
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 69
   ingredient_id: 1382
   quantity: 100
   unit: ml
-  optional: false
 - recipe_id: 69
   ingredient_id: 1373
   quantity: 250
   unit: g
-  optional: false
 - recipe_id: 69
   ingredient_id: 1378
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 69
   ingredient_id: 1442
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 69
   ingredient_id: 1407
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 69
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 69
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 69
   ingredient_id: 310
   quantity: 0.125
   unit: Liter
-  optional: false
 - recipe_id: 69
   ingredient_id: 1443
   quantity: 125
   unit: ml
-  optional: false
 - recipe_id: 69
   ingredient_id: 1396
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 69
   ingredient_id: 1412
   quantity: 5
   unit: Blatt
-  optional: false
 - recipe_id: 70
   ingredient_id: 1356
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 70
   ingredient_id: 1378
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 70
   ingredient_id: 1364
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 70
   ingredient_id: 1445
   quantity: 2
   unit: Stange
-  optional: false
 - recipe_id: 70
   ingredient_id: 1446
   quantity: 400
   unit: g
-  optional: false
 - recipe_id: 70
   ingredient_id: 1447
   quantity: 360
   unit: g
-  optional: false
 - recipe_id: 70
   ingredient_id: 1448
   quantity: 2
   unit: TL
-  optional: false
 - recipe_id: 70
   ingredient_id: 1359
   quantity: 1
   unit: Dose
-  optional: false
 - recipe_id: 70
   ingredient_id: 78
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 70
   ingredient_id: 1449
   quantity: 0.25
   unit: Liter
-  optional: false
 - recipe_id: 70
   ingredient_id: 1450
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 70
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 70
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 70
   ingredient_id: 1420
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 70
   ingredient_id: 1451
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 70
   ingredient_id: 7
   quantity: 0.5
   unit: g
-  optional: false
 - recipe_id: 70
   ingredient_id: 1452
   quantity: 80
   unit: g
-  optional: false
 - recipe_id: 71
   ingredient_id: 1446
   quantity: 1000
   unit: g
-  optional: false
 - recipe_id: 71
   ingredient_id: 1356
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 71
   ingredient_id: 1378
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 71
   ingredient_id: 1380
   quantity: 60
   unit: g
-  optional: false
 - recipe_id: 71
   ingredient_id: 310
   quantity: 0.25
   unit: Liter
-  optional: false
 - recipe_id: 71
   ingredient_id: 1453
   quantity: 250
   unit: ml
-  optional: false
 - recipe_id: 71
   ingredient_id: 1430
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 71
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 71
   ingredient_id: 1352
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 71
   ingredient_id: 1420
   quantity: 0.1
   unit: TL
-  optional: false
 - recipe_id: 71
   ingredient_id: 1454
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 71
   ingredient_id: 242
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 71
   ingredient_id: 1455
   quantity: 3
   unit: Scheibe
-  optional: false
 - recipe_id: 72
   ingredient_id: 1446
   quantity: 400
   unit: g
-  optional: false
 - recipe_id: 72
   ingredient_id: 1351
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 72
   ingredient_id: 1382
   quantity: 125
   unit: ml
-  optional: false
 - recipe_id: 72
   ingredient_id: 1456
   quantity: 40
   unit: g
-  optional: false
 - recipe_id: 72
   ingredient_id: 1381
   quantity: 600
   unit: g
-  optional: false
 - recipe_id: 72
   ingredient_id: 7
   quantity: 60
   unit: g
-  optional: false
 - recipe_id: 72
   ingredient_id: 1406
   quantity: 1
   unit: Packung
-  optional: false
 - recipe_id: 72
   ingredient_id: 1457
   quantity: 4
   unit: EL
-  optional: false
 - recipe_id: 72
   ingredient_id: 1458
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 73
   ingredient_id: 1389
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 73
   ingredient_id: 1440
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 73
   ingredient_id: 1364
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 73
   ingredient_id: 1464
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 73
   ingredient_id: 1378
   quantity: 3
   unit: ''
-  optional: false
 - recipe_id: 73
   ingredient_id: 1436
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 73
   ingredient_id: 1407
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 73
   ingredient_id: 1351
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 73
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 74
   ingredient_id: 1356
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 74
   ingredient_id: 1378
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 74
   ingredient_id: 1366
   quantity: 80
   unit: g
-  optional: false
 - recipe_id: 74
   ingredient_id: 1445
   quantity: 1
   unit: Stange
-  optional: true
 - recipe_id: 74
   ingredient_id: 1461
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 74
   ingredient_id: 1351
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 74
   ingredient_id: 1352
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 74
   ingredient_id: 1449
   quantity: 0.2
   unit: Liter
-  optional: false
 - recipe_id: 74
   ingredient_id: 78
   quantity: 4
   unit: EL
-  optional: false
 - recipe_id: 74
   ingredient_id: 1436
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 74
   ingredient_id: 1359
   quantity: 1
   unit: Dose
-  optional: false
 - recipe_id: 74
   ingredient_id: 301
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 74
   ingredient_id: 1382
   quantity: 100
   unit: ml
-  optional: true
 - recipe_id: 74
   ingredient_id: 1459
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 75
   ingredient_id: 1377
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 75
   ingredient_id: 1459
   quantity: 400
   unit: g
-  optional: false
 - recipe_id: 75
   ingredient_id: 1465
   quantity: 400
   unit: g
-  optional: false
 - recipe_id: 75
   ingredient_id: 1410
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 75
   ingredient_id: 1356
   quantity: 2.5
   unit: ''
-  optional: false
 - recipe_id: 75
   ingredient_id: 1366
   quantity: 50
   unit: g
-  optional: false
 - recipe_id: 75
   ingredient_id: 1445
   quantity: 1
   unit: Stange
-  optional: false
 - recipe_id: 75
   ingredient_id: 1382
   quantity: 200
   unit: ml
-  optional: false
 - recipe_id: 75
   ingredient_id: 1380
   quantity: 40
   unit: g
-  optional: false
 - recipe_id: 75
   ingredient_id: 1357
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 75
   ingredient_id: 78
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 75
   ingredient_id: 1362
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 75
   ingredient_id: 1397
   quantity: 0.1
   unit: TL
-  optional: false
 - recipe_id: 75
   ingredient_id: 1351
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 75
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 75
   ingredient_id: 1466
   quantity: 125
   unit: ml
-  optional: true
 - recipe_id: 76
   ingredient_id: 1357
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 76
   ingredient_id: 1461
   quantity: 800
   unit: g
-  optional: false
 - recipe_id: 76
   ingredient_id: 1356
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 76
   ingredient_id: 1364
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 76
   ingredient_id: 78
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 76
   ingredient_id: 1378
   quantity: 3
   unit: ''
-  optional: false
 - recipe_id: 76
   ingredient_id: 1359
   quantity: 2
   unit: Dose
-  optional: false
 - recipe_id: 76
   ingredient_id: 1351
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 76
   ingredient_id: 1352
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 76
   ingredient_id: 7
   quantity: 0.5
   unit: g
-  optional: false
 - recipe_id: 76
   ingredient_id: 1358
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 76
   ingredient_id: 1467
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 76
   ingredient_id: 1379
   quantity: 0.3
   unit: TL
-  optional: false
 - recipe_id: 76
   ingredient_id: 310
   quantity: 0.5
   unit: Liter
-  optional: false
 - recipe_id: 76
   ingredient_id: 1468
   quantity: 1
   unit: Dose
-  optional: false
 - recipe_id: 76
   ingredient_id: 1374
   quantity: 0.7
   unit: Dose
-  optional: false
 - recipe_id: 76
   ingredient_id: 1434
   quantity: 200
   unit: g
-  optional: true
 - recipe_id: 76
   ingredient_id: 1442
   quantity: 6
   unit: EL
-  optional: true
 - recipe_id: 77
   ingredient_id: 732
   quantity: 600
   unit: g
-  optional: false
 - recipe_id: 77
   ingredient_id: 164
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 77
   ingredient_id: 1378
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 77
   ingredient_id: 1357
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 77
   ingredient_id: 98
   quantity: 15
   unit: TL
-  optional: false
 - recipe_id: 77
   ingredient_id: 7
   quantity: 24
   unit: g
-  optional: false
 - recipe_id: 77
   ingredient_id: 34
   quantity: 3
   unit: EL
-  optional: false
 - recipe_id: 77
   ingredient_id: 1469
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 77
   ingredient_id: 1470
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 77
   ingredient_id: 309
   quantity: 0.333
   unit: EL
-  optional: false
 - recipe_id: 77
   ingredient_id: 277
   quantity: 10
   unit: ml
-  optional: false
 - recipe_id: 78
   ingredient_id: 242
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 78
   ingredient_id: 1378
   quantity: 3
   unit: ''
-  optional: false
 - recipe_id: 78
   ingredient_id: 1471
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 78
   ingredient_id: 164
   quantity: 3
   unit: ''
-  optional: false
 - recipe_id: 78
   ingredient_id: 205
   quantity: 4
   unit: ''
-  optional: false
 - recipe_id: 78
   ingredient_id: 1472
   quantity: 250
   unit: g
-  optional: false
 - recipe_id: 78
   ingredient_id: 1470
   quantity: 2.33
   unit: EL
-  optional: false
 - recipe_id: 78
   ingredient_id: 1473
   quantity: 2.05
   unit: Liter
-  optional: false
 - recipe_id: 78
   ingredient_id: 1474
   quantity: 2.5
   unit: EL
-  optional: false
 - recipe_id: 78
   ingredient_id: 98
   quantity: 18
   unit: TL
-  optional: false
 - recipe_id: 78
   ingredient_id: 732
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 78
   ingredient_id: 1351
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 78
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
-- recipe_id: 79
-  ingredient_id: 1471
-  quantity: 600
-  unit: g
-  optional: false
-- recipe_id: 79
-  ingredient_id: 1463
-  quantity: 1
-  unit: ''
-  optional: false
-- recipe_id: 79
-  ingredient_id: 1378
-  quantity: 2
-  unit: ''
-  optional: false
-- recipe_id: 79
-  ingredient_id: 1407
-  quantity: 1
-  unit: EL
-  optional: false
-- recipe_id: 79
-  ingredient_id: 1399
-  quantity: 250
-  unit: ml
-  optional: false
-- recipe_id: 79
-  ingredient_id: 1449
-  quantity: 0.1
-  unit: Liter
-  optional: false
-- recipe_id: 79
-  ingredient_id: 1442
-  quantity: 2
-  unit: EL
-  optional: false
-- recipe_id: 79
-  ingredient_id: 1440
-  quantity: 20
-  unit: g
-  optional: false
-- recipe_id: 79
-  ingredient_id: 1475
-  quantity: 1
-  unit: EL
-  optional: false
-- recipe_id: 79
-  ingredient_id: 1351
-  quantity: 0.5
-  unit: TL
-  optional: false
-- recipe_id: 79
-  ingredient_id: 1352
-  quantity: 0.25
-  unit: TL
-  optional: false
 - recipe_id: 80
   ingredient_id: 1477
   quantity: 6
   unit: ''
-  optional: false
 - recipe_id: 80
   ingredient_id: 164
   quantity: 3
   unit: ''
-  optional: false
 - recipe_id: 80
   ingredient_id: 1434
   quantity: 400
   unit: g
-  optional: false
 - recipe_id: 80
   ingredient_id: 1396
   quantity: 150
   unit: g
-  optional: false
 - recipe_id: 80
   ingredient_id: 1392
   quantity: 150
   unit: g
-  optional: false
 - recipe_id: 80
   ingredient_id: 1351
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 80
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 81
   ingredient_id: 1363
   quantity: 1000
   unit: g
-  optional: false
 - recipe_id: 81
   ingredient_id: 1353
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 81
   ingredient_id: 1462
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 81
   ingredient_id: 1380
   quantity: 30
   unit: g
-  optional: false
 - recipe_id: 81
   ingredient_id: 1449
   quantity: 1
   unit: Liter
-  optional: false
 - recipe_id: 81
   ingredient_id: 1399
   quantity: 100
   unit: ml
-  optional: false
 - recipe_id: 81
   ingredient_id: 1442
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 81
   ingredient_id: 1351
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 81
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 81
   ingredient_id: 1397
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 82
   ingredient_id: 1462
   quantity: 800
   unit: g
-  optional: false
 - recipe_id: 82
   ingredient_id: 1378
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 82
   ingredient_id: 1461
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 82
   ingredient_id: 1357
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 82
   ingredient_id: 1449
   quantity: 1
   unit: Liter
-  optional: false
 - recipe_id: 82
   ingredient_id: 1440
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 82
   ingredient_id: 1396
   quantity: 50
   unit: g
-  optional: false
 - recipe_id: 82
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 82
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 82
   ingredient_id: 1397
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 83
   ingredient_id: 1381
   quantity: 250
   unit: g
-  optional: false
 - recipe_id: 83
   ingredient_id: 1351
   quantity: 1.5
   unit: TL
-  optional: false
 - recipe_id: 83
   ingredient_id: 1380
   quantity: 150
   unit: g
-  optional: false
 - recipe_id: 83
   ingredient_id: 205
   quantity: 5
   unit: ''
-  optional: false
 - recipe_id: 83
   ingredient_id: 1463
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 83
   ingredient_id: 1378
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 83
   ingredient_id: 1446
   quantity: 900
   unit: g
-  optional: false
 - recipe_id: 83
   ingredient_id: 1407
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 83
   ingredient_id: 1399
   quantity: 200
   unit: ml
-  optional: false
 - recipe_id: 83
   ingredient_id: 1396
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 83
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 83
   ingredient_id: 1397
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 83
   ingredient_id: 1389
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 84
   ingredient_id: 1480
   quantity: 1
   unit: Rolle
-  optional: false
 - recipe_id: 84
   ingredient_id: 1356
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 84
   ingredient_id: 1462
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 84
   ingredient_id: 1380
   quantity: 35
   unit: g
-  optional: false
 - recipe_id: 84
   ingredient_id: 1410
   quantity: 150
   unit: g
-  optional: false
 - recipe_id: 84
   ingredient_id: 1399
   quantity: 200
   unit: ml
-  optional: false
 - recipe_id: 84
   ingredient_id: 205
   quantity: 4
   unit: ''
-  optional: false
 - recipe_id: 84
   ingredient_id: 1396
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 84
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 84
   ingredient_id: 1352
   quantity: 0.125
   unit: TL
-  optional: false
 - recipe_id: 84
   ingredient_id: 1397
   quantity: 0.125
   unit: TL
-  optional: false
 - recipe_id: 85
   ingredient_id: 1479
   quantity: 1
   unit: Rolle
-  optional: false
 - recipe_id: 85
   ingredient_id: 1371
   quantity: 3
   unit: ''
-  optional: false
 - recipe_id: 85
   ingredient_id: 7
   quantity: 24
   unit: g
-  optional: false
 - recipe_id: 85
   ingredient_id: 1481
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 85
   ingredient_id: 1398
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 85
   ingredient_id: 1382
   quantity: 10
   unit: ml
-  optional: false
 - recipe_id: 85
   ingredient_id: 1482
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 86
   ingredient_id: 1483
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 86
   ingredient_id: 1485
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 86
   ingredient_id: 1356
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 86
   ingredient_id: 1378
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 86
   ingredient_id: 1407
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 86
   ingredient_id: 1479
   quantity: 1
   unit: Rolle
-  optional: false
 - recipe_id: 86
   ingredient_id: 1427
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 86
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 86
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 86
   ingredient_id: 205
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 86
   ingredient_id: 1404
   quantity: 5
   unit: g
-  optional: false
 - recipe_id: 87
   ingredient_id: 1487
   quantity: 300
   unit: g
-  optional: false
 - recipe_id: 87
   ingredient_id: 1355
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 87
   ingredient_id: 1489
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 87
   ingredient_id: 1364
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 87
   ingredient_id: 164
   quantity: 3
   unit: ''
-  optional: false
 - recipe_id: 87
   ingredient_id: 1490
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 87
   ingredient_id: 1357
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 87
   ingredient_id: 1491
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 87
   ingredient_id: 1493
   quantity: 800
   unit: ml
-  optional: false
 - recipe_id: 87
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 87
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 87
   ingredient_id: 1494
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 88
   ingredient_id: 1366
   quantity: 250
   unit: g
-  optional: false
 - recipe_id: 88
   ingredient_id: 1497
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 88
   ingredient_id: 1496
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 88
   ingredient_id: 1492
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 88
   ingredient_id: 1493
   quantity: 400
   unit: ml
-  optional: false
 - recipe_id: 88
   ingredient_id: 1449
   quantity: 0.6
   unit: Liter
-  optional: false
 - recipe_id: 88
   ingredient_id: 1498
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 88
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 88
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 89
   ingredient_id: 1463
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 89
   ingredient_id: 1499
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 89
   ingredient_id: 1399
   quantity: 200
   unit: ml
-  optional: false
 - recipe_id: 89
   ingredient_id: 1500
   quantity: 1
   unit: Packung
-  optional: false
 - recipe_id: 89
   ingredient_id: 1442
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 90
   ingredient_id: 1501
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 90
   ingredient_id: 1392
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 90
   ingredient_id: 1413
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 90
   ingredient_id: 1399
   quantity: 250
   unit: ml
-  optional: false
 - recipe_id: 90
   ingredient_id: 1427
   quantity: 150
   unit: g
-  optional: false
 - recipe_id: 90
   ingredient_id: 1375
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 90
   ingredient_id: 1396
   quantity: 150
   unit: g
-  optional: false
 - recipe_id: 90
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 90
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 90
   ingredient_id: 1397
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 91
   ingredient_id: 1461
   quantity: 600
   unit: g
-  optional: false
 - recipe_id: 91
   ingredient_id: 1430
   quantity: 80
   unit: g
-  optional: false
 - recipe_id: 91
   ingredient_id: 1439
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 91
   ingredient_id: 301
   quantity: 1.333
   unit: EL
-  optional: false
 - recipe_id: 91
   ingredient_id: 1356
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 91
   ingredient_id: 1506
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 91
   ingredient_id: 1502
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 91
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 91
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 91
   ingredient_id: 1357
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 91
   ingredient_id: 1507
   quantity: 4
   unit: ''
-  optional: false
 - recipe_id: 92
   ingredient_id: 732
   quantity: 600
   unit: g
-  optional: false
 - recipe_id: 92
   ingredient_id: 1356
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 92
   ingredient_id: 1364
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 92
   ingredient_id: 1462
   quantity: 250
   unit: g
-  optional: false
 - recipe_id: 92
   ingredient_id: 1366
   quantity: 120
   unit: g
-  optional: false
 - recipe_id: 92
   ingredient_id: 1493
   quantity: 400
   unit: ml
-  optional: false
 - recipe_id: 92
   ingredient_id: 1433
   quantity: 150
   unit: g
-  optional: false
 - recipe_id: 92
   ingredient_id: 1423
   quantity: 7
   unit: TL
-  optional: false
 - recipe_id: 92
   ingredient_id: 78
   quantity: 5
   unit: EL
-  optional: false
 - recipe_id: 92
   ingredient_id: 1378
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 92
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 92
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 92
   ingredient_id: 1358
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 92
   ingredient_id: 1357
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 93
   ingredient_id: 1357
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 93
   ingredient_id: 277
   quantity: 125
   unit: ml
-  optional: false
 - recipe_id: 93
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 93
   ingredient_id: 1381
   quantity: 250
   unit: g
-  optional: false
 - recipe_id: 93
   ingredient_id: 1356
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 93
   ingredient_id: 1434
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 93
   ingredient_id: 1508
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 93
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 93
   ingredient_id: 1410
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 93
   ingredient_id: 1510
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 94
   ingredient_id: 1363
   quantity: 600
   unit: g
-  optional: false
 - recipe_id: 94
   ingredient_id: 1463
   quantity: 1.5
   unit: ''
-  optional: false
 - recipe_id: 94
   ingredient_id: 1392
   quantity: 50
   unit: g
-  optional: false
 - recipe_id: 94
   ingredient_id: 1407
   quantity: 16.667
   unit: EL
-  optional: false
 - recipe_id: 94
   ingredient_id: 205
   quantity: 5
   unit: ''
-  optional: false
 - recipe_id: 94
   ingredient_id: 1378
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 94
   ingredient_id: 1442
   quantity: 0.333
   unit: EL
-  optional: false
 - recipe_id: 94
   ingredient_id: 1510
   quantity: 0.333
   unit: EL
-  optional: false
 - recipe_id: 94
   ingredient_id: 1382
   quantity: 30
   unit: ml
-  optional: false
 - recipe_id: 94
   ingredient_id: 1358
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 94
   ingredient_id: 1351
   quantity: 1.5
   unit: TL
-  optional: false
 - recipe_id: 94
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 95
   ingredient_id: 1363
   quantity: 400
   unit: g
-  optional: false
 - recipe_id: 95
   ingredient_id: 1356
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 95
   ingredient_id: 1357
   quantity: 0.667
   unit: EL
-  optional: false
 - recipe_id: 95
   ingredient_id: 1449
   quantity: 1
   unit: Liter
-  optional: false
 - recipe_id: 95
   ingredient_id: 1511
   quantity: 0.5
   unit: ''
-  optional: false
 - recipe_id: 95
   ingredient_id: 1462
   quantity: 250
   unit: g
-  optional: false
 - recipe_id: 95
   ingredient_id: 1366
   quantity: 240
   unit: g
-  optional: false
 - recipe_id: 95
   ingredient_id: 1439
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 95
   ingredient_id: 1410
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 95
   ingredient_id: 1442
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 96
   ingredient_id: 1356
   quantity: 3
   unit: ''
-  optional: false
 - recipe_id: 96
   ingredient_id: 1363
   quantity: 1000
   unit: g
-  optional: false
 - recipe_id: 96
   ingredient_id: 1351
   quantity: 2
   unit: TL
-  optional: false
 - recipe_id: 96
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 96
   ingredient_id: 205
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 96
   ingredient_id: 1381
   quantity: 80
   unit: g
-  optional: false
 - recipe_id: 96
   ingredient_id: 1357
   quantity: 10
   unit: EL
-  optional: false
 - recipe_id: 97
   ingredient_id: 775
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 97
   ingredient_id: 1490
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 97
   ingredient_id: 1463
   quantity: 3
   unit: ''
-  optional: false
 - recipe_id: 97
   ingredient_id: 1515
   quantity: 1000
   unit: g
-  optional: false
 - recipe_id: 97
   ingredient_id: 1514
   quantity: 2
   unit: TL
-  optional: false
 - recipe_id: 97
   ingredient_id: 1512
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 97
   ingredient_id: 1454
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 97
   ingredient_id: 1513
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 97
   ingredient_id: 1481
   quantity: 0.125
   unit: TL
-  optional: false
 - recipe_id: 97
   ingredient_id: 1351
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 97
   ingredient_id: 1378
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 97
   ingredient_id: 1407
   quantity: 6
   unit: EL
-  optional: false
 - recipe_id: 98
   ingredient_id: 732
   quantity: 1200
   unit: g
-  optional: false
 - recipe_id: 98
   ingredient_id: 1516
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 98
   ingredient_id: 1407
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 98
   ingredient_id: 1512
   quantity: 4
   unit: TL
-  optional: false
 - recipe_id: 98
   ingredient_id: 1358
   quantity: 3
   unit: TL
-  optional: false
 - recipe_id: 98
   ingredient_id: 1517
   quantity: 3
   unit: TL
-  optional: false
 - recipe_id: 98
   ingredient_id: 1518
   quantity: 3
   unit: TL
-  optional: false
 - recipe_id: 98
   ingredient_id: 1351
   quantity: 1.5
   unit: TL
-  optional: false
 - recipe_id: 98
   ingredient_id: 1352
   quantity: 1.25
   unit: TL
-  optional: false
 - recipe_id: 98
   ingredient_id: 1481
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 98
   ingredient_id: 1467
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 98
   ingredient_id: 1378
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 98
   ingredient_id: 1390
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 98
   ingredient_id: 1504
   quantity: 150
   unit: g
-  optional: false
 - recipe_id: 98
   ingredient_id: 1389
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 98
   ingredient_id: 1369
   quantity: 0.5
   unit: EL
-  optional: false
-- recipe_id: 99
-  ingredient_id: 1521
-  quantity: 5
-  unit: ''
-  optional: false
-- recipe_id: 99
-  ingredient_id: 1495
-  quantity: 1
-  unit: ''
-  optional: false
-- recipe_id: 99
-  ingredient_id: 1522
-  quantity: 30
-  unit: ml
-  optional: false
-- recipe_id: 99
-  ingredient_id: 1476
-  quantity: 1
-  unit: EL
-  optional: false
-- recipe_id: 99
-  ingredient_id: 1351
-  quantity: 0.25
-  unit: TL
-  optional: false
-- recipe_id: 99
-  ingredient_id: 1352
-  quantity: 0.25
-  unit: TL
-  optional: false
-- recipe_id: 99
-  ingredient_id: 1520
-  quantity: 500
-  unit: g
-  optional: false
-- recipe_id: 99
-  ingredient_id: 1505
-  quantity: 75
-  unit: g
-  optional: false
-- recipe_id: 99
-  ingredient_id: 1389
-  quantity: 100
-  unit: g
-  optional: false
-- recipe_id: 99
-  ingredient_id: 1523
-  quantity: 100
-  unit: g
-  optional: false
 - recipe_id: 100
   ingredient_id: 205
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 100
   ingredient_id: 1439
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 100
   ingredient_id: 1381
   quantity: 20
   unit: g
-  optional: false
 - recipe_id: 100
   ingredient_id: 1382
   quantity: 30
   unit: ml
-  optional: false
 - recipe_id: 100
   ingredient_id: 1358
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 100
   ingredient_id: 1351
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 100
   ingredient_id: 1352
   quantity: 0.125
   unit: TL
-  optional: false
 - recipe_id: 100
   ingredient_id: 1442
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 100
   ingredient_id: 1407
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 101
   ingredient_id: 1488
   quantity: 250
   unit: g
-  optional: false
 - recipe_id: 101
   ingredient_id: 277
   quantity: 375
   unit: ml
-  optional: false
 - recipe_id: 101
   ingredient_id: 34
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 101
   ingredient_id: 1469
   quantity: 0.5
   unit: EL
-  optional: false
 - recipe_id: 101
   ingredient_id: 7
   quantity: 6
   unit: g
-  optional: false
 - recipe_id: 101
   ingredient_id: 1351
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 101
   ingredient_id: 1524
   quantity: 6
   unit: ''
-  optional: false
 - recipe_id: 101
   ingredient_id: 1485
   quantity: 250
   unit: g
-  optional: false
 - recipe_id: 101
   ingredient_id: 1525
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 101
   ingredient_id: 1431
   quantity: 0.2
   unit: ''
-  optional: true
 - recipe_id: 101
   ingredient_id: 1364
   quantity: 0.5
   unit: ''
-  optional: true
-- recipe_id: 102
-  ingredient_id: 1453
-  quantity: 50
-  unit: ml
-  optional: false
-- recipe_id: 102
-  ingredient_id: 1380
-  quantity: 45
-  unit: g
-  optional: false
-- recipe_id: 102
-  ingredient_id: 205
-  quantity: 2
-  unit: ''
-  optional: false
-- recipe_id: 102
-  ingredient_id: 1478
-  quantity: 4
-  unit: ''
-  optional: false
-- recipe_id: 102
-  ingredient_id: 1351
-  quantity: 1
-  unit: TL
-  optional: false
-- recipe_id: 102
-  ingredient_id: 1352
-  quantity: 0.25
-  unit: TL
-  optional: false
-- recipe_id: 102
-  ingredient_id: 1392
-  quantity: 30
-  unit: g
-  optional: false
-- recipe_id: 102
-  ingredient_id: 1510
-  quantity: 2
-  unit: EL
-  optional: false
-- recipe_id: 102
-  ingredient_id: 1449
-  quantity: 0.2
-  unit: Liter
-  optional: false
-- recipe_id: 102
-  ingredient_id: 1356
-  quantity: 2
-  unit: ''
-  optional: false
-- recipe_id: 102
-  ingredient_id: 1509
-  quantity: 100
-  unit: g
-  optional: false
-- recipe_id: 102
-  ingredient_id: 1378
-  quantity: 1
-  unit: ''
-  optional: false
-- recipe_id: 102
-  ingredient_id: 1382
-  quantity: 200
-  unit: ml
-  optional: false
-- recipe_id: 102
-  ingredient_id: 1515
-  quantity: 150
-  unit: g
-  optional: false
-- recipe_id: 102
-  ingredient_id: 1397
-  quantity: 0.25
-  unit: TL
-  optional: false
 - recipe_id: 103
   ingredient_id: 1351
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 103
   ingredient_id: 1358
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 103
   ingredient_id: 1518
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 103
   ingredient_id: 1357
   quantity: 5
   unit: EL
-  optional: false
 - recipe_id: 103
   ingredient_id: 1526
   quantity: 125
   unit: g
-  optional: false
 - recipe_id: 103
   ingredient_id: 1527
   quantity: 75
   unit: g
-  optional: false
 - recipe_id: 103
   ingredient_id: 1528
   quantity: 125
   unit: g
-  optional: false
 - recipe_id: 103
   ingredient_id: 1438
   quantity: 0.7
   unit: ''
-  optional: false
 - recipe_id: 103
   ingredient_id: 1356
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 103
   ingredient_id: 1378
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 103
   ingredient_id: 78
   quantity: 3
   unit: EL
-  optional: false
 - recipe_id: 103
   ingredient_id: 1359
   quantity: 1
   unit: Dose
-  optional: false
 - recipe_id: 103
   ingredient_id: 1443
   quantity: 150
   unit: ml
-  optional: false
 - recipe_id: 103
   ingredient_id: 1468
   quantity: 1
   unit: Dose
-  optional: false
 - recipe_id: 103
   ingredient_id: 1374
   quantity: 1
   unit: Dose
-  optional: false
 - recipe_id: 103
   ingredient_id: 1420
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 103
   ingredient_id: 1512
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 103
   ingredient_id: 1503
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 103
   ingredient_id: 1442
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 103
   ingredient_id: 1369
   quantity: 1.5
   unit: EL
-  optional: false
 - recipe_id: 103
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 103
   ingredient_id: 277
   quantity: 120
   unit: ml
-  optional: false
 - recipe_id: 104
   ingredient_id: 1377
   quantity: 150
   unit: g
-  optional: false
 - recipe_id: 104
   ingredient_id: 1351
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 104
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 104
   ingredient_id: 1356
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 104
   ingredient_id: 78
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 104
   ingredient_id: 277
   quantity: 50
   unit: ml
-  optional: false
 - recipe_id: 104
   ingredient_id: 1452
   quantity: 125
   unit: g
-  optional: false
 - recipe_id: 104
   ingredient_id: 1529
   quantity: 5
   unit: EL
-  optional: false
 - recipe_id: 104
   ingredient_id: 1396
   quantity: 75
   unit: g
-  optional: false
 - recipe_id: 104
   ingredient_id: 1530
   quantity: 3
   unit: ''
-  optional: true
 - recipe_id: 104
   ingredient_id: 1357
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 104
   ingredient_id: 1358
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 104
   ingredient_id: 1512
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 105
   ingredient_id: 1356
   quantity: 0.5
   unit: ''
-  optional: false
 - recipe_id: 105
   ingredient_id: 1378
   quantity: 2.5
   unit: ''
-  optional: false
 - recipe_id: 105
   ingredient_id: 1359
   quantity: 0.75
   unit: Dose
-  optional: false
 - recipe_id: 105
   ingredient_id: 1518
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 105
   ingredient_id: 1351
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 105
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 105
   ingredient_id: 1442
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 105
   ingredient_id: 1490
   quantity: 1
   unit: ''
-  optional: true
 - recipe_id: 106
   ingredient_id: 1364
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 106
   ingredient_id: 1378
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 106
   ingredient_id: 1490
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 106
   ingredient_id: 1356
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 106
   ingredient_id: 7
   quantity: 12
   unit: g
-  optional: false
 - recipe_id: 106
   ingredient_id: 1442
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 106
   ingredient_id: 1465
   quantity: 250
   unit: g
-  optional: false
 - recipe_id: 106
   ingredient_id: 1509
   quantity: 100
   unit: g
-  optional: true
 - recipe_id: 106
   ingredient_id: 1475
   quantity: 0.5
   unit: EL
-  optional: false
 - recipe_id: 106
   ingredient_id: 1357
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 107
   ingredient_id: 1413
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 107
   ingredient_id: 1378
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 107
   ingredient_id: 1392
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 107
   ingredient_id: 1399
   quantity: 150
   unit: ml
-  optional: false
 - recipe_id: 107
   ingredient_id: 1430
   quantity: 50
   unit: g
-  optional: false
 - recipe_id: 107
   ingredient_id: 1383
   quantity: 10
   unit: g
-  optional: false
 - recipe_id: 107
   ingredient_id: 1407
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 107
   ingredient_id: 1351
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 107
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 108
   ingredient_id: 1483
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 108
   ingredient_id: 1399
   quantity: 200
   unit: ml
-  optional: false
 - recipe_id: 108
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 108
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 108
   ingredient_id: 1423
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 108
   ingredient_id: 1449
   quantity: 0.2
   unit: Liter
-  optional: false
 - recipe_id: 108
   ingredient_id: 1356
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 108
   ingredient_id: 1413
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 108
   ingredient_id: 732
   quantity: 300
   unit: g
-  optional: false
 - recipe_id: 108
   ingredient_id: 1357
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 108
   ingredient_id: 1531
   quantity: 125
   unit: g
-  optional: false
 - recipe_id: 109
   ingredient_id: 1460
   quantity: 600
   unit: g
-  optional: false
 - recipe_id: 109
   ingredient_id: 1484
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 109
   ingredient_id: 1356
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 109
   ingredient_id: 1357
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 109
   ingredient_id: 1449
   quantity: 0.125
   unit: Liter
-  optional: false
 - recipe_id: 109
   ingredient_id: 1378
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 109
   ingredient_id: 1486
   quantity: 175
   unit: g
-  optional: false
 - recipe_id: 109
   ingredient_id: 309
   quantity: 0.333
   unit: EL
-  optional: false
 - recipe_id: 109
   ingredient_id: 1399
   quantity: 200
   unit: ml
-  optional: false
 - recipe_id: 109
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 109
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 109
   ingredient_id: 1397
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 110
   ingredient_id: 1485
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 110
   ingredient_id: 1460
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 110
   ingredient_id: 78
   quantity: 0.667
   unit: EL
-  optional: false
 - recipe_id: 110
   ingredient_id: 1380
   quantity: 15
   unit: g
-  optional: false
 - recipe_id: 110
   ingredient_id: 1399
   quantity: 200
   unit: ml
-  optional: false
 - recipe_id: 110
   ingredient_id: 1449
   quantity: 0.1
   unit: Liter
-  optional: false
 - recipe_id: 110
   ingredient_id: 309
   quantity: 0.333
   unit: EL
-  optional: false
 - recipe_id: 110
   ingredient_id: 277
   quantity: 30
   unit: ml
-  optional: false
 - recipe_id: 110
   ingredient_id: 1435
   quantity: 0.2
   unit: Bund
-  optional: false
 - recipe_id: 111
   ingredient_id: 1532
   quantity: 900
   unit: g
-  optional: false
 - recipe_id: 111
   ingredient_id: 1351
   quantity: 1.5
   unit: TL
-  optional: false
 - recipe_id: 111
   ingredient_id: 1352
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 111
   ingredient_id: 1467
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 111
   ingredient_id: 1513
   quantity: 3
   unit: TL
-  optional: false
 - recipe_id: 111
   ingredient_id: 1533
   quantity: 3
   unit: TL
-  optional: false
 - recipe_id: 111
   ingredient_id: 1512
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 111
   ingredient_id: 1518
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 111
   ingredient_id: 1535
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 111
   ingredient_id: 1536
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 111
   ingredient_id: 1369
   quantity: 1.5
   unit: EL
-  optional: false
 - recipe_id: 111
   ingredient_id: 1540
   quantity: 255
   unit: g
-  optional: false
 - recipe_id: 111
   ingredient_id: 1539
   quantity: 4
   unit: TL
-  optional: false
 - recipe_id: 111
   ingredient_id: 78
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 111
   ingredient_id: 1357
   quantity: 12
   unit: EL
-  optional: false
 - recipe_id: 111
   ingredient_id: 1537
   quantity: 4
   unit: TL
-  optional: false
 - recipe_id: 111
   ingredient_id: 1538
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 111
   ingredient_id: 1463
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 111
   ingredient_id: 1442
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 111
   ingredient_id: 1542
   quantity: 6
   unit: ''
-  optional: false
 - recipe_id: 111
   ingredient_id: 1439
   quantity: 1.5
   unit: ''
-  optional: false
 - recipe_id: 111
   ingredient_id: 1543
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 112
   ingredient_id: 1433
   quantity: 125
   unit: g
-  optional: false
 - recipe_id: 112
   ingredient_id: 205
   quantity: 3
   unit: ''
-  optional: false
 - recipe_id: 112
   ingredient_id: 1544
   quantity: 3
   unit: TL
-  optional: false
 - recipe_id: 112
   ingredient_id: 7
   quantity: 220
   unit: g
-  optional: false
 - recipe_id: 112
   ingredient_id: 1395
   quantity: 2
   unit: TL
-  optional: false
 - recipe_id: 112
   ingredient_id: 1381
   quantity: 250
   unit: g
-  optional: false
 - recipe_id: 112
   ingredient_id: 1380
   quantity: 130
   unit: g
-  optional: false
 - recipe_id: 112
   ingredient_id: 1545
   quantity: 3
   unit: ''
-  optional: false
 - recipe_id: 113
   ingredient_id: 1398
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 113
   ingredient_id: 1547
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 113
   ingredient_id: 1546
   quantity: 1
   unit: Packung
-  optional: false
 - recipe_id: 113
   ingredient_id: 164
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 113
   ingredient_id: 1404
   quantity: 3
   unit: g
-  optional: false
 - recipe_id: 114
   ingredient_id: 1378
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 114
   ingredient_id: 164
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 114
   ingredient_id: 1546
   quantity: 1
   unit: Packung
-  optional: false
 - recipe_id: 114
   ingredient_id: 1357
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 114
   ingredient_id: 34
   quantity: 0.667
   unit: EL
-  optional: false
 - recipe_id: 114
   ingredient_id: 205
   quantity: 1
   unit: ''
-  optional: true
 - recipe_id: 114
   ingredient_id: 1404
   quantity: 3
   unit: g
-  optional: false
 - recipe_id: 115
   ingredient_id: 1548
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 115
   ingredient_id: 277
   quantity: 510
   unit: ml
-  optional: false
 - recipe_id: 115
   ingredient_id: 1546
   quantity: 1
   unit: Packung
-  optional: false
 - recipe_id: 115
   ingredient_id: 309
   quantity: 0.333
   unit: EL
-  optional: false
 - recipe_id: 115
   ingredient_id: 205
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 115
   ingredient_id: 164
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 115
   ingredient_id: 1404
   quantity: 3
   unit: g
-  optional: false
 - recipe_id: 115
   ingredient_id: 1470
   quantity: 0.167
   unit: EL
-  optional: false
 - recipe_id: 116
   ingredient_id: 205
   quantity: 12
   unit: ''
-  optional: false
 - recipe_id: 116
   ingredient_id: 1389
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 116
   ingredient_id: 1560
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 116
   ingredient_id: 1378
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 116
   ingredient_id: 1484
   quantity: 60
   unit: g
-  optional: false
 - recipe_id: 116
   ingredient_id: 1407
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 116
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 116
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 116
   ingredient_id: 1510
   quantity: 1
   unit: EL
-  optional: true
 - recipe_id: 117
   ingredient_id: 205
   quantity: 12
   unit: ''
-  optional: false
 - recipe_id: 117
   ingredient_id: 1462
   quantity: 150
   unit: g
-  optional: false
 - recipe_id: 117
   ingredient_id: 1410
   quantity: 150
   unit: g
-  optional: false
 - recipe_id: 117
   ingredient_id: 1510
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 117
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 117
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 117
   ingredient_id: 1383
   quantity: 20
   unit: g
-  optional: true
 - recipe_id: 118
   ingredient_id: 1461
   quantity: 800
   unit: g
-  optional: false
 - recipe_id: 118
   ingredient_id: 1378
   quantity: 8
   unit: ''
-  optional: false
 - recipe_id: 118
   ingredient_id: 1513
   quantity: 2
   unit: TL
-  optional: false
 - recipe_id: 118
   ingredient_id: 1512
   quantity: 3
   unit: TL
-  optional: false
 - recipe_id: 118
   ingredient_id: 1454
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 118
   ingredient_id: 1351
   quantity: 5
   unit: TL
-  optional: false
 - recipe_id: 118
   ingredient_id: 1352
   quantity: 4
   unit: TL
-  optional: false
 - recipe_id: 118
   ingredient_id: 1535
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 118
   ingredient_id: 1481
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 118
   ingredient_id: 1442
   quantity: 7
   unit: EL
-  optional: false
 - recipe_id: 118
   ingredient_id: 1519
   quantity: 1
   unit: Bund
-  optional: true
 - recipe_id: 118
   ingredient_id: 1356
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 118
   ingredient_id: 1407
   quantity: 6
   unit: EL
-  optional: false
 - recipe_id: 118
   ingredient_id: 1534
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 118
   ingredient_id: 1463
   quantity: 0.5
   unit: ''
-  optional: false
 - recipe_id: 118
   ingredient_id: 1560
   quantity: 150
   unit: g
-  optional: false
 - recipe_id: 118
   ingredient_id: 1537
   quantity: 2
   unit: TL
-  optional: false
 - recipe_id: 118
   ingredient_id: 1369
   quantity: 3
   unit: EL
-  optional: false
 - recipe_id: 118
   ingredient_id: 1516
   quantity: 120
   unit: g
-  optional: false
 - recipe_id: 118
   ingredient_id: 1541
   quantity: 3
   unit: EL
-  optional: false
 - recipe_id: 118
   ingredient_id: 277
   quantity: 30
   unit: ml
-  optional: false
 - recipe_id: 118
   ingredient_id: 1358
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 118
   ingredient_id: 1542
   quantity: 6
   unit: ''
-  optional: false
 - recipe_id: 119
   ingredient_id: 1392
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 119
   ingredient_id: 1357
   quantity: 1
   unit: EL
-  optional: false
 - recipe_id: 119
   ingredient_id: 1549
   quantity: 800
   unit: g
-  optional: false
 - recipe_id: 119
   ingredient_id: 1363
   quantity: 600
   unit: g
-  optional: false
 - recipe_id: 119
   ingredient_id: 1550
   quantity: 4
   unit: ''
-  optional: false
 - recipe_id: 119
   ingredient_id: 277
   quantity: 500
   unit: ml
-  optional: false
 - recipe_id: 120
   ingredient_id: 1356
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 120
   ingredient_id: 1363
   quantity: 400
   unit: g
-  optional: false
 - recipe_id: 120
   ingredient_id: 1366
   quantity: 150
   unit: g
-  optional: true
 - recipe_id: 120
   ingredient_id: 1511
   quantity: 0.25
   unit: ''
-  optional: true
 - recipe_id: 120
   ingredient_id: 1462
   quantity: 125
   unit: g
-  optional: true
 - recipe_id: 120
   ingredient_id: 1551
   quantity: 1
   unit: ''
-  optional: true
 - recipe_id: 120
   ingredient_id: 1380
   quantity: 15
   unit: g
-  optional: false
 - recipe_id: 120
   ingredient_id: 1410
   quantity: 150
   unit: g
-  optional: false
 - recipe_id: 120
   ingredient_id: 1552
   quantity: 350
   unit: g
-  optional: false
 - recipe_id: 120
   ingredient_id: 310
   quantity: 2
   unit: Liter
-  optional: false
 - recipe_id: 120
   ingredient_id: 1362
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 120
   ingredient_id: 1361
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 120
   ingredient_id: 1351
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 120
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 120
   ingredient_id: 1368
   quantity: 0.667
   unit: EL
-  optional: false
 - recipe_id: 120
   ingredient_id: 1442
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 120
   ingredient_id: 1554
   quantity: 4
   unit: ''
-  optional: false
 - recipe_id: 121
   ingredient_id: 1553
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 121
   ingredient_id: 1356
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 121
   ingredient_id: 1378
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 121
   ingredient_id: 1366
   quantity: 160
   unit: g
-  optional: false
 - recipe_id: 121
   ingredient_id: 1407
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 121
   ingredient_id: 1449
   quantity: 0.6
   unit: Liter
-  optional: false
 - recipe_id: 121
   ingredient_id: 1465
   quantity: 500
   unit: g
-  optional: false
 - recipe_id: 121
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 121
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 121
   ingredient_id: 1441
   quantity: 3
   unit: TL
-  optional: false
 - recipe_id: 121
   ingredient_id: 1384
   quantity: 250
   unit: g
-  optional: false
 - recipe_id: 121
   ingredient_id: 1509
   quantity: 200
   unit: g
-  optional: false
 - recipe_id: 121
   ingredient_id: 1531
   quantity: 100
   unit: g
-  optional: false
 - recipe_id: 121
   ingredient_id: 1380
   quantity: 5
   unit: g
-  optional: false
 - recipe_id: 121
   ingredient_id: 277
   quantity: 45
   unit: ml
-  optional: false
 - recipe_id: 122
   ingredient_id: 1555
   quantity: 1
   unit: Dose
-  optional: false
 - recipe_id: 122
   ingredient_id: 1356
   quantity: 1.5
   unit: ''
-  optional: false
 - recipe_id: 122
   ingredient_id: 1439
   quantity: 4
   unit: ''
-  optional: false
 - recipe_id: 122
   ingredient_id: 1556
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 122
   ingredient_id: 1535
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 122
   ingredient_id: 242
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 122
   ingredient_id: 1378
   quantity: 4
   unit: ''
-  optional: false
 - recipe_id: 122
   ingredient_id: 1490
   quantity: 1
   unit: ''
-  optional: false
 - recipe_id: 122
   ingredient_id: 1512
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 122
   ingredient_id: 1518
   quantity: 1
   unit: TL
-  optional: false
 - recipe_id: 122
   ingredient_id: 1467
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 122
   ingredient_id: 1357
   quantity: 3
   unit: EL
-  optional: false
 - recipe_id: 122
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 122
   ingredient_id: 7
   quantity: 0.5
   unit: g
-  optional: false
 - recipe_id: 122
   ingredient_id: 277
   quantity: 120
   unit: ml
-  optional: false
 - recipe_id: 123
   ingredient_id: 1356
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 123
   ingredient_id: 1378
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 123
   ingredient_id: 242
   quantity: 0.33
   unit: EL
-  optional: false
 - recipe_id: 123
   ingredient_id: 1439
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 123
   ingredient_id: 1496
   quantity: 2
   unit: EL
-  optional: false
 - recipe_id: 123
   ingredient_id: 1493
   quantity: 400
   unit: ml
-  optional: false
 - recipe_id: 123
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 123
   ingredient_id: 1483
   quantity: 425
   unit: g
-  optional: false
 - recipe_id: 123
   ingredient_id: 1358
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 123
   ingredient_id: 1535
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 123
   ingredient_id: 1558
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 123
   ingredient_id: 1557
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 123
   ingredient_id: 1555
   quantity: 1
   unit: Dose
-  optional: false
 - recipe_id: 124
   ingredient_id: 1462
   quantity: 400
   unit: g
-  optional: false
 - recipe_id: 124
   ingredient_id: 1356
   quantity: 2.5
   unit: ''
-  optional: false
 - recipe_id: 124
   ingredient_id: 1378
   quantity: 2
   unit: ''
-  optional: false
 - recipe_id: 124
   ingredient_id: 1383
   quantity: 125
   unit: g
-  optional: false
 - recipe_id: 124
   ingredient_id: 1407
   quantity: 4
   unit: EL
-  optional: false
 - recipe_id: 124
   ingredient_id: 1408
   quantity: 0.25
   unit: Bund
-  optional: false
 - recipe_id: 124
   ingredient_id: 1454
   quantity: 0.25
   unit: TL
-  optional: false
 - recipe_id: 124
   ingredient_id: 1449
   quantity: 1
   unit: Liter
-  optional: false
 - recipe_id: 124
   ingredient_id: 1399
   quantity: 250
   unit: ml
-  optional: false
 - recipe_id: 124
   ingredient_id: 1555
   quantity: 2
   unit: Dose
-  optional: false
 - recipe_id: 124
   ingredient_id: 1559
   quantity: 50
   unit: g
-  optional: false
 - recipe_id: 124
   ingredient_id: 1351
   quantity: 0.5
   unit: TL
-  optional: false
 - recipe_id: 124
   ingredient_id: 1352
   quantity: 0.25
   unit: TL
-  optional: false
+- recipe_id: 99
+  ingredient_id: 1521
+  quantity: 5
+  unit: ''
+- recipe_id: 99
+  ingredient_id: 1495
+  quantity: 1
+  unit: ''
+- recipe_id: 99
+  ingredient_id: 1522
+  quantity: 30
+  unit: ml
+- recipe_id: 99
+  ingredient_id: 1476
+  quantity: 1
+  unit: EL
+- recipe_id: 99
+  ingredient_id: 1351
+  quantity: 0.25
+  unit: TL
+- recipe_id: 99
+  ingredient_id: 1352
+  quantity: 0.25
+  unit: TL
+- recipe_id: 99
+  ingredient_id: 1520
+  quantity: 500
+  unit: g
+- recipe_id: 99
+  ingredient_id: 1505
+  quantity: 75
+  unit: g
+- recipe_id: 99
+  ingredient_id: 1389
+  quantity: 100
+  unit: g
+- recipe_id: 99
+  ingredient_id: 1523
+  quantity: 100
+  unit: g
+- recipe_id: 79
+  ingredient_id: 1471
+  quantity: 600
+  unit: g
+- recipe_id: 79
+  ingredient_id: 1463
+  quantity: 1
+  unit: ''
+- recipe_id: 79
+  ingredient_id: 1378
+  quantity: 2
+  unit: ''
+- recipe_id: 79
+  ingredient_id: 1407
+  quantity: 1
+  unit: EL
+- recipe_id: 79
+  ingredient_id: 1399
+  quantity: 250
+  unit: ml
+- recipe_id: 79
+  ingredient_id: 1449
+  quantity: 0.1
+  unit: Liter
+- recipe_id: 79
+  ingredient_id: 1442
+  quantity: 2
+  unit: EL
+- recipe_id: 79
+  ingredient_id: 1440
+  quantity: 20
+  unit: g
+- recipe_id: 79
+  ingredient_id: 1475
+  quantity: 1
+  unit: EL
+- recipe_id: 79
+  ingredient_id: 1351
+  quantity: 0.5
+  unit: TL
+- recipe_id: 79
+  ingredient_id: 1352
+  quantity: 0.25
+  unit: TL
+- recipe_id: 79
+  ingredient_id: 1460
+  quantity: 1
+  unit: Packung
+- recipe_id: 102
+  ingredient_id: 1453
+  quantity: 50
+  unit: ml
+- recipe_id: 102
+  ingredient_id: 1380
+  quantity: 45
+  unit: g
+- recipe_id: 102
+  ingredient_id: 205
+  quantity: 2
+  unit: ''
+- recipe_id: 102
+  ingredient_id: 1478
+  quantity: 4
+  unit: ''
+- recipe_id: 102
+  ingredient_id: 1351
+  quantity: 1
+  unit: TL
+- recipe_id: 102
+  ingredient_id: 1352
+  quantity: 0.25
+  unit: TL
+- recipe_id: 102
+  ingredient_id: 1392
+  quantity: 30
+  unit: g
+- recipe_id: 102
+  ingredient_id: 1510
+  quantity: 2
+  unit: EL
+- recipe_id: 102
+  ingredient_id: 1449
+  quantity: 0.2
+  unit: Liter
+- recipe_id: 102
+  ingredient_id: 1356
+  quantity: 2
+  unit: ''
+- recipe_id: 102
+  ingredient_id: 1509
+  quantity: 100
+  unit: g
+- recipe_id: 102
+  ingredient_id: 1378
+  quantity: 1
+  unit: ''
+- recipe_id: 102
+  ingredient_id: 1382
+  quantity: 200
+  unit: ml
+- recipe_id: 102
+  ingredient_id: 1515
+  quantity: 150
+  unit: g
+- recipe_id: 102
+  ingredient_id: 1397
+  quantity: 0.25
+  unit: TL

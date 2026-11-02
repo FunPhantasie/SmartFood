@@ -68,3 +68,18 @@ default_ratings:
   taste_rating: 10
   effort_rating: 5
   repeat_rating: 4
+- recipe_id: 57
+  name: Lasagne mit Hackfleisch-Tomatensauce und Parmesan
+  taste_rating: 10
+  effort_rating: 8
+  repeat_rating: 7
+- recipe_id: 86
+  name: Lachs im Blaetterteig mit Spinat und Frischkaese
+  taste_rating: 9
+  effort_rating: 7
+  repeat_rating: 7
+- recipe_id: 54
+  name: Gulaschsuppe mit Rindfleisch und Paprika
+  taste_rating: 9
+  effort_rating: 8
+  repeat_rating: 8

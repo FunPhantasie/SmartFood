@@ -672,9 +672,10 @@ recipes:
   - home-style
   prep_minutes: 10
   recipe_id: 79
-  recipe_spec: sauce
-  recipe_type: dip
-  side_dish: null
+  recipe_spec: pan_dish
+  recipe_type: main_dish
+  season: always
+  side_dish: 1460
   sweet: false
   variant_of: null
   veg_type: vegetarian
@@ -1177,8 +1178,8 @@ recipes:
   prep_minutes: 15
   recipe_id: 99
   recipe_spec: salad
+  recipe_type: main_dish
   season: only_summer
-  recipe_type: side_dish
   side_dish: null
   sweet: false
   variant_of: null
@@ -1264,6 +1265,7 @@ recipes:
   sweet: false
   variant_of: null
   veg_type: meat
+  season: autumn
 - cook_minutes: 20
   cooking_method: oven
   instructions: Fuer die Nachos ca. 120 ml Wasser mit 1 Prise Salz, Paprikapulver,
