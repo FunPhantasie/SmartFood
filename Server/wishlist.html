@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartFood – Wunschliste</title>
+  <style>
+    :root{ --bg:#0b0f17; --card:#121a2a; --line:#1d2840; --text:#e9eefc; --muted:#a7b4d6; --accent:#22d3ee; --ok:#4cd4a6; --danger:#ff8a8a; }
+    *{ box-sizing:border-box; }
+    body{ font-family: system-ui, sans-serif; margin:0; color:var(--text);
+          background: radial-gradient(900px 500px at 30% 0%, #172141 0%, var(--bg) 55%) fixed; }
+    header{ padding:18px 24px 10px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+    header h1{ margin:0; font-size:22px; }
+    .btn{ border-radius:10px; padding:8px 14px; border:1px solid #2a3a58; background:#1a2436; color:var(--text);
+          font-weight:600; cursor:pointer; font-size:13px; }
+    .btn.primary{ background:var(--accent); color:#0f172a; border-color:var(--accent); }
+    .btn.danger{ color:var(--danger); border-color:rgba(255,107,107,.4); }
+    .btn:disabled{ opacity:.5; cursor:default; }
+    main{ display:grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr); gap:20px; padding:8px 24px 32px; align-items:start; }
+    @media (max-width: 900px){ main{ grid-template-columns: 1fr; } }
+    h2{ font-size:14px; letter-spacing:.3px; color:var(--muted); text-transform:uppercase; margin:6px 0 12px; }
+    .list{ display:flex; flex-direction:column; gap:12px; }
+    .rcard{ display:grid; grid-template-columns: 160px 1fr; gap:14px; background:var(--card); border:1px solid var(--line);
+            border-radius:14px; overflow:hidden; }
+    .rcard img{ width:160px; height:120px; object-fit:cover; display:block; background:#0b1220; }
+    .rcard .body{ padding:12px 14px 12px 0; display:flex; flex-direction:column; gap:6px; min-width:0; }
+    .rcard .name{ font-weight:700; font-size:15px; }
+    .rcard .meta{ color:var(--muted); font-size:12px; display:flex; gap:12px; flex-wrap:wrap; }
+    .rcard .actions{ display:flex; gap:8px; margin-top:auto; flex-wrap:wrap; }
+    @media (max-width: 520px){ .rcard{ grid-template-columns: 1fr; } .rcard img{ width:100%; height:auto; aspect-ratio:4/3; }
+                               .rcard .body{ padding:0 14px 14px; } }
+    .undo{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:14px; padding:10px 14px;
+           border:1px dashed rgba(251,191,36,.5); border-radius:12px; color:#fde68a; font-size:13px; background:rgba(251,191,36,.06); }
+    .empty{ border:1px dashed #2a3a58; border-radius:14px; padding:18px; color:var(--muted); font-size:14px; }
+    .shop{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; position:sticky; top:12px; }
+    .shop h3{ margin:4px 0 8px; font-size:13px; color:var(--muted); font-weight:700; }
+    .shop ul{ list-style:none; margin:0 0 12px; padding:0; }
+    .shop li{ display:grid; grid-template-columns: 22px 1fr auto; gap:8px; align-items:baseline; padding:6px 0;
+              border-bottom:1px solid var(--line); font-size:14px; }
+    .shop li:last-child{ border-bottom:none; }
+    .shop li .amt{ color:var(--muted); font-variant-numeric: tabular-nums; white-space:nowrap; text-align:right; }
+    .shop li .for{ grid-column: 2 / 4; color:#7d8db3; font-size:11px; margin-top:-2px; }
+    .shop li.done .nm, .shop li.done .amt{ text-decoration: line-through; color:#5c6f96; }
+    .shop .hint{ color:#7d8db3; font-size:12px; }
+  </style>
+</head>
+<body>
+<script src="/static/nav.js"></script>
+
+<header>
+  <h1>Wunschliste</h1>
+  <span id="sf-user-slot" style="display:inline-flex; align-items:center; gap:6px;"></span>
+  <button class="btn" type="button" id="btnHome">Zur Startseite</button>
+</header>
+
+<main>
+  <section>
+    <h2>Rezepte <span id="count"></span></h2>
+    <div class="list" id="list"></div>
+    <div class="undo" id="undo" hidden>
+      <span id="undoText"></span>
+      <button class="btn" type="button" id="btnUndo">Wiederherstellen</button>
+    </div>
+  </section>
+  <aside>
+    <h2>Einkaufsliste</h2>
+    <div class="shop" id="shop"></div>
+  </aside>
+</main>
+
+<script>
+const TYPE_LABEL = { main_dish: "Hauptgericht", side_dish: "Beilage", sweet: "Nachspeise", snack: "Snack",
+                     dip: "Dip", wuerzung: "Gewürzmischung" };
+const VEG_LABEL = { vegan: "vegan", vegetarian: "vegetarisch", fish: "Fisch", meat: "Fleisch" };
+const userId = window.SmartFoodUser.get();
+const LAST_KEY = `smartfood_wishlist_last_removed_${userId}`;   // zuletzt entfernt -> Wiederherstellen
+const DONE_KEY = `smartfood_shopping_done_${userId}`;           // abgehakte Zutaten
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const num = q => Number.isInteger(q) ? String(q) : q.toLocaleString("de-DE", { maximumFractionDigits: 2 });
+
+async function setWish(recipeId, on){
+  const res = await fetch("/api/wishlist/set", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ recipe_id: recipeId, user_id: userId, on }),
+  });
+  const out = await res.json();
+  if(!res.ok) throw new Error(out.error || ("HTTP " + res.status));
+}
+
+function renderUndo(){
+  const last = JSON.parse(localStorage.getItem(LAST_KEY) || "null");
+  const box = document.getElementById("undo");
+  box.hidden = !last;
+  if(last) document.getElementById("undoText").textContent = `Zuletzt entfernt: „${last.name}“`;
+}
+
+function renderRecipes(recipes){
+  document.getElementById("count").textContent = `(${recipes.length})`;
+  const list = document.getElementById("list");
+  if(!recipes.length){
+    list.innerHTML = '<div class="empty">Die Wunschliste ist leer. Auf einer Rezeptseite „Auf demnächst setzen“ drücken.</div>';
+    return;
+  }
+  list.innerHTML = "";
+  for(const r of recipes){
+    const card = document.createElement("div");
+    card.className = "rcard";
+    card.innerHTML = `
+      <img src="/img/recipe/${r.recipe_id}/thumb" alt="" loading="lazy">
+      <div class="body">
+        <div class="name">${esc(r.name)}</div>
+        <div class="meta">
+          <span>${esc(TYPE_LABEL[r.recipe_type] || r.recipe_type || "")}</span>
+          ${r.veg_type ? `<span>${esc(VEG_LABEL[r.veg_type] || r.veg_type)}</span>` : ""}
+          ${r.minutes ? `<span>~${r.minutes} min</span>` : ""}
+          ${r.added ? `<span>seit ${esc(r.added)}</span>` : ""}
+        </div>
+        <div class="actions">
+          <button class="btn primary" type="button" data-go>Zum Rezept</button>
+          <button class="btn danger" type="button" data-remove>Entfernen</button>
+        </div>
+      </div>`;
+    card.querySelector("[data-go]").onclick = () => {
+      location.href = window.SmartFoodUser.decorate(`/recipe?id=${encodeURIComponent(r.recipe_id)}`);
+    };
+    const remove = card.querySelector("[data-remove]");
+    remove.onclick = async () => {
+      remove.disabled = true;
+      try{
+        await setWish(r.recipe_id, false);
+        localStorage.setItem(LAST_KEY, JSON.stringify({ recipe_id: r.recipe_id, name: r.name }));
+        await load();
+      }catch(e){
+        remove.disabled = false;
+        alert("Konnte nicht entfernt werden: " + e.message);
+      }
+    };
+    list.appendChild(card);
+  }
+}
+
+function renderShopping(items){
+  const shop = document.getElementById("shop");
+  if(!items.length){ shop.innerHTML = '<div class="hint">Nichts zu kaufen.</div>'; return; }
+  const done = new Set(JSON.parse(localStorage.getItem(DONE_KEY) || "[]"));
+  const groups = [["Zutaten", items.filter(i => i.category !== "spice")], ["Gewürze & Saucen", items.filter(i => i.category === "spice")]];
+  shop.innerHTML = groups.filter(([, g]) => g.length).map(([title, g]) => `
+    <h3>${title}</h3>
+    <ul>${g.map(i => `
+      <li class="${done.has(i.ingredient_id) ? "done" : ""}" data-id="${i.ingredient_id}">
+        <input type="checkbox" ${done.has(i.ingredient_id) ? "checked" : ""}>
+        <span class="nm">${esc(i.name)}</span>
+        <span class="amt">${i.amounts.map(a => a.quantity === null ? esc(a.unit) : `${num(a.quantity)} ${esc(a.unit)}`).join(" + ")}</span>
+        ${i.recipes.length > 1 ? `<span class="for">für ${i.recipes.length} Rezepte</span>` : ""}
+      </li>`).join("")}
+    </ul>`).join("") + '<div class="hint">Ohne Grundzutaten (Salz, Mehl, Wasser …). Abhaken wird im Browser gemerkt.</div>';
+  shop.querySelectorAll("li input").forEach(cb => cb.onchange = () => {
+    const li = cb.closest("li"), id = Number(li.dataset.id);
+    cb.checked ? done.add(id) : done.delete(id);
+    li.classList.toggle("done", cb.checked);
+    localStorage.setItem(DONE_KEY, JSON.stringify([...done]));
+  });
+}
+
+async function load(){
+  renderUndo();
+  if(!userId){
+    document.getElementById("list").innerHTML = '<div class="empty">Bitte oben zuerst einen User wählen – die Wunschliste gehört dem User.</div>';
+    document.getElementById("shop").innerHTML = "";
+    return;
+  }
+  const res = await fetch(`/api/wishlist?user=${encodeURIComponent(userId)}`);
+  const out = await res.json();
+  if(!res.ok){ document.getElementById("list").innerHTML = `<div class="empty">Fehler: ${esc(out.error || res.status)}</div>`; return; }
+  renderRecipes(out.recipes);
+  renderShopping(out.shopping_list);
+}
+
+document.getElementById("btnUndo").onclick = async () => {
+  const last = JSON.parse(localStorage.getItem(LAST_KEY) || "null");
+  if(!last) return;
+  try{
+    await setWish(last.recipe_id, true);
+    localStorage.removeItem(LAST_KEY);
+    await load();
+  }catch(e){
+    alert("Konnte nicht wiederhergestellt werden: " + e.message);
+  }
+};
+document.getElementById("btnHome").onclick = () => { location.href = window.SmartFoodUser.decorate("/"); };
+load();
+</script>
+</body>
+</html>
